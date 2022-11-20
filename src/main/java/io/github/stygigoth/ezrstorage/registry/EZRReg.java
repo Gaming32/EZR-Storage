@@ -1,7 +1,6 @@
 package io.github.stygigoth.ezrstorage.registry;
 
 import io.github.stygigoth.ezrstorage.Main;
-import io.github.stygigoth.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
