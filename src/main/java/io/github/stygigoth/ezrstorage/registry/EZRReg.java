@@ -18,6 +18,7 @@ public class EZRReg {
 
     public static void registerMod() {
         ModBlocks.registerBlocks();
+        ModBlockEntities.registerModBlockEntities();
     }
 
     public static <T extends Item> Item registerItem(T item, String name) {
