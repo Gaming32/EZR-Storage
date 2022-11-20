@@ -17,9 +17,9 @@ public class ModBlocks {
             new StorageCoreBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
             "storage_core", new FabricItemSettings().group(Main.EZR_GROUP)
     );
-    public static final Pair<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
+    /*public static final Pair<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
             , "access_terminal", new FabricItemSettings().group(Main.EZR_GROUP)
-    );
+    );*/
 
     public static final Pair<Block, Item> BLANK_BOX = EZRReg.registerBlock(
             new BoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
@@ -68,7 +68,7 @@ public class ModBlocks {
             new FabricItemSettings().group(Main.EZR_GROUP)
     );
 
-    public static final Pair<Block, Item> INPUT_PORT = EZRReg.registerBlock(
+    /*public static final Pair<Block, Item> INPUT_PORT = EZRReg.registerBlock(
             , "input_port", new FabricItemSettings().group(Main.EZR_GROUP)
     );
     public static final Pair<Block, Item> OUTPUT_PORT = EZRReg.registerBlock(
@@ -76,7 +76,7 @@ public class ModBlocks {
     );
     public static final Pair<Block, Item> EJECTION_PORT = EZRReg.registerBlock(
             , "ejection_port", new FabricItemSettings().group(Main.EZR_GROUP)
-    );
+    );*/
 
     public static void registerBlocks() {
         Main.LOGGER.info("Registering blocks...");
