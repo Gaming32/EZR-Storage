@@ -1,7 +1,10 @@
 package io.github.stygigoth.ezrstorage.registry;
 
 import io.github.stygigoth.ezrstorage.Main;
+import io.github.stygigoth.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -27,5 +30,9 @@ public class EZRReg {
 
     public static <T extends Block> Pair<Block, Item> registerBlock(T block, String name, Item.Settings blockItemSettings) {
         return new Pair<>(registerBlock(block, name), registerItem(new BlockItem(block, blockItemSettings), name));
+    }
+
+    public static <T extends BlockEntity> BlockEntityType<T> registerBlockEntityType(BlockEntityType<T> type, String name) {
+        return Registry.register(Registry.BLOCK_ENTITY_TYPE, id(name), type);
     }
 }
