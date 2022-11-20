@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "ezrstorage",
+  "version": "${version}",
+  "name": "EZR Storage",
+  "description": "A fabric/quilt port of EZ Storage 2 to 1.18.2 and above",
+  "authors": [
+    "stygigoth"
+  ],
+  "contact": {
+    "repo": "https://github.com/stygigoth/EZR-Storage"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "io.github.stygigoth.ezrstorage.client.ClientMain"
+    ],
+    "main": [
+      "io.github.stygigoth.ezrstorage.Main"
+    ]
+  },
+  "mixins": [
+    "ezrstorage.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
