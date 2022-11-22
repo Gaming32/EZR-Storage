@@ -7,6 +7,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public class RefBlockEntity extends BlockEntity {
     StorageCoreBlockEntity core;
 
@@ -29,11 +32,17 @@ public class RefBlockEntity extends BlockEntity {
     }
 
     void recurse(WorldAccess world) {
-        for (Direction d : Direction.values()) {
-            BlockEntity be = world.getBlockEntity(pos.offset(d));
-            if (be instanceof RefBlockEntity && ((RefBlockEntity) be).core != null && !core.networkContains(pos.offset(d))) {
-                core.addToNetwork(pos.offset(d), (RefBlockEntity) be);
-                ((RefBlockEntity) be).recurse(world);
+        final Deque<BlockPos> queue = new ArrayDeque<>();
+        queue.addLast(pos);
+        while (!queue.isEmpty()) {
+            final BlockPos checkPos = queue.removeFirst();
+            for (Direction d : Direction.values()) {
+                final BlockPos offsetPos = checkPos.offset(d);
+                BlockEntity be = world.getBlockEntity(offsetPos);
+                if (be instanceof RefBlockEntity && ((RefBlockEntity) be).core != null && !core.networkContains(offsetPos)) {
+                    core.addToNetwork(offsetPos, (RefBlockEntity) be);
+                    queue.addLast(offsetPos);
+                }
             }
         }
     }
