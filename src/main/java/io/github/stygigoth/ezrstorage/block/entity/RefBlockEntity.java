@@ -3,6 +3,7 @@ package io.github.stygigoth.ezrstorage.block.entity;
 import io.github.stygigoth.ezrstorage.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
@@ -16,6 +17,10 @@ public class RefBlockEntity extends BlockEntity {
     public RefBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.REF_BLOCK_ENTITY, pos, state);
     }
+    public RefBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
+
 
     public void attemptFindNetwork(WorldAccess world) {
         for (Direction d : Direction.values()) {
