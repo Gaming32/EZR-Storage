@@ -1,6 +1,7 @@
 package io.github.stygigoth.ezrstorage.block;
 
 import io.github.stygigoth.ezrstorage.block.entity.RefBlockEntity;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -28,7 +29,7 @@ public class BoxBlock extends BlockWithEntity {
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
         BlockEntity be = world.getBlockEntity(pos);
-        if (be == null) {return;}
+        if (be == null) return;
         ((RefBlockEntity) be).attemptFindNetwork(world);
     }
 
@@ -36,5 +37,10 @@ public class BoxBlock extends BlockWithEntity {
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         ((RefBlockEntity) Objects.requireNonNull(world.getBlockEntity(pos))).notifyBreak();
         super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 }

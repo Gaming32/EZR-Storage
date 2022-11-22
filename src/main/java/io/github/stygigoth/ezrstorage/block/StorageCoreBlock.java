@@ -1,6 +1,7 @@
 package io.github.stygigoth.ezrstorage.block;
 
 import io.github.stygigoth.ezrstorage.block.entity.StorageCoreBlockEntity;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,5 +25,10 @@ public class StorageCoreBlock extends BlockWithEntity {
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         ((StorageCoreBlockEntity)world.getBlockEntity(pos)).notifyBreak();
         super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 }
