@@ -15,6 +15,7 @@ public class StorageCoreBlockEntity extends BlockEntity {
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY, pos, state);
+        scan(world);
     }
 
     public void scan(WorldAccess world) {
