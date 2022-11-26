@@ -21,8 +21,8 @@ public class StorageCoreBlockEntity extends BlockEntity implements ImplementedIn
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY, pos, state);
-        scanBlocks(world);
         if (world != null) {
+            scanBlocks(world);
             network.forEach(((blockPos, refBlockEntity) -> {
                 if (refBlockEntity instanceof StorageBoxBlockEntity)
                     inventory.add(((StorageBoxBlockEntity) refBlockEntity).inventory);
