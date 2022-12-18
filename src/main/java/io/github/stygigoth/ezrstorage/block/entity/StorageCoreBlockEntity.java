@@ -1,39 +1,38 @@
 package io.github.stygigoth.ezrstorage.block.entity;
 
-import io.github.stygigoth.ezrstorage.impl.ImplementedInventory;
+import io.github.stygigoth.ezrstorage.InfiniteInventory;
+import io.github.stygigoth.ezrstorage.block.StorageBoxBlock;
 import io.github.stygigoth.ezrstorage.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class StorageCoreBlockEntity extends BlockEntity implements ImplementedInventory {
+public class StorageCoreBlockEntity extends BlockEntity {
     private final Map<BlockPos, RefBlockEntity> network = new HashMap<>();
-    private final DefaultedList<List<ItemStack>> inventory = DefaultedList.of();
-    private final DefaultedList<ItemStack> items = DefaultedList.of();
+    private final InfiniteInventory inventory = new InfiniteInventory();
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY, pos, state);
         if (world != null) {
-            scanBlocks(world);
-            network.forEach(((blockPos, refBlockEntity) -> {
-                if (refBlockEntity instanceof StorageBoxBlockEntity)
-                    inventory.add(((StorageBoxBlockEntity) refBlockEntity).inventory);
-            }));
+            scan(world);
         }
-        scanInventories();
     }
 
     public void scan(WorldAccess world) {
         scanBlocks(world);
-        scanInventories();
+        inventory.setMaxCount(0L);
+        for (final BlockPos otherPos : network.keySet()) {
+            final BlockState otherState = world.getBlockState(otherPos);
+            if (otherState.getBlock() instanceof StorageBoxBlock storageBox) {
+                inventory.setMaxCount(inventory.getMaxCount() + storageBox.capacity);
+            }
+        }
     }
 
     private void scanBlocks(WorldAccess world) {
@@ -69,12 +68,17 @@ public class StorageCoreBlockEntity extends BlockEntity implements ImplementedIn
         }
     }
 
-    private void scanInventories() {
-        items.clear();
-        inventory.forEach(items::addAll);
+    public InfiniteInventory getInventory() {
+        return inventory;
     }
 
-    public DefaultedList<ItemStack> getItems() {
-        return items;
+    @Override
+    protected void writeNbt(NbtCompound nbt) {
+        nbt.put("Inventory", inventory.writeNbt());
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbt) {
+        inventory.readNbt(nbt.getCompound("Inventory"));
     }
 }

@@ -17,6 +17,7 @@ public class RefBlockEntity extends BlockEntity {
     public RefBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.REF_BLOCK_ENTITY, pos, state);
     }
+
     public RefBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
