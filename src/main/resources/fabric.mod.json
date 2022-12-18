@@ -17,7 +17,7 @@
       "io.github.stygigoth.ezrstorage.client.ClientMain"
     ],
     "main": [
-      "io.github.stygigoth.ezrstorage.Main"
+      "io.github.stygigoth.ezrstorage.EZRStorage"
     ]
   },
   "mixins": [

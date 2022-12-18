@@ -22,7 +22,6 @@ public class RefBlockEntity extends BlockEntity {
         super(type, pos, state);
     }
 
-
     public void attemptFindNetwork(WorldAccess world) {
         for (Direction d : Direction.values()) {
             BlockEntity neighbor = world.getBlockEntity(pos.offset(d));

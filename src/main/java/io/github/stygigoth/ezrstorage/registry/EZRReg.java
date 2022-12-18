@@ -1,6 +1,6 @@
 package io.github.stygigoth.ezrstorage.registry;
 
-import io.github.stygigoth.ezrstorage.Main;
+import io.github.stygigoth.ezrstorage.EZRStorage;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -12,7 +12,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EZRReg {
     private static Identifier id(String name) {
-        return new Identifier(Main.MOD_ID, name);
+        return new Identifier(EZRStorage.MOD_ID, name);
     }
 
     public static void registerMod() {
