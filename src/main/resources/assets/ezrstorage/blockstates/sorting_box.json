@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"": {"model": "ezrstorage:block/sort_box"}
+		"": {"model": "ezrstorage:block/sorting_box"}
 	}
 }

@@ -1,70 +1,80 @@
 package io.github.stygigoth.ezrstorage.block.entity;
 
 import io.github.stygigoth.ezrstorage.InfiniteInventory;
+import io.github.stygigoth.ezrstorage.MoreCollectors;
+import io.github.stygigoth.ezrstorage.NbtUtil;
 import io.github.stygigoth.ezrstorage.block.StorageBoxBlock;
 import io.github.stygigoth.ezrstorage.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StorageCoreBlockEntity extends BlockEntity {
-    private final Map<BlockPos, RefBlockEntity> network = new HashMap<>();
+    private final Set<BlockPos> network = new HashSet<>();
     private final InfiniteInventory inventory = new InfiniteInventory();
+    private boolean scanning = false;
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY, pos, state);
-        if (world != null) {
-            scan(world);
-        }
     }
 
     public void scan(WorldAccess world) {
-        scanBlocks(world);
+        if (scanning) return;
+        scanning = true;
+        for (final BlockPos pos : network) {
+            final BlockEntity entity = world.getBlockEntity(pos);
+            if (entity instanceof RefBlockEntity ref) {
+                ref.core = null;
+            }
+        }
+        network.clear();
+        startRecursion(world);
         inventory.setMaxCount(0L);
-        for (final BlockPos otherPos : network.keySet()) {
+        for (final BlockPos otherPos : network) {
             final BlockState otherState = world.getBlockState(otherPos);
             if (otherState.getBlock() instanceof StorageBoxBlock storageBox) {
                 inventory.setMaxCount(inventory.getMaxCount() + storageBox.capacity);
             }
         }
-    }
-
-    private void scanBlocks(WorldAccess world) {
-        for (RefBlockEntity be : network.values()) {
-            be.core = null;
-        }
-        startRecursion(world);
+        scanning = false;
     }
 
     private void startRecursion(WorldAccess world) {
         network.clear();
         for (Direction d : Direction.values()) {
             BlockEntity be = world.getBlockEntity(pos.offset(d));
-            if (be instanceof RefBlockEntity) {
-                addToNetwork(pos.offset(d), (RefBlockEntity) be);
-                ((RefBlockEntity) be).core = this;
-                ((RefBlockEntity) be).recurse(world);
+            if (be instanceof RefBlockEntity ref) {
+                addToNetwork(pos.offset(d));
+                ref.core = this;
+                ref.recurse(world);
             }
         }
     }
 
-    void addToNetwork(BlockPos pos, RefBlockEntity be) {
-        network.put(pos, be);
+    void addToNetwork(BlockPos pos) {
+        network.add(pos);
     }
 
     public boolean networkContains(BlockPos pos) {
-        return network.containsKey(pos);
+        return network.contains(pos);
     }
 
     public void notifyBreak() {
-        for (RefBlockEntity be : network.values()) {
-            be.core = null;
+        if (world == null) return;
+        for (final BlockPos pos : network) {
+            final BlockEntity entity = world.getBlockEntity(pos);
+            if (entity instanceof RefBlockEntity ref) {
+                ref.core = null;
+            }
         }
     }
 
@@ -75,10 +85,21 @@ public class StorageCoreBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         nbt.put("Inventory", inventory.writeNbt());
+        nbt.put(
+            "Network",
+            network.stream()
+                .map(NbtUtil::blockPosToNbt)
+                .collect(MoreCollectors.customCollection(NbtList::new))
+        );
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         inventory.readNbt(nbt.getCompound("Inventory"));
+        network.clear();
+        nbt.getList("Network", NbtElement.INT_ARRAY_TYPE)
+            .stream()
+            .map(element -> NbtUtil.nbtToBlockPos((NbtIntArray)element))
+            .forEach(network::add);
     }
 }

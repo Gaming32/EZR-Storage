@@ -28,8 +28,7 @@ public final class InfiniteInventory {
         items.clear();
         in.getList("Items", NbtElement.COMPOUND_TYPE)
             .stream()
-            .map(FunctionUtil.<NbtElement, NbtCompound>uncheckedCast())
-            .map(InfiniteItemStack::readNbt)
+            .map(element -> InfiniteItemStack.readNbt((NbtCompound)element))
             .forEach(stack -> items.put(stack.getContents(), stack));
         return this;
     }
