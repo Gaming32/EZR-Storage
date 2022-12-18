@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": {"model": "ezrstorage:input_port"}
+		"": {"model": "ezrstorage:block/input_port"}
 	}
 }

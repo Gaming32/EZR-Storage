@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": {"model": "ezrstorage:condensed_storage_box"}
+		"": {"model": "ezrstorage:block/condensed_storage_box"}
 	}
 }

@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": {"model": "ezrstorage:storage_core"}
+		"": {"model": "ezrstorage:block/storage_core"}
 	}
 }

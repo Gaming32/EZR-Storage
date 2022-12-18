@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": {"model": "ezrstorage:access_terminal"}
+		"": {"model": "ezrstorage:block/access_terminal"}
 	}
 }

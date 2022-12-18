@@ -1,5 +1,5 @@
 {
 	"variants": {
-		"normal": {"model": "ezrstorage:blank_box"}
+		"": {"model": "ezrstorage:block/blank_box"}
 	}
 }
