@@ -14,7 +14,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "io.github.stygigoth.ezrstorage.client.ClientMain"
+      "io.github.stygigoth.ezrstorage.client.EZRStorageClient"
     ],
     "main": [
       "io.github.stygigoth.ezrstorage.EZRStorage"

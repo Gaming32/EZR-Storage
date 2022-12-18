@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "ezrstorage:blocks/extract_port",
+        "particle": "ezrstorage:blocks/extract_port"
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "itemGroup.ezrstorage.ezrstorage": "EZR Storage",
+  "block.ezrstorage.blank_box": "Blank Box",
+  "block.ezrstorage.storage_core": "Storage Core",
+  "block.ezrstorage.storage_box": "Storage Box",
+  "block.ezrstorage.condensed_storage_box": "Condensed Storage Box",
+  "block.ezrstorage.super_storage_box": "Super Storage Box",
+  "block.ezrstorage.ultra_storage_box": "Ultra Storage Box",
+  "block.ezrstorage.hyper_storage_box": "Hyper Storage Box",
+  "block.ezrstorage.input_port": "Input Port",
+  "block.ezrstorage.output_port": "Ejection Port",
+  "block.ezrstorage.extract_port": "Extraction Port",
+  "block.ezrstorage.crafting_box": "Crafting Box",
+  "block.ezrstorage.search_box": "Search Box",
+  "block.ezrstorage.sorting_box": "Sorting Box",
+  "block.ezrstorage.access_terminal": "Access Terminal",
+  "block.ezrstorage.security_box": "Security Box",
+  "item.ezrstorage.key": "EZ Key"
+}

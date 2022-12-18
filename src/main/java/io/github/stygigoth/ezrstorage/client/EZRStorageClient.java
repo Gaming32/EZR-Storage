@@ -5,9 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class ClientMain implements ClientModInitializer {
+public class EZRStorageClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-
     }
 }

@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "ezrstorage:blocks/box_side_wood"
+    }
+}

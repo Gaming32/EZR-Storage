@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "down": "ezrstorage:blocks/box_side_super",
+        "up": "ezrstorage:blocks/box_side_super",
+        "north": "ezrstorage:blocks/super_storage_box",
+        "south": "ezrstorage:blocks/super_storage_box",
+        "east": "ezrstorage:blocks/super_storage_box",
+        "west": "ezrstorage:blocks/super_storage_box",
+        "particle": "ezrstorage:blocks/super_storage_box"
+    }
+}
