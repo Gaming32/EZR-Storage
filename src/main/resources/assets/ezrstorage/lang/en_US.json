@@ -28,5 +28,8 @@
   "sortType.modAz.desc": "Sorts by mod name A-Z, then by descending item counts for equal cases.",
   "sortType.modZa": "Mod Z-A",
   "sortType.modZa.desc": "Sorts by mod name Z-A, then by ascending item counts for equal cases.",
-  "item.ezrstorage.key": "EZ Key"
+  "item.ezrstorage.key": "EZ Key",
+  "tag.ezrstorage.boxes": "Boxes",
+  "tag.ezrstorage.storage_boxes": "Storage Boxes",
+  "tag.ezrstorage.modification_boxes": "Modification Boxes"
 }

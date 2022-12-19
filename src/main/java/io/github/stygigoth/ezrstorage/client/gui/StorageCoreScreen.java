@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -23,8 +24,10 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
@@ -39,6 +42,9 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     private int scrollRow = 0;
     private InfiniteItemRenderer infiniteItemRenderer;
 
+    private final List<InfiniteItemStack> filteredItems = new ArrayList<>();
+
+    private TextFieldWidget searchField;
     private ButtonWidget sortTypeSelector;
 
     public StorageCoreScreen(StorageCoreScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -50,6 +56,16 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     @Override
     protected void init() {
         super.init();
+
+        searchField = new TextFieldWidget(textRenderer, x + 10, y + 6, 80, textRenderer.fontHeight, Text.of(""));
+        searchField.setMaxLength(20);
+        searchField.setDrawsBackground(false);
+        searchField.setFocusUnlocked(true);
+        searchField.setEditableColor(0xffffff);
+        searchField.setTextFieldFocused(true);
+        searchField.setText("");
+        addDrawableChild(searchField);
+
         //noinspection DataFlowIssue
         addDrawableChild(sortTypeSelector = new ButtonWidget(
             x - 100, y + 16, 90, 20, Text.of(""),
@@ -69,6 +85,12 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         if (sortTypeSelector.visible) {
             RenderSystem.setShaderTexture(0, SORT_GUI);
             drawTexture(matrices, x - 108, y, 0, 128, 112, 128);
+        }
+
+        searchField.visible = handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
+        if (searchField.visible) {
+            RenderSystem.setShaderTexture(0, SEARCH_BAR);
+            drawTexture(matrices, x + 8, y + 4, 80, 4, searchField.getInnerWidth() + 10, 12);
         }
     }
 
@@ -116,11 +138,11 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         for (int row = 0, y = 18; row < 6; row++, y += 18) {
             for (int column = 0, x = 8; column < 9; column++, x += 18) {
                 final int index = scrollRow * 9 + row * 9 + column;
-                if (index >= handler.getCoreInventory().getUniqueCount()) {
+                if (index >= getSlotCount()) {
                     break outer;
                 }
 
-                final InfiniteItemStack infiniteStack = handler.getCoreInventory().getStack(index);
+                final InfiniteItemStack infiniteStack = getSlot(index);
                 final ItemStack stack = infiniteStack.toItemStack();
 
                 itemRenderer.renderInGui(stack, x, y);
@@ -144,8 +166,8 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         final Integer slot = getSlotAt(mouseX, mouseY);
         if (slot != null) {
             int index;
-            if (slot < handler.getCoreInventory().getUniqueCount()) {
-                final InfiniteItemStack infiniteStack = handler.getCoreInventory().getStack(slot);
+            if (slot < getSlotCount()) {
+                final InfiniteItemStack infiniteStack = getSlot(slot);
                 if (!infiniteStack.isEmpty()) {
                     index = handler.getCoreInventory().indexOf(infiniteStack);
                     if (index < 0) {
@@ -170,6 +192,59 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (
+            handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH) &&
+                searchField.isFocused() &&
+                searchField.keyPressed(keyCode, scanCode, modifiers)
+        ) {
+            searchBoxChange(null);
+            return true;
+        }
+        if (keyCode >= GLFW.GLFW_KEY_A && keyCode <= GLFW.GLFW_KEY_Z) return false;
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char chr, int modifiers) {
+        if (
+            handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH) &&
+                searchField.isFocused() &&
+                searchField.charTyped(chr, modifiers)
+        ) {
+            searchBoxChange(null);
+            return true;
+        }
+        return super.charTyped(chr, modifiers);
+    }
+
+    private void searchBoxChange(String newText) {
+        if (newText != null) {
+            searchField.setText(newText);
+        }
+
+        updateFilteredItems();
+        scrollTo(currentScroll = 0f);
+    }
+
+    private void updateFilteredItems() {
+        filteredItems.clear();
+        final String searchText = searchField.getText().toLowerCase();
+
+        if (searchText.isEmpty()) return;
+
+        stackIter:
+        for (final InfiniteItemStack stack : handler.getCoreInventory()) {
+            for (final Text line : getTooltipFromItem(stack.toItemStack())) {
+                if (line.asString().toLowerCase().contains(searchText)) {
+                    filteredItems.add(stack);
+                    continue stackIter;
+                }
+            }
+        }
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && this.isClickInScrollbar(mouseX, mouseY)) {
             this.scrolling = true;
@@ -180,8 +255,8 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         if (slot != null) {
             final SlotActionType mode = hasShiftDown() ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP;
             int index = handler.getCoreInventory().getUniqueCount();
-            if (slot < handler.getCoreInventory().getUniqueCount()) {
-                final InfiniteItemStack infiniteStack = handler.getCoreInventory().getStack(slot);
+            if (slot < getSlotCount()) {
+                final InfiniteItemStack infiniteStack = getSlot(slot);
                 if (!infiniteStack.isEmpty()) {
                     index = handler.getCoreInventory().indexOf(infiniteStack);
                     if (index < 0) {
@@ -197,6 +272,20 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             buf.writeVarInt(button);
             buf.writeEnumConstant(mode);
             ClientPlayNetworking.send(EZRStorage.CUSTOM_SLOT_CLICK, buf);
+        } else {
+            final int elementX = searchField.x;
+            final int elementY = searchField.y;
+            if (
+                mouseX >= elementX && mouseX <= elementX + searchField.getWidth() &&
+                    mouseY >= elementY && mouseY <= elementY + searchField.getHeight()
+            ) {
+                if (button == 1 || hasShiftDown()) {
+                    searchBoxChange("");
+                }
+                searchField.setTextFieldFocused(true);
+            } else {
+                searchField.setTextFieldFocused(false);
+            }
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
@@ -269,5 +358,19 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             j = 0;
         }
         this.scrollRow = j;
+    }
+
+    private boolean skipSearch() {
+        return
+            searchField.getText().isEmpty() ||
+            !handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
+    }
+
+    private int getSlotCount() {
+        return skipSearch() ? handler.getCoreInventory().getUniqueCount() : filteredItems.size();
+    }
+
+    private InfiniteItemStack getSlot(int index) {
+        return skipSearch() ? handler.getCoreInventory().getStack(index) : filteredItems.get(index);
     }
 }

@@ -6,12 +6,14 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
-public final class InfiniteInventory {
+public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     private final List<InfiniteItemStack> items = new ArrayList<>();
     private SortType sortType = SortType.COUNT_DOWN;
     private long count;
@@ -144,6 +146,12 @@ public final class InfiniteInventory {
 
     public void setSortType(SortType sortType) {
         this.sortType = sortType;
+    }
+
+    @NotNull
+    @Override
+    public Iterator<InfiniteItemStack> iterator() {
+        return items.iterator();
     }
 
     private static final Comparator<InfiniteItemStack> COUNT_UP_BASE = Comparator.comparingLong(InfiniteItemStack::getCount);
