@@ -105,7 +105,7 @@ public final class InfiniteInventory {
         items.sort(sortType.comparator);
     }
 
-    private int indexOf(InfiniteItemStack.Contents contents) {
+    public int indexOf(InfiniteItemStack.Contents contents) {
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).getContents().equals(contents)) {
                 return i;
@@ -114,7 +114,11 @@ public final class InfiniteInventory {
         return -1;
     }
 
-    private InfiniteItemStack getStack(InfiniteItemStack.Contents contents) {
+    public int indexOf(InfiniteItemStack contents) {
+        return items.indexOf(contents);
+    }
+
+    public InfiniteItemStack getStack(InfiniteItemStack.Contents contents) {
         final int index = indexOf(contents);
         if (index < 0) return null;
         return items.get(index);
@@ -127,7 +131,7 @@ public final class InfiniteInventory {
         return items.get(index);
     }
 
-    private boolean remove(InfiniteItemStack.Contents contents) {
+    public boolean remove(InfiniteItemStack.Contents contents) {
         final int index = indexOf(contents);
         if (index < 0) return false;
         items.remove(index);

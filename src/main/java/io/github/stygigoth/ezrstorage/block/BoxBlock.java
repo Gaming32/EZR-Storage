@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BoxBlock extends BlockWithEntity {
     public BoxBlock(Settings settings) {
@@ -31,9 +31,9 @@ public class BoxBlock extends BlockWithEntity {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-        final List<StorageCoreBlockEntity> cores = findCores(world, pos);
+        final Set<StorageCoreBlockEntity> cores = findCores(world, pos);
         if (!cores.isEmpty()) {
-            cores.get(0).scan(world);
+            cores.iterator().next().scan(world);
         }
     }
 
@@ -48,8 +48,8 @@ public class BoxBlock extends BlockWithEntity {
         return BlockRenderType.MODEL;
     }
 
-    private static List<StorageCoreBlockEntity> findCores(WorldView world, BlockPos pos) {
-        final List<StorageCoreBlockEntity> cores = new ArrayList<>(1);
+    private static Set<StorageCoreBlockEntity> findCores(WorldView world, BlockPos pos) {
+        final Set<StorageCoreBlockEntity> cores = new HashSet<>(1);
         for (Direction d : Direction.values()) {
             BlockEntity neighbor = world.getBlockEntity(pos.offset(d));
             if (neighbor instanceof StorageCoreBlockEntity otherCore) {

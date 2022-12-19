@@ -9,6 +9,8 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public final class InfiniteItemStack {
     public record Contents(@Nullable Item item, @NotNull NbtCompound nbt) {
         public Contents(ItemStack stack) {
@@ -121,5 +123,18 @@ public final class InfiniteItemStack {
             result.setNbt(contents.nbt);
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InfiniteItemStack that = (InfiniteItemStack)o;
+        return count == that.count && contents.equals(that.contents);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contents, count);
     }
 }

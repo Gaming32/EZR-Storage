@@ -32,7 +32,7 @@ public class InfiniteItemRenderer extends ItemRenderer {
                 if (count > 999999999999L) {
                     string = String.valueOf((int) Math.floor(count / 1000000000000.0)) + 'T';
                 } else if (count > 9999999999L) {
-                    string = "." + String.valueOf((int) Math.floor(count / 1000000000000.0)) + 'T';
+                    string = "." + (int)Math.floor(count / 1000000000000.0) + 'T';
                 } else if (count > 999999999L) {
                     string = String.valueOf((int) Math.floor(count / 1000000000.0)) + 'B';
                 } else if (count > 99999999L) {
@@ -45,13 +45,13 @@ public class InfiniteItemRenderer extends ItemRenderer {
                     string = String.valueOf((int) Math.floor(count / 1000.0)) + 'K';
                 }
 
-                matrixStack.translate(0.0, 0.0, (double)(this.zOffset + 200.0F));
+                matrixStack.translate(0.0, 0.0, this.zOffset + 200.0F);
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
                 VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
                 renderer.draw(
                     string,
-                    (float)(x + 19 - 2 - renderer.getWidth(string)),
-                    (float)(y + 6 + 3),
+                    (float)(x + 19 - 2 - renderer.getWidth(string) * 0.5) * 2,
+                    (float)(y + 6 + 3 + 3.5) * 2,
                     16777215,
                     true,
                     matrixStack.peek().getPositionMatrix(),
