@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 public class EZRStorage implements ModInitializer {
     public static final String MOD_ID = "ezrstorage";
+    public static final Identifier SYNC_INVENTORY = EZRReg.id("sync_inventory");
+
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final ScreenHandlerType<StorageCoreScreenHandler> STORAGE_CORE_SCREEN_HANDLER = Registry.register(

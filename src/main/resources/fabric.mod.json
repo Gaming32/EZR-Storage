@@ -23,6 +23,7 @@
   "mixins": [
     "ezrstorage.mixins.json"
   ],
+  "accessWidener": "ezrstorage.accessWidener",
   "depends": {
     "fabricloader": ">=0.14.10",
     "fabric": "*",

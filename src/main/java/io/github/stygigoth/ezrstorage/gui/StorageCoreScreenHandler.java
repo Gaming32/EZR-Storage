@@ -1,16 +1,21 @@
 package io.github.stygigoth.ezrstorage.gui;
 
 import io.github.stygigoth.ezrstorage.EZRStorage;
+import io.github.stygigoth.ezrstorage.HasServerPlayerOuterClass;
 import io.github.stygigoth.ezrstorage.InfiniteInventory;
 import io.github.stygigoth.ezrstorage.InfiniteItemStack;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class StorageCoreScreenHandler extends ScreenHandler {
     private final InfiniteInventory coreInventory;
@@ -42,6 +47,21 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     }
 
     @Override
+    public void syncState() {
+        super.syncState();
+        if (syncHandler instanceof HasServerPlayerOuterClass playerSyncHandler) {
+            syncToClient(playerSyncHandler.getPlayer());
+        }
+    }
+
+    public void syncToClient(ServerPlayerEntity player) {
+        final PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeByte(syncId);
+        buf.writeNbt(coreInventory.writeNbt());
+        ServerPlayNetworking.send(player, EZRStorage.SYNC_INVENTORY, buf);
+    }
+
+    @Override
     public boolean canUse(PlayerEntity player) {
         return true;
     }
@@ -59,6 +79,9 @@ public class StorageCoreScreenHandler extends ScreenHandler {
         if (slot != null && slot.hasStack()) {
             final ItemStack stack = slot.getStack();
             slot.setStack(coreInventory.moveFrom(stack));
+        }
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            syncToClient(serverPlayer);
         }
         return ItemStack.EMPTY;
     }
@@ -98,5 +121,9 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     public void close(PlayerEntity player) {
         super.close(player);
         coreInventory.reSort();
+    }
+
+    public InfiniteInventory getCoreInventory() {
+        return coreInventory;
     }
 }

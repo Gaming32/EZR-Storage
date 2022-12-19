@@ -56,6 +56,10 @@ public final class InfiniteInventory {
         this.maxCount = maxCount;
     }
 
+    public int getUniqueCount() {
+        return items.size();
+    }
+
     public InfiniteItemStack getByContents(InfiniteItemStack.Contents contents) {
         for (final InfiniteItemStack stack : items) {
             if (stack.getContents().equals(contents)) {

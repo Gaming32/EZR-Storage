@@ -86,7 +86,7 @@ public final class InfiniteItemStack {
     }
 
     public boolean isEmpty() {
-        return count == 0 || contents.item == null || contents.item.equals(Items.AIR);
+        return this == EMPTY || count == 0 || contents.item == null || contents.item.equals(Items.AIR);
     }
 
     public boolean add(ItemStack itemStack) {
@@ -111,5 +111,15 @@ public final class InfiniteItemStack {
             stack.setNbt(contents.nbt.copy());
         }
         return stack;
+    }
+
+    public ItemStack toItemStack() {
+        if (isEmpty()) return ItemStack.EMPTY;
+        assert contents.item != null;
+        final ItemStack result = new ItemStack(contents.item, (int)Math.min(count, contents.item.getMaxCount()));
+        if (!contents.nbt.isEmpty()) {
+            result.setNbt(contents.nbt);
+        }
+        return result;
     }
 }
