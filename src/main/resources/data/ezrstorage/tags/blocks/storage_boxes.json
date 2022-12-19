@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "ezrstorage:storage_box",
+    "ezrstorage:condensed_storage_box",
+    "ezrstorage:super_storage_box",
+    "ezrstorage:ultra_storage_box",
+    "ezrstorage:hyper_storage_box"
+  ]
+}

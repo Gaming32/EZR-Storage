@@ -1,4 +1,4 @@
-package io.github.stygigoth.ezrstorage;
+package io.github.stygigoth.ezrstorage.util;
 
 import java.util.Collection;
 import java.util.function.Supplier;

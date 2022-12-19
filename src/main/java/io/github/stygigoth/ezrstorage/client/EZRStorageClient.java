@@ -1,8 +1,10 @@
 package io.github.stygigoth.ezrstorage.client;
 
 import io.github.stygigoth.ezrstorage.EZRStorage;
+import io.github.stygigoth.ezrstorage.block.ModificationBoxBlock;
 import io.github.stygigoth.ezrstorage.client.gui.StorageCoreScreen;
 import io.github.stygigoth.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.stygigoth.ezrstorage.util.MoreBufs;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,8 +24,11 @@ public class EZRStorageClient implements ClientModInitializer {
             final int syncId = buf.readUnsignedByte();
             if (client.player.currentScreenHandler instanceof StorageCoreScreenHandler screenHandler && screenHandler.syncId == syncId) {
                 final NbtCompound inventoryData = buf.readNbt();
+                final var modifications = MoreBufs.readEnumSet(buf, ModificationBoxBlock.Type.class);
                 if (inventoryData != null) {
                     screenHandler.getCoreInventory().readNbt(inventoryData);
+                    screenHandler.getModifications().clear();
+                    screenHandler.getModifications().addAll(modifications);
                 }
             }
         });

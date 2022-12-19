@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "#ezrstorage:storage_boxes",
+    "#ezrstorage:modification_boxes",
+    "ezrstorage:blank_box"
+  ]
+}

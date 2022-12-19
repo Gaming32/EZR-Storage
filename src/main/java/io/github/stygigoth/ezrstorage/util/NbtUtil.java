@@ -1,4 +1,4 @@
-package io.github.stygigoth.ezrstorage;
+package io.github.stygigoth.ezrstorage.util;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIntArray;

@@ -1,7 +1,7 @@
 package io.github.stygigoth.ezrstorage.block.entity;
 
-import io.github.stygigoth.ezrstorage.NbtUtil;
 import io.github.stygigoth.ezrstorage.registry.ModBlockEntities;
+import io.github.stygigoth.ezrstorage.util.NbtUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -14,7 +14,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class RefBlockEntity extends BlockEntity {
-    StorageCoreBlockEntity core;
+    BlockPos core;
 
     public RefBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.REF_BLOCK_ENTITY, pos, state);
@@ -24,7 +24,7 @@ public class RefBlockEntity extends BlockEntity {
         super(type, pos, state);
     }
 
-    void recurse(WorldAccess world) {
+    void recurse(WorldAccess world, StorageCoreBlockEntity coreEntity) {
         final Deque<BlockPos> queue = new ArrayDeque<>();
         queue.addLast(pos);
         while (!queue.isEmpty()) {
@@ -32,8 +32,8 @@ public class RefBlockEntity extends BlockEntity {
             for (Direction d : Direction.values()) {
                 final BlockPos offsetPos = checkPos.offset(d);
                 BlockEntity be = world.getBlockEntity(offsetPos);
-                if (be instanceof RefBlockEntity ref && !core.networkContains(offsetPos)) {
-                    core.addToNetwork(offsetPos);
+                if (be instanceof RefBlockEntity ref && !coreEntity.networkContains(offsetPos)) {
+                    coreEntity.addToNetwork(offsetPos, ref.getCachedState());
                     ref.core = core;
                     queue.addLast(offsetPos);
                 }
@@ -41,22 +41,19 @@ public class RefBlockEntity extends BlockEntity {
         }
     }
 
-    public StorageCoreBlockEntity getCore() {
+    public BlockPos getCore() {
         return core;
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
         if (core != null) {
-            nbt.put("Core", NbtUtil.blockPosToNbt(core.getPos()));
+            nbt.put("Core", NbtUtil.blockPosToNbt(core));
         }
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
-        final BlockPos corePos = NbtUtil.getBlockPos(nbt, "Core");
-        if (corePos != null && world != null) {
-            core = world.getBlockEntity(corePos, ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY).orElse(null);
-        }
+        core = NbtUtil.getBlockPos(nbt, "Core");
     }
 }

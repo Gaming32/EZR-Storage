@@ -1,19 +1,17 @@
 package io.github.stygigoth.ezrstorage.block.entity;
 
 import io.github.stygigoth.ezrstorage.InfiniteInventory;
-import io.github.stygigoth.ezrstorage.MoreCollectors;
-import io.github.stygigoth.ezrstorage.NbtUtil;
+import io.github.stygigoth.ezrstorage.block.ModificationBoxBlock;
 import io.github.stygigoth.ezrstorage.block.StorageBoxBlock;
 import io.github.stygigoth.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.stygigoth.ezrstorage.registry.ModBlockEntities;
+import io.github.stygigoth.ezrstorage.util.MoreCollectors;
+import io.github.stygigoth.ezrstorage.util.NbtUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -22,12 +20,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
     private final Set<BlockPos> network = new HashSet<>();
     private final InfiniteInventory inventory = new InfiniteInventory();
+    private final Set<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
     private boolean scanning = false;
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
@@ -44,6 +45,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
             }
         }
         network.clear();
+        modifications.clear();
         startRecursion(world);
         inventory.setMaxCount(0L);
         for (final BlockPos otherPos : network) {
@@ -60,15 +62,18 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         for (Direction d : Direction.values()) {
             BlockEntity be = world.getBlockEntity(pos.offset(d));
             if (be instanceof RefBlockEntity ref) {
-                addToNetwork(pos.offset(d));
-                ref.core = this;
-                ref.recurse(world);
+                addToNetwork(pos.offset(d), ref.getCachedState());
+                ref.core = pos;
+                ref.recurse(world, this);
             }
         }
     }
 
-    void addToNetwork(BlockPos pos) {
+    void addToNetwork(BlockPos pos, BlockState state) {
         network.add(pos);
+        if (state.getBlock() instanceof ModificationBoxBlock modification) {
+            modifications.add(modification.type);
+        }
     }
 
     public boolean networkContains(BlockPos pos) {
@@ -91,7 +96,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
 
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new StorageCoreScreenHandler(syncId, inv, inventory);
+        return new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
     }
 
     @Override
@@ -103,6 +108,13 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
     protected void writeNbt(NbtCompound nbt) {
         nbt.put("Inventory", inventory.writeNbt());
         nbt.put(
+            "Modifications",
+            modifications.stream()
+                .map(ModificationBoxBlock.Type::asString)
+                .map(NbtString::of)
+                .collect(MoreCollectors.customCollection(NbtList::new))
+        );
+        nbt.put(
             "Network",
             network.stream()
                 .map(NbtUtil::blockPosToNbt)
@@ -113,6 +125,13 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
     @Override
     public void readNbt(NbtCompound nbt) {
         inventory.readNbt(nbt.getCompound("Inventory"));
+
+        modifications.clear();
+        nbt.getList("Modifications", NbtElement.STRING_TYPE)
+            .stream()
+            .map(element -> ModificationBoxBlock.Type.valueOf(element.asString().toUpperCase(Locale.ROOT)))
+            .forEach(modifications::add);
+
         network.clear();
         nbt.getList("Network", NbtElement.INT_ARRAY_TYPE)
             .stream()

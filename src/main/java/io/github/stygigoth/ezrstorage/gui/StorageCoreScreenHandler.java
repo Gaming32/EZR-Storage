@@ -4,6 +4,8 @@ import io.github.stygigoth.ezrstorage.EZRStorage;
 import io.github.stygigoth.ezrstorage.HasServerPlayerOuterClass;
 import io.github.stygigoth.ezrstorage.InfiniteInventory;
 import io.github.stygigoth.ezrstorage.InfiniteItemStack;
+import io.github.stygigoth.ezrstorage.block.ModificationBoxBlock;
+import io.github.stygigoth.ezrstorage.util.MoreBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,16 +19,26 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public class StorageCoreScreenHandler extends ScreenHandler {
     private final InfiniteInventory coreInventory;
+    private final Set<ModificationBoxBlock.Type> modifications;
 
     public StorageCoreScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new InfiniteInventory());
+        this(syncId, playerInventory, new InfiniteInventory(), EnumSet.noneOf(ModificationBoxBlock.Type.class));
     }
 
-    public StorageCoreScreenHandler(int syncId, PlayerInventory playerInventory, InfiniteInventory coreInventory) {
+    public StorageCoreScreenHandler(
+        int syncId,
+        PlayerInventory playerInventory,
+        InfiniteInventory coreInventory,
+        Set<ModificationBoxBlock.Type> modifications
+    ) {
         super(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, syncId);
         this.coreInventory = coreInventory;
+        this.modifications = modifications;
 
         final Inventory inventory = new SimpleInventory(54);
         for (int row = 0; row < 6; row++) {
@@ -58,6 +70,7 @@ public class StorageCoreScreenHandler extends ScreenHandler {
         final PacketByteBuf buf = PacketByteBufs.create();
         buf.writeByte(syncId);
         buf.writeNbt(coreInventory.writeNbt());
+        MoreBufs.writeEnumSet(buf, modifications);
         ServerPlayNetworking.send(player, EZRStorage.SYNC_INVENTORY, buf);
     }
 
@@ -68,8 +81,21 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
-        // TODO: Sort mode and crafting grid
-        return super.onButtonClick(player, id);
+        return switch (id) {
+            case 0 -> {
+                coreInventory.setSortType(coreInventory.getSortType().rotate());
+                coreInventory.reSort();
+                if (player instanceof ServerPlayerEntity serverPlayer) {
+                    syncToClient(serverPlayer);
+                }
+                yield true;
+            }
+            case 1 -> {
+                // TODO: implement crafting grid
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     @Override
@@ -125,5 +151,9 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
     public InfiniteInventory getCoreInventory() {
         return coreInventory;
+    }
+
+    public Set<ModificationBoxBlock.Type> getModifications() {
+        return modifications;
     }
 }

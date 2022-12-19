@@ -138,6 +138,14 @@ public final class InfiniteInventory {
         return true;
     }
 
+    public SortType getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(SortType sortType) {
+        this.sortType = sortType;
+    }
+
     private static final Comparator<InfiniteItemStack> COUNT_UP_BASE = Comparator.comparingLong(InfiniteItemStack::getCount);
     private static final Comparator<InfiniteItemStack> COUNT_DOWN_BASE = COUNT_UP_BASE.reversed();
     private static final Comparator<InfiniteItemStack> AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getId(x.getItem()).getPath());
@@ -170,6 +178,10 @@ public final class InfiniteInventory {
         @Override
         public int compare(InfiniteItemStack o1, InfiniteItemStack o2) {
             return comparator.compare(o1, o2);
+        }
+
+        public SortType rotate() {
+            return values()[(ordinal() + 1) % values().length];
         }
     }
 }

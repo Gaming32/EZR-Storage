@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "ezrstorage:crafting_box",
+    "ezrstorage:search_box",
+    "ezrstorage:sorting_box",
+    "ezrstorage:security_box"
+  ]
+}

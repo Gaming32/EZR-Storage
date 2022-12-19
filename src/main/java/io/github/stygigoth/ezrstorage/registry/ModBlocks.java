@@ -27,29 +27,29 @@ public class ModBlocks {
     );
 
     public static final Pair<Block, Item> STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(400, FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
+        new StorageBoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK), 400),
         "storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> CONDENSED_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(4_000, FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
+        new StorageBoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK), 4_000),
         "condensed_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> SUPER_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(20_000, FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
+        new StorageBoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK), 20_000),
         "super_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> ULTRA_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(80_000, FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
+        new StorageBoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK), 80_000),
         "ultra_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> HYPER_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(400_000, FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
+        new StorageBoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK), 400_000),
         "hyper_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
 
     public static final Pair<Block, Item> CRAFTING_BOX = EZRReg.registerBlock(
         new ModificationBoxBlock(
-            ModificationBoxBlock.ModificationBoxBlockType.CRAFTING,
+            ModificationBoxBlock.Type.CRAFTING,
             FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)
         ),
         "crafting_box",
@@ -57,7 +57,7 @@ public class ModBlocks {
     );
     public static final Pair<Block, Item> SEARCH_BOX = EZRReg.registerBlock(
         new ModificationBoxBlock(
-            ModificationBoxBlock.ModificationBoxBlockType.SEARCH,
+            ModificationBoxBlock.Type.SEARCH,
             FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)
         ),
         "search_box",
@@ -65,7 +65,7 @@ public class ModBlocks {
     );
     public static final Pair<Block, Item> SORTING_BOX = EZRReg.registerBlock(
         new ModificationBoxBlock(
-            ModificationBoxBlock.ModificationBoxBlockType.SORTING,
+            ModificationBoxBlock.Type.SORTING,
             FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)
         ),
         "sorting_box",
@@ -73,7 +73,7 @@ public class ModBlocks {
     );
     public static final Pair<Block, Item> SECURITY_BOX = EZRReg.registerBlock(
         new ModificationBoxBlock(
-            ModificationBoxBlock.ModificationBoxBlockType.SECURITY,
+            ModificationBoxBlock.Type.SECURITY,
             FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)
         ),
         "security_box",

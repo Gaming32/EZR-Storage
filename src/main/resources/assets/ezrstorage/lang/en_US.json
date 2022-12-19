@@ -15,5 +15,18 @@
   "block.ezrstorage.sorting_box": "Sorting Box",
   "block.ezrstorage.access_terminal": "Access Terminal",
   "block.ezrstorage.security_box": "Security Box",
+  "sortType": "Sorting Mode",
+  "sortType.countDown": "Count Down",
+  "sortType.countDown.desc": "Sorts by descending item counts, then from A-Z for equal cases.",
+  "sortType.countUp": "Count Up",
+  "sortType.countUp.desc": "Sorts by ascending item counts, then from Z-A for equal cases.",
+  "sortType.az": "Name A-Z",
+  "sortType.az.desc": "Sorts A-Z, then by descending item counts for equal cases.",
+  "sortType.za": "Name Z-A",
+  "sortType.za.desc": "Sorts Z-A, then by ascending item counts for equal cases.",
+  "sortType.modAz": "Mod A-Z",
+  "sortType.modAz.desc": "Sorts by mod name A-Z, then by descending item counts for equal cases.",
+  "sortType.modZa": "Mod Z-A",
+  "sortType.modZa.desc": "Sorts by mod name Z-A, then by ascending item counts for equal cases.",
   "item.ezrstorage.key": "EZ Key"
 }

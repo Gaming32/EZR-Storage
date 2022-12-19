@@ -3,12 +3,14 @@ package io.github.stygigoth.ezrstorage.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.stygigoth.ezrstorage.EZRStorage;
 import io.github.stygigoth.ezrstorage.InfiniteItemStack;
+import io.github.stygigoth.ezrstorage.block.ModificationBoxBlock;
 import io.github.stygigoth.ezrstorage.client.InfiniteItemRenderer;
 import io.github.stygigoth.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.stygigoth.ezrstorage.registry.EZRReg;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,7 +18,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -35,6 +39,8 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     private int scrollRow = 0;
     private InfiniteItemRenderer infiniteItemRenderer;
 
+    private ButtonWidget sortTypeSelector;
+
     public StorageCoreScreen(StorageCoreScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         backgroundWidth = 195;
@@ -42,13 +48,28 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     @Override
+    protected void init() {
+        super.init();
+        //noinspection DataFlowIssue
+        addDrawableChild(sortTypeSelector = new ButtonWidget(
+            x - 100, y + 16, 90, 20, Text.of(""),
+            button -> client.interactionManager.clickButton(handler.syncId, 0)
+        ));
+        sortTypeSelector.visible = false;
+    }
+
+    @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, BACKGROUND);
-        final int x = (width - backgroundWidth) / 2;
-        final int y = (height - backgroundHeight) / 2;
-        drawTexture(matrices, x, y, 0, 0, 195, 222);
+        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
+
+        sortTypeSelector.visible = handler.getModifications().contains(ModificationBoxBlock.Type.SORTING);
+        if (sortTypeSelector.visible) {
+            RenderSystem.setShaderTexture(0, SORT_GUI);
+            drawTexture(matrices, x - 108, y, 0, 128, 112, 128);
+        }
     }
 
     @Override
@@ -69,6 +90,19 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             matrices.pop();
         } else {
             textRenderer.draw(matrices, amount, 187 - stringWidth, 6, 0x404040);
+        }
+
+        if (sortTypeSelector.visible) {
+            sortTypeSelector.setMessage(new TranslatableText("sortType." + handler.getCoreInventory().getSortType().asString()));
+            textRenderer.draw(matrices, new TranslatableText("sortType"), -100, 6, 0x404040);
+            matrices.push();
+            matrices.scale(0.7f, 0.7f, 0.7f);
+            int drawY = (int)(42 / 0.7);
+            for (final OrderedText line : textRenderer.wrapLines(new TranslatableText("sortType." + handler.getCoreInventory().getSortType().asString() + ".desc"), (int)(96 / 0.7))) {
+                textRenderer.draw(matrices, line, (int)(-100 / 0.7), drawY, 0x404040);
+                drawY += 9;
+            }
+            matrices.pop();
         }
 
         setZOffset(100);
