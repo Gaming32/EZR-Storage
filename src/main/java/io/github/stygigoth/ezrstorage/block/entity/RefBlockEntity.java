@@ -46,14 +46,6 @@ public class RefBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void markRemoved() {
-        super.markRemoved();
-        if (core != null) {
-            core.scan(world);
-        }
-    }
-
-    @Override
     protected void writeNbt(NbtCompound nbt) {
         if (core != null) {
             nbt.put("Core", NbtUtil.blockPosToNbt(core.getPos()));

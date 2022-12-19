@@ -1,15 +1,20 @@
 package io.github.stygigoth.ezrstorage.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.stygigoth.ezrstorage.EZRStorage;
 import io.github.stygigoth.ezrstorage.InfiniteItemStack;
 import io.github.stygigoth.ezrstorage.client.InfiniteItemRenderer;
 import io.github.stygigoth.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.stygigoth.ezrstorage.registry.EZRReg;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -137,6 +142,29 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             return true;
         }
 
+        final Integer slot = getSlotAt((int)mouseX, (int)mouseY);
+        if (slot != null) {
+            final SlotActionType mode = hasShiftDown() ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP;
+            int index = handler.getCoreInventory().getUniqueCount();
+            if (slot < handler.getCoreInventory().getUniqueCount()) {
+                final InfiniteItemStack infiniteStack = handler.getCoreInventory().getStack(slot);
+                if (!infiniteStack.isEmpty()) {
+                    index = handler.getCoreInventory().indexOf(infiniteStack);
+                    if (index < 0) {
+                        return false;
+                    }
+                }
+            }
+            assert client != null;
+            handler.customSlotClick(index, button, mode, client.player);
+            final PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeByte(handler.syncId);
+            buf.writeVarInt(index);
+            buf.writeVarInt(button);
+            buf.writeEnumConstant(mode);
+            ClientPlayNetworking.send(EZRStorage.CUSTOM_SLOT_CLICK, buf);
+        }
+
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -181,22 +209,6 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         return mouseX >= (double)k && mouseY >= (double)l && mouseX < (double)m && mouseY < (double)n;
     }
 
-//    @Override
-//    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-//        final Integer slot = getSlotAt(mouseX, mouseY);
-//        if (slot != null) {
-//            final int mode = hasShiftDown() ? 1 : 0;
-//            int index = handler.getCoreInventory().getUniqueCount();
-//            if (slot < handler.getCoreInventory().getUniqueCount()) {
-//                final InfiniteItemStack infiniteStack = handler.getCoreInventory().getStack(slot);
-//                if (!infiniteStack.isEmpty()) {
-//                    index = handler.getCoreInventory().indexOf(infiniteStack);
-//                }
-//            }
-//            handler.customSlotClick(index, )
-//        }
-//    }
-
     private Integer getSlotAt(int x, int y) {
         final int startX = this.x + 7;
         final int startY = this.y + 17;
@@ -209,7 +221,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             if (column < 9) {
                 final int row = clickedY / 18;
                 if (row < 6) {
-                    return scrollRow * 9 + row * 8 + column;
+                    return scrollRow * 9 + row * 9 + column;
                 }
             }
         }

@@ -4,7 +4,8 @@
   "package": "io.github.stygigoth.ezrstorage.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinServerPlayerEntity_1"
+    "MixinServerPlayerEntity_1",
+    "MixinWorldChunk"
   ],
   "client": [
   ],
