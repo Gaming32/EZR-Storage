@@ -4,13 +4,20 @@ import io.github.stygigoth.ezrstorage.InfiniteInventory;
 import io.github.stygigoth.ezrstorage.MoreCollectors;
 import io.github.stygigoth.ezrstorage.NbtUtil;
 import io.github.stygigoth.ezrstorage.block.StorageBoxBlock;
+import io.github.stygigoth.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.stygigoth.ezrstorage.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
@@ -18,7 +25,7 @@ import net.minecraft.world.WorldAccess;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StorageCoreBlockEntity extends BlockEntity {
+public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
     private final Set<BlockPos> network = new HashSet<>();
     private final InfiniteInventory inventory = new InfiniteInventory();
     private boolean scanning = false;
@@ -80,6 +87,16 @@ public class StorageCoreBlockEntity extends BlockEntity {
 
     public InfiniteInventory getInventory() {
         return inventory;
+    }
+
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        return new StorageCoreScreenHandler(syncId, inv, inventory);
+    }
+
+    @Override
+    public Text getDisplayName() {
+        return new TranslatableText(getCachedState().getBlock().getTranslationKey());
     }
 
     @Override

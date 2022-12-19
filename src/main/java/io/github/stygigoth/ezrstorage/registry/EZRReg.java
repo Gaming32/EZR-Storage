@@ -11,7 +11,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 public class EZRReg {
-    private static Identifier id(String name) {
+    public static Identifier id(String name) {
         return new Identifier(EZRStorage.MOD_ID, name);
     }
 

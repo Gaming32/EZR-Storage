@@ -7,9 +7,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class InfiniteItemStack {
-    public record Contents(@NotNull Item item, @NotNull NbtCompound nbt) {
+    public record Contents(@Nullable Item item, @NotNull NbtCompound nbt) {
         public Contents(ItemStack stack) {
             //noinspection DataFlowIssue
             this(
@@ -18,6 +19,8 @@ public final class InfiniteItemStack {
             );
         }
     }
+
+    public static final InfiniteItemStack EMPTY = new InfiniteItemStack(ItemStack.EMPTY);
 
     private final Contents contents;
     private long count;
@@ -83,7 +86,7 @@ public final class InfiniteItemStack {
     }
 
     public boolean isEmpty() {
-        return count == 0 || contents.item.equals(Items.AIR);
+        return count == 0 || contents.item == null || contents.item.equals(Items.AIR);
     }
 
     public boolean add(ItemStack itemStack) {
@@ -98,7 +101,9 @@ public final class InfiniteItemStack {
     }
 
     public ItemStack extract(int n) {
+        if (isEmpty()) return ItemStack.EMPTY;
         if (n > count) n = (int)count;
+        //noinspection DataFlowIssue
         if (n > contents.item.getMaxCount()) n = contents.item.getMaxCount();
         count -= n;
         final ItemStack stack = new ItemStack(contents.item, n);
