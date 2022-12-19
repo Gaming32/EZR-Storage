@@ -27,21 +27,18 @@ import java.util.Set;
 
 public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
     private final Set<BlockPos> network = new HashSet<>();
-    private final InfiniteInventory inventory = new InfiniteInventory();
+    private final InfiniteInventory inventory = new InfiniteInventory(this::markDirty);
     private final Set<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
-    private boolean scanning = false;
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY, pos, state);
     }
 
     public void scan(WorldAccess world) {
-        if (scanning) return;
-        scanning = true;
         for (final BlockPos pos : network) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof RefBlockEntity ref) {
-                ref.core = null;
+                ref.setCore(null);
             }
         }
         network.clear();
@@ -54,7 +51,6 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
                 inventory.setMaxCount(inventory.getMaxCount() + storageBox.capacity);
             }
         }
-        scanning = false;
     }
 
     private void startRecursion(WorldAccess world) {
@@ -63,7 +59,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
             BlockEntity be = world.getBlockEntity(pos.offset(d));
             if (be instanceof RefBlockEntity ref) {
                 addToNetwork(pos.offset(d), ref.getCachedState());
-                ref.core = pos;
+                ref.setCore(pos);
                 ref.recurse(world, this);
             }
         }
@@ -74,6 +70,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         if (state.getBlock() instanceof ModificationBoxBlock modification) {
             modifications.add(modification.type);
         }
+        markDirty();
     }
 
     public boolean networkContains(BlockPos pos) {
@@ -85,7 +82,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         for (final BlockPos pos : network) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof RefBlockEntity ref) {
-                ref.core = null;
+                ref.setCore(null);
             }
         }
     }

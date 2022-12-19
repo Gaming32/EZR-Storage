@@ -14,7 +14,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class RefBlockEntity extends BlockEntity {
-    BlockPos core;
+    private BlockPos core;
 
     public RefBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.REF_BLOCK_ENTITY, pos, state);
@@ -43,6 +43,11 @@ public class RefBlockEntity extends BlockEntity {
 
     public BlockPos getCore() {
         return core;
+    }
+
+    public void setCore(BlockPos core) {
+        this.core = core;
+        markDirty();
     }
 
     @Override

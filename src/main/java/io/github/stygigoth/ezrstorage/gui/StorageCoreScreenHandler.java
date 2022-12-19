@@ -84,7 +84,6 @@ public class StorageCoreScreenHandler extends ScreenHandler {
         return switch (id) {
             case 0 -> {
                 coreInventory.setSortType(coreInventory.getSortType().rotate());
-                coreInventory.reSort();
                 if (player instanceof ServerPlayerEntity serverPlayer) {
                     syncToClient(serverPlayer);
                 }

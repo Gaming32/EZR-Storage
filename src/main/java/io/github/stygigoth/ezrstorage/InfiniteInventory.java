@@ -1,5 +1,6 @@
 package io.github.stygigoth.ezrstorage;
 
+import com.google.common.collect.Iterators;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -15,13 +16,20 @@ import java.util.List;
 
 public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     private final List<InfiniteItemStack> items = new ArrayList<>();
+    private final Runnable markDirty;
     private SortType sortType = SortType.COUNT_DOWN;
-    private long count;
     private long maxCount;
+
+    public InfiniteInventory() {
+        this(() -> {});
+    }
+
+    public InfiniteInventory(Runnable markDirty) {
+        this.markDirty = markDirty;
+    }
 
     public NbtCompound writeNbt(NbtCompound out) {
         out.putInt("SortType", sortType.ordinal());
-        out.putLong("Count", count);
         out.putLong("MaxCount", maxCount);
         final NbtList itemData = new NbtList();
         items.stream().map(InfiniteItemStack::writeNbt).forEach(itemData::add);
@@ -34,7 +42,6 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     }
 
     public InfiniteInventory readNbt(NbtCompound in) {
-        count = in.getLong("Count");
         maxCount = in.getLong("MaxCount");
         sortType = SortType.values()[in.getInt("SortType")];
         items.clear();
@@ -42,12 +49,11 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
             .stream()
             .map(element -> InfiniteItemStack.readNbt((NbtCompound)element))
             .forEach(items::add);
-        reSort();
         return this;
     }
 
     public long getCount() {
-        return count;
+        return items.stream().mapToLong(InfiniteItemStack::getCount).sum();
     }
 
     public long getMaxCount() {
@@ -56,6 +62,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
     public void setMaxCount(long maxCount) {
         this.maxCount = maxCount;
+        markDirty();
     }
 
     public int getUniqueCount() {
@@ -73,7 +80,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
     public ItemStack moveFrom(ItemStack stack) {
         if (stack.isEmpty()) return stack;
-        final long toMove = Math.min(maxCount - count, stack.getCount());
+        final long toMove = Math.min(maxCount - getCount(), stack.getCount());
         if (toMove > 0) {
             final InfiniteItemStack.Contents contents = new InfiniteItemStack.Contents(stack);
             InfiniteItemStack to = getByContents(contents);
@@ -81,7 +88,6 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
             if (isNew) {
                 items.add(to = new InfiniteItemStack(contents, 0));
             }
-            count += toMove;
             to.setCount(to.getCount() + toMove);
             stack.setCount((int)(stack.getCount() - toMove));
             reSort();
@@ -94,17 +100,21 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     }
 
     public ItemStack extract(InfiniteItemStack stack, int n) {
+        if (n == 0) return ItemStack.EMPTY;
         stack = getStack(stack.getContents());
         if (stack == null) return ItemStack.EMPTY;
         final ItemStack result = stack.extract(n);
         if (stack.isEmpty()) {
             remove(stack.getContents());
+        } else {
+            reSort(); // Count changed, resort needed
         }
         return result;
     }
 
     public void reSort() {
         items.sort(sortType.comparator);
+        markDirty();
     }
 
     public int indexOf(InfiniteItemStack.Contents contents) {
@@ -137,6 +147,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         final int index = indexOf(contents);
         if (index < 0) return false;
         items.remove(index);
+        markDirty();
         return true;
     }
 
@@ -146,12 +157,17 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
     public void setSortType(SortType sortType) {
         this.sortType = sortType;
+        reSort();
+    }
+
+    public void markDirty() {
+        markDirty.run();
     }
 
     @NotNull
     @Override
     public Iterator<InfiniteItemStack> iterator() {
-        return items.iterator();
+        return Iterators.unmodifiableIterator(items.iterator());
     }
 
     private static final Comparator<InfiniteItemStack> COUNT_UP_BASE = Comparator.comparingLong(InfiniteItemStack::getCount);
