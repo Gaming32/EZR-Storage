@@ -235,6 +235,10 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
         stackIter:
         for (final InfiniteItemStack stack : handler.getCoreInventory()) {
+            if (stack.getItem().getName().getString().toLowerCase().contains(searchText)) {
+                filteredItems.add(stack);
+                continue;
+            }
             for (final Text line : getTooltipFromItem(stack.toItemStack())) {
                 if (line.asString().toLowerCase().contains(searchText)) {
                     filteredItems.add(stack);
