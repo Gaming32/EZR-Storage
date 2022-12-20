@@ -1,10 +1,7 @@
 package io.github.stygigoth.ezrstorage.registry;
 
 import io.github.stygigoth.ezrstorage.EZRStorage;
-import io.github.stygigoth.ezrstorage.block.BoxBlock;
-import io.github.stygigoth.ezrstorage.block.ModificationBoxBlock;
-import io.github.stygigoth.ezrstorage.block.StorageBoxBlock;
-import io.github.stygigoth.ezrstorage.block.StorageCoreBlock;
+import io.github.stygigoth.ezrstorage.block.*;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -17,9 +14,10 @@ public class ModBlocks {
         new StorageCoreBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
         "storage_core", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
-    /*public static final Pair<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
-            , "access_terminal", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
-    );*/
+    public static final Pair<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
+        new AccessTerminalBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),
+        "access_terminal", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+    );
 
     public static final Pair<Block, Item> BLANK_BOX = EZRReg.registerBlock(
         new BoxBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)),

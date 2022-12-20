@@ -23,7 +23,6 @@ public class BoxBlock extends BlockWithEntity {
         super(settings);
     }
 
-    @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new RefBlockEntity(pos, state);

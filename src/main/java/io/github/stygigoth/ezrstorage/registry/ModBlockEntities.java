@@ -1,5 +1,6 @@
 package io.github.stygigoth.ezrstorage.registry;
 
+import io.github.stygigoth.ezrstorage.block.entity.AccessTerminalBlockEntity;
 import io.github.stygigoth.ezrstorage.block.entity.RefBlockEntity;
 import io.github.stygigoth.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -11,7 +12,14 @@ public class ModBlockEntities {
             StorageCoreBlockEntity::new,
             ModBlocks.STORAGE_CORE.getLeft()
         ).build(),
-        "storage_core_block_entity"
+        "storage_core"
+    );
+    public static final BlockEntityType<AccessTerminalBlockEntity> ACCESS_TERMINAL_BLOCK_ENTITY = EZRReg.registerBlockEntityType(
+        FabricBlockEntityTypeBuilder.create(
+            AccessTerminalBlockEntity::new,
+            ModBlocks.ACCESS_TERMINAL.getLeft()
+        ).build(),
+        "access_terminal"
     );
     public static final BlockEntityType<RefBlockEntity> REF_BLOCK_ENTITY = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
@@ -27,7 +35,7 @@ public class ModBlockEntities {
             ModBlocks.ULTRA_STORAGE_BOX.getLeft(),
             ModBlocks.HYPER_STORAGE_BOX.getLeft()
         ).build(),
-        "ref_block_entity"
+        "box"
     );
 
     public static void registerBlockEntities() {

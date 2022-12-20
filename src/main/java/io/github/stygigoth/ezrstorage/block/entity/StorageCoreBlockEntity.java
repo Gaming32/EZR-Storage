@@ -91,6 +91,10 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         return inventory;
     }
 
+    public Set<ModificationBoxBlock.Type> getModifications() {
+        return modifications;
+    }
+
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
         return new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
