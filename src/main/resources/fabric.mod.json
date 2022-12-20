@@ -5,9 +5,9 @@
   "name": "EZR Storage",
   "description": "A fabric/quilt port of EZ Storage 2 to 1.18.2 and above",
   "authors": [
-    "stygigoth",
     "Gaming32",
-    "Quizzly_ (Artist)"
+    "Quizzly_ (Artist)",
+    "stygigoth"
   ],
   "contact": {
     "repo": "https://github.com/stygigoth/EZR-Storage"
@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "io.github.stygigoth.ezrstorage.client.EZRStorageClient"
+      "io.github.gaming32.ezrstorage.client.EZRStorageClient"
     ],
     "main": [
-      "io.github.stygigoth.ezrstorage.EZRStorage"
+      "io.github.gaming32.ezrstorage.EZRStorage"
     ]
   },
   "mixins": [
