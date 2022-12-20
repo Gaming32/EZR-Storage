@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "CBC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:iron_blocks"
+    },
+    "C": {
+      "item": "minecraft:iron_bars"
+    },
+    "B": {
+      "item": "ezrstorage:storage_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:condensed_storage_box"
+  }
+}

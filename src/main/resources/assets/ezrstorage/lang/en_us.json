@@ -31,5 +31,13 @@
   "item.ezrstorage.key": "EZ Key",
   "tag.ezrstorage.boxes": "Boxes",
   "tag.ezrstorage.storage_boxes": "Storage Boxes",
-  "tag.ezrstorage.modification_boxes": "Modification Boxes"
+  "tag.ezrstorage.modification_boxes": "Modification Boxes",
+  "tag.c.diamond_blocks": "Diamond Blocks",
+  "tag.c.diamonds": "Diamonds",
+  "tag.c.gold_blocks": "Gold Blocks",
+  "tag.c.gold_nuggets": "Gold Nuggets",
+  "tag.c.iron_blocks": "Iron Blocks",
+  "tag.c.wood_sticks": "Sticks",
+  "tag.c.wooden_chests": "Wooden Chests",
+  "tag.c.wooden_rods": "Wooden Rods"
 }

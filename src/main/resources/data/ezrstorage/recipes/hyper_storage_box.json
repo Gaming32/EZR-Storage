@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "ACA",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:obsidian"
+    },
+    "B": {
+      "item": "minecraft:nether_star"
+    },
+    "C": {
+      "item": "ezrstorage:ultra_storage_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:hyper_storage_box"
+  }
+}

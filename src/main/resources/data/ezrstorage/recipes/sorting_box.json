@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EDE",
+    "CBC",
+    "CEC"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:comparator"
+    },
+    "D": {
+      "item": "minecraft:map"
+    },
+    "C": {
+      "tag": "minecraft:logs"
+    },
+    "B": {
+      "item": "ezrstorage:blank_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:sorting_box"
+  }
+}

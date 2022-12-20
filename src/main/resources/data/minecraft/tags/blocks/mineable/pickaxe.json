@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "ezrstorage:storage_core",
+    "ezrstorage:access_terminal",
+    "ezrstorage:super_storage_box",
+    "ezrstorage:ultra_storage_box",
+    "ezrstorage:hyper_storage_box",
+    "ezrstorage:crafting_box",
+    "ezrstorage:search_box",
+    "ezrstorage:security_box"
+  ]
+}

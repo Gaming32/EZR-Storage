@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "CBC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:gold_blocks"
+    },
+    "C": {
+      "tag": "c:gold_nuggets"
+    },
+    "B": {
+      "item": "ezrstorage:condensed_storage_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:super_storage_box"
+  }
+}

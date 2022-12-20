@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "CBC",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "tag": "c:wooden_chests"
+    },
+    "B": {
+      "item": "ezrstorage:blank_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:storage_box"
+  }
+}

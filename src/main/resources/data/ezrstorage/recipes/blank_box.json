@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ABA",
+    "BCB",
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:logs"
+    },
+    "B": {
+      "tag": "minecraft:planks"
+    },
+    "C": {
+      "tag": "c:wooden_rods"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:blank_box"
+  }
+}

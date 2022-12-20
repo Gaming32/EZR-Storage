@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IXI",
+    "XAX",
+    "IXI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_bars"
+    },
+    "X": {
+      "item": "minecraft:glass_pane"
+    },
+    "A": {
+      "item": "ezrstorage:storage_core"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:access_terminal"
+  }
+}

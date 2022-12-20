@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "CBC",
+    "ACA"
+  ],
+  "key": {
+    "A": {
+      "tag": "c:diamond_blocks"
+    },
+    "C": {
+      "tag": "c:diamonds"
+    },
+    "B": {
+      "item": "ezrstorage:super_storage_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:ultra_storage_box"
+  }
+}
