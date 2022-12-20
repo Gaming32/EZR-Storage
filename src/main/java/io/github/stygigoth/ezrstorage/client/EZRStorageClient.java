@@ -4,11 +4,15 @@ import io.github.stygigoth.ezrstorage.EZRStorage;
 import io.github.stygigoth.ezrstorage.block.ModificationBoxBlock;
 import io.github.stygigoth.ezrstorage.client.gui.StorageCoreScreen;
 import io.github.stygigoth.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.stygigoth.ezrstorage.registry.EZRReg;
 import io.github.stygigoth.ezrstorage.util.MoreBufs;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -32,6 +36,15 @@ public class EZRStorageClient implements ClientModInitializer {
                 }
             }
         });
+
+        if (!ResourceManagerHelper.registerBuiltinResourcePack(
+            EZRReg.id("classic_resources"),
+            FabricLoader.getInstance().getModContainer("ezrstorage").orElseThrow(),
+            "Classic Resources",
+            ResourcePackActivationType.NORMAL
+        )) {
+            EZRStorage.LOGGER.warn("Failed to register Classic Resources.");
+        }
     }
 
     private static void registerGlobalReceiver(Identifier packet, ClientPlayNetworking.PlayChannelHandler packetHandler) {

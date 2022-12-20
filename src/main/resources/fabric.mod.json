@@ -6,7 +6,8 @@
   "description": "A fabric/quilt port of EZ Storage 2 to 1.18.2 and above",
   "authors": [
     "stygigoth",
-    "Gaming32"
+    "Gaming32",
+    "Quizzly_ (Artist)"
   ],
   "contact": {
     "repo": "https://github.com/stygigoth/EZR-Storage"
