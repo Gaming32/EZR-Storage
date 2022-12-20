@@ -118,11 +118,10 @@ public class StorageCoreScreenHandler extends ScreenHandler {
         }
     }
 
-    public ItemStack customSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+    public ItemStack customSlotClick(int slotIndex, SlotActionType actionType) {
         final ItemStack heldStack = getCursorStack();
 
         if (heldStack.isEmpty()) {
-            final int type = button == 1 ? 1 : 0;
             final InfiniteItemStack infiniteStack = coreInventory.getStack(slotIndex);
             if (infiniteStack.isEmpty()) {
                 return ItemStack.EMPTY;

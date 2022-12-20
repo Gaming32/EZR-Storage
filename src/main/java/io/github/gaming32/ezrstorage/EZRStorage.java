@@ -48,9 +48,8 @@ public class EZRStorage implements ModInitializer {
             final int syncId = buf.readUnsignedByte();
             if (player.currentScreenHandler.syncId != syncId) return;
             final int index = buf.readVarInt();
-            final int button = buf.readVarInt();
             final SlotActionType mode = buf.readEnumConstant(SlotActionType.class);
-            ((StorageCoreScreenHandler)player.currentScreenHandler).customSlotClick(index, button, mode, player);
+            ((StorageCoreScreenHandler)player.currentScreenHandler).customSlotClick(index, mode);
         });
     }
 

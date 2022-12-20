@@ -269,11 +269,10 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
                 }
             }
             assert client != null;
-            handler.customSlotClick(index, button, mode, client.player);
+            handler.customSlotClick(index, mode);
             final PacketByteBuf buf = PacketByteBufs.create();
             buf.writeByte(handler.syncId);
             buf.writeVarInt(index);
-            buf.writeVarInt(button);
             buf.writeEnumConstant(mode);
             ClientPlayNetworking.send(EZRStorage.CUSTOM_SLOT_CLICK, buf);
         } else {
