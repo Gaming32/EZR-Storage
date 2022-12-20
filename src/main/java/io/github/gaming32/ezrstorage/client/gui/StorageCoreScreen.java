@@ -162,6 +162,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         final Integer slot = getSlotAt(mouseX, mouseY);
         if (slot != null) {
