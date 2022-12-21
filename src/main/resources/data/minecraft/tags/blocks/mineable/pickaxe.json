@@ -10,6 +10,7 @@
     "ezrstorage:crafting_box",
     "ezrstorage:search_box",
     "ezrstorage:security_box",
-    "ezrstorage:input_port"
+    "ezrstorage:input_port",
+    "ezrstorage:ejection_port"
   ]
 }

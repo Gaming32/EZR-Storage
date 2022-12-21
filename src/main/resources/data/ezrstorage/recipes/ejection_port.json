@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " D ",
+    "ABA",
+    " A "
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "A": {
+      "item": "minecraft:piston"
+    },
+    "B": {
+      "item": "ezrstorage:input_port"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:ejection_port"
+  }
+}
