@@ -2,7 +2,6 @@ package io.github.gaming32.ezrstorage.block;
 
 import io.github.gaming32.ezrstorage.block.entity.RefBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -54,8 +53,8 @@ public class BoxBlock extends BlockWithEntity {
             BlockEntity neighbor = world.getBlockEntity(pos.offset(d));
             if (neighbor instanceof StorageCoreBlockEntity otherCore) {
                 cores.add(otherCore);
-            } else if (neighbor instanceof RefBlockEntity ref && ref.getCore() != null) {
-                world.getBlockEntity(ref.getCore(), ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY).ifPresent(cores::add);
+            } else if (neighbor instanceof RefBlockEntity ref) {
+                ref.getCoreBlockEntity().ifPresent(cores::add);
             }
         }
         return cores;

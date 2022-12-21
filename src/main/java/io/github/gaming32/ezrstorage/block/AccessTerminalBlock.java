@@ -27,7 +27,7 @@ public class AccessTerminalBlock extends BoxBlock {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
             final AccessTerminalBlockEntity blockEntity =
-                world.getBlockEntity(pos, ModBlockEntities.ACCESS_TERMINAL_BLOCK_ENTITY).orElse(null);
+                world.getBlockEntity(pos, ModBlockEntities.ACCESS_TERMINAL).orElse(null);
             if (blockEntity == null || blockEntity.getCore() == null) return ActionResult.PASS;
             final NamedScreenHandlerFactory factory = state.createScreenHandlerFactory(world, pos);
             if (factory != null) {

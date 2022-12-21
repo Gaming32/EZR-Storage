@@ -31,7 +31,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
     private final Set<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY, pos, state);
+        super(ModBlockEntities.STORAGE_CORE, pos, state);
     }
 
     public void scan(WorldAccess world) {

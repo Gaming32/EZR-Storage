@@ -12,12 +12,13 @@ import net.minecraft.world.WorldAccess;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Optional;
 
 public class RefBlockEntity extends BlockEntity {
     private BlockPos core;
 
     public RefBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.REF_BLOCK_ENTITY, pos, state);
+        super(ModBlockEntities.BOX, pos, state);
     }
 
     public RefBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {
@@ -43,6 +44,10 @@ public class RefBlockEntity extends BlockEntity {
 
     public BlockPos getCore() {
         return core;
+    }
+
+    public Optional<StorageCoreBlockEntity> getCoreBlockEntity() {
+        return core == null || world == null ? Optional.empty() : world.getBlockEntity(core, ModBlockEntities.STORAGE_CORE);
     }
 
     public void setCore(BlockPos core) {

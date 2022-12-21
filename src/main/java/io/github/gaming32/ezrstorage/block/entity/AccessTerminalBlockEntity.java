@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class AccessTerminalBlockEntity extends RefBlockEntity implements NamedScreenHandlerFactory {
     public AccessTerminalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ACCESS_TERMINAL_BLOCK_ENTITY, pos, state);
+        super(ModBlockEntities.ACCESS_TERMINAL, pos, state);
     }
 
     public AccessTerminalBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {
@@ -24,11 +24,9 @@ public class AccessTerminalBlockEntity extends RefBlockEntity implements NamedSc
 
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        if (world == null || getCore() == null) return null;
-        final StorageCoreBlockEntity core =
-            world.getBlockEntity(getCore(), ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY).orElse(null);
-        if (core == null) return null;
-        return new StorageCoreScreenHandler(syncId, inv, core.getInventory(), core.getModifications());
+        return getCoreBlockEntity().map(core ->
+            new StorageCoreScreenHandler(syncId, inv, core.getInventory(), core.getModifications())
+        ).orElse(null);
     }
 
     @Override

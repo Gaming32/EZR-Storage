@@ -16,14 +16,16 @@ public class ModBlocks {
                 .hardness(2f)
                 .resistance(6080f)
         ),
-        "storage_core", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "storage_core",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
         new AccessTerminalBlock(
             FabricBlockSettings.of(Material.METAL)
                 .hardness(2f)
         ),
-        "access_terminal", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "access_terminal",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
 
     public static final Pair<Block, Item> BLANK_BOX = EZRReg.registerBlock(
@@ -31,7 +33,8 @@ public class ModBlocks {
             FabricBlockSettings.of(Material.WOOD)
                 .hardness(2f)
         ),
-        "blank_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "blank_box",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
 
     public static final Pair<Block, Item> STORAGE_BOX = EZRReg.registerBlock(
@@ -40,7 +43,8 @@ public class ModBlocks {
                 .hardness(2f),
             400
         ),
-        "storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "storage_box",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> CONDENSED_STORAGE_BOX = EZRReg.registerBlock(
         new StorageBoxBlock(
@@ -48,7 +52,8 @@ public class ModBlocks {
                 .hardness(2f),
             4_000
         ),
-        "condensed_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "condensed_storage_box",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> SUPER_STORAGE_BOX = EZRReg.registerBlock(
         new StorageBoxBlock(
@@ -56,7 +61,8 @@ public class ModBlocks {
                 .hardness(2f),
             20_000
         ),
-        "super_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "super_storage_box",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> ULTRA_STORAGE_BOX = EZRReg.registerBlock(
         new StorageBoxBlock(
@@ -64,7 +70,8 @@ public class ModBlocks {
                 .hardness(2f),
             80_000
         ),
-        "ultra_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "ultra_storage_box",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
     public static final Pair<Block, Item> HYPER_STORAGE_BOX = EZRReg.registerBlock(
         new StorageBoxBlock(
@@ -72,7 +79,8 @@ public class ModBlocks {
                 .hardness(2f),
             400_000
         ),
-        "hyper_storage_box", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        "hyper_storage_box",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
 
     public static final Pair<Block, Item> CRAFTING_BOX = EZRReg.registerBlock(
@@ -112,15 +120,14 @@ public class ModBlocks {
         new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
 
-    /*public static final Pair<Block, Item> INPUT_PORT = EZRReg.registerBlock(
-            , "input_port", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+    public static final Pair<Block, Item> INPUT_PORT = EZRReg.registerBlock(
+        new InputPortBlock(
+            FabricBlockSettings.of(Material.METAL)
+                .hardness(2f)
+        ),
+        "input_port",
+        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
     );
-    public static final Pair<Block, Item> OUTPUT_PORT = EZRReg.registerBlock(
-            , "output_port", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
-    );
-    public static final Pair<Block, Item> EJECTION_PORT = EZRReg.registerBlock(
-            , "ejection_port", new FabricItemSettings().group(EZRStorage.EZR_GROUP)
-    );*/
 
     public static void registerBlocks() {
     }

@@ -46,7 +46,7 @@ public class StorageCoreBlock extends BlockWithEntity {
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY)
+        world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE)
             .ifPresent(StorageCoreBlockEntity::notifyBreak);
         super.onBreak(world, pos, state, player);
     }
@@ -54,7 +54,7 @@ public class StorageCoreBlock extends BlockWithEntity {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-        world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE_BLOCK_ENTITY)
+        world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE)
             .ifPresent(entity -> entity.scan(world));
     }
 
