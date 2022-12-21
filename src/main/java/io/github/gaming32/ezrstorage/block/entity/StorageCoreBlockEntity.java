@@ -4,7 +4,7 @@ import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
 import io.github.gaming32.ezrstorage.block.StorageBoxBlock;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
+import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.MoreCollectors;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
 import net.minecraft.block.BlockState;
@@ -32,7 +32,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
     private final Set<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.STORAGE_CORE, pos, state);
+        super(EZRBlockEntities.STORAGE_CORE, pos, state);
     }
 
     public void scan(WorldAccess world, @Nullable BlockEntity skipEntity) {

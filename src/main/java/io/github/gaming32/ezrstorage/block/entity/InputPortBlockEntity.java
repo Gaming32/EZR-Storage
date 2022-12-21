@@ -1,6 +1,6 @@
 package io.github.gaming32.ezrstorage.block.entity;
 
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
+import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -15,7 +15,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
     private ItemStack inventory = ItemStack.EMPTY;
 
     public InputPortBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.INPUT_PORT, pos, state);
+        super(EZRBlockEntities.INPUT_PORT, pos, state);
     }
 
     public InputPortBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {

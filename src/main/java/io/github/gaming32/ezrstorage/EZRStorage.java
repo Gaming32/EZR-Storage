@@ -2,8 +2,8 @@ package io.github.gaming32.ezrstorage;
 
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.gaming32.ezrstorage.registry.EZRBlocks;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
-import io.github.gaming32.ezrstorage.registry.ModBlocks;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -33,7 +33,7 @@ public class EZRStorage implements ModInitializer {
 
     public static final ItemGroup EZR_GROUP = FabricItemGroupBuilder.build(
         new Identifier(MOD_ID, MOD_ID),
-        () -> new ItemStack(ModBlocks.STORAGE_CORE.getLeft())
+        () -> new ItemStack(EZRBlocks.STORAGE_CORE.getLeft())
     );
 
     @Override

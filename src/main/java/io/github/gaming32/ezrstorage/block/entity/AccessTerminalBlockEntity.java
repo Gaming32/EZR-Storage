@@ -1,7 +1,7 @@
 package io.github.gaming32.ezrstorage.block.entity;
 
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
+import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class AccessTerminalBlockEntity extends RefBlockEntity implements NamedScreenHandlerFactory {
     public AccessTerminalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ACCESS_TERMINAL, pos, state);
+        super(EZRBlockEntities.ACCESS_TERMINAL, pos, state);
     }
 
     public AccessTerminalBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {

@@ -1,6 +1,6 @@
 package io.github.gaming32.ezrstorage.block.entity;
 
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
+import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,7 +19,7 @@ public class RefBlockEntity extends BlockEntity {
     private BlockPos core;
 
     public RefBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.BOX, pos, state);
+        super(EZRBlockEntities.BOX, pos, state);
     }
 
     public RefBlockEntity(BlockEntityType<? extends BlockEntity> type, BlockPos pos, BlockState state) {
@@ -48,7 +48,7 @@ public class RefBlockEntity extends BlockEntity {
     }
 
     public Optional<StorageCoreBlockEntity> getCoreBlockEntity() {
-        return core == null || world == null ? Optional.empty() : world.getBlockEntity(core, ModBlockEntities.STORAGE_CORE);
+        return core == null || world == null ? Optional.empty() : world.getBlockEntity(core, EZRBlockEntities.STORAGE_CORE);
     }
 
     public void setCore(BlockPos core) {

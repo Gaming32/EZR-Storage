@@ -2,7 +2,7 @@ package io.github.gaming32.ezrstorage.block;
 
 import io.github.gaming32.ezrstorage.block.entity.RefBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
+import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -46,7 +46,7 @@ public class StorageCoreBlock extends BlockWithEntity {
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE)
+        world.getBlockEntity(pos, EZRBlockEntities.STORAGE_CORE)
             .ifPresent(StorageCoreBlockEntity::notifyBreak);
         super.onBreak(world, pos, state, player);
     }
@@ -54,7 +54,7 @@ public class StorageCoreBlock extends BlockWithEntity {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
-        world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE)
+        world.getBlockEntity(pos, EZRBlockEntities.STORAGE_CORE)
             .ifPresent(entity -> entity.scan(world, null));
     }
 

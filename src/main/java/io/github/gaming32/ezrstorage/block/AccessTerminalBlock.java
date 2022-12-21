@@ -1,7 +1,7 @@
 package io.github.gaming32.ezrstorage.block;
 
 import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
-import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
+import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +27,7 @@ public class AccessTerminalBlock extends BoxBlock {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
             final AccessTerminalBlockEntity blockEntity =
-                world.getBlockEntity(pos, ModBlockEntities.ACCESS_TERMINAL).orElse(null);
+                world.getBlockEntity(pos, EZRBlockEntities.ACCESS_TERMINAL).orElse(null);
             if (blockEntity == null || blockEntity.getCore() == null) return ActionResult.PASS;
             final NamedScreenHandlerFactory factory = state.createScreenHandlerFactory(world, pos);
             if (factory != null) {

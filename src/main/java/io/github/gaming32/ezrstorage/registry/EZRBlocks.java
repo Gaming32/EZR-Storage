@@ -9,7 +9,7 @@ import net.minecraft.block.Material;
 import net.minecraft.item.Item;
 import net.minecraft.util.Pair;
 
-public class ModBlocks {
+public class EZRBlocks {
     public static final Pair<Block, Item> STORAGE_CORE = EZRReg.registerBlock(
         new StorageCoreBlock(
             FabricBlockSettings.of(Material.METAL)
