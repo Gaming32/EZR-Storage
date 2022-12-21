@@ -48,7 +48,7 @@ public class EZRBlocks {
     );
     public static final Pair<Block, Item> CONDENSED_STORAGE_BOX = EZRReg.registerBlock(
         new StorageBoxBlock(
-            FabricBlockSettings.of(Material.WOOD)
+            FabricBlockSettings.of(Material.METAL)
                 .hardness(2f),
             4_000
         ),
