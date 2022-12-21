@@ -7,126 +7,63 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.item.Item;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Pair;
 
 public class EZRBlocks {
+    private static final FabricBlockSettings METAL = FabricBlockSettings.of(Material.METAL)
+        .hardness(2f)
+        .requiresTool()
+        .sounds(BlockSoundGroup.METAL);
+    private static final FabricBlockSettings WOOD = FabricBlockSettings.of(Material.WOOD)
+        .hardness(2f)
+        .sounds(BlockSoundGroup.WOOD);
+    private static final FabricItemSettings ITEM_SETTINGS = new FabricItemSettings().group(EZRStorage.EZR_GROUP);
+
     public static final Pair<Block, Item> STORAGE_CORE = EZRReg.registerBlock(
-        new StorageCoreBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f)
-                .resistance(6080f)
-        ),
-        "storage_core",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new StorageCoreBlock(FabricBlockSettings.copyOf(METAL).resistance(6080f)), "storage_core", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
-        new AccessTerminalBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f)
-        ),
-        "access_terminal",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new AccessTerminalBlock(METAL), "access_terminal", ITEM_SETTINGS
     );
 
     public static final Pair<Block, Item> BLANK_BOX = EZRReg.registerBlock(
-        new BoxBlock(
-            FabricBlockSettings.of(Material.WOOD)
-                .hardness(2f)
-        ),
-        "blank_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new BoxBlock(WOOD), "blank_box", ITEM_SETTINGS
     );
 
     public static final Pair<Block, Item> STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(
-            FabricBlockSettings.of(Material.WOOD)
-                .hardness(2f),
-            400
-        ),
-        "storage_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new StorageBoxBlock(WOOD, 400), "storage_box", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> CONDENSED_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f),
-            4_000
-        ),
-        "condensed_storage_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new StorageBoxBlock(METAL, 4_000), "condensed_storage_box", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> SUPER_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f),
-            20_000
-        ),
-        "super_storage_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new StorageBoxBlock(METAL, 20_000), "super_storage_box", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> ULTRA_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f),
-            80_000
-        ),
-        "ultra_storage_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new StorageBoxBlock(METAL, 80_000), "ultra_storage_box", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> HYPER_STORAGE_BOX = EZRReg.registerBlock(
-        new StorageBoxBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f),
-            400_000
-        ),
-        "hyper_storage_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new StorageBoxBlock(METAL, 400_000), "hyper_storage_box", ITEM_SETTINGS
     );
 
     public static final Pair<Block, Item> CRAFTING_BOX = EZRReg.registerBlock(
-        new ModificationBoxBlock(
-            ModificationBoxBlock.Type.CRAFTING,
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f)
-        ),
+        new ModificationBoxBlock(METAL, ModificationBoxBlock.Type.CRAFTING),
         "crafting_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        ITEM_SETTINGS
     );
     public static final Pair<Block, Item> SEARCH_BOX = EZRReg.registerBlock(
-        new ModificationBoxBlock(
-            ModificationBoxBlock.Type.SEARCH,
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f)
-        ),
-        "search_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new ModificationBoxBlock(METAL, ModificationBoxBlock.Type.SEARCH), "search_box", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> SORTING_BOX = EZRReg.registerBlock(
-        new ModificationBoxBlock(
-            ModificationBoxBlock.Type.SORTING,
-            FabricBlockSettings.of(Material.WOOD)
-                .hardness(2f)
-        ),
-        "sorting_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new ModificationBoxBlock(WOOD, ModificationBoxBlock.Type.SORTING), "sorting_box", ITEM_SETTINGS
     );
     public static final Pair<Block, Item> SECURITY_BOX = EZRReg.registerBlock(
-        new ModificationBoxBlock(
-            ModificationBoxBlock.Type.SECURITY,
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f)
-        ),
-        "security_box",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new ModificationBoxBlock(METAL, ModificationBoxBlock.Type.SECURITY), "security_box", ITEM_SETTINGS
     );
 
     public static final Pair<Block, Item> INPUT_PORT = EZRReg.registerBlock(
-        new InputPortBlock(
-            FabricBlockSettings.of(Material.METAL)
-                .hardness(2f)
-        ),
-        "input_port",
-        new FabricItemSettings().group(EZRStorage.EZR_GROUP)
+        new InputPortBlock(METAL), "input_port", ITEM_SETTINGS
     );
 
     public static void registerBlocks() {

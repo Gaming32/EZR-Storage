@@ -5,7 +5,7 @@ import net.minecraft.util.StringIdentifiable;
 public class ModificationBoxBlock extends BoxBlock {
     public final Type type;
 
-    public ModificationBoxBlock(Type type, Settings settings) {
+    public ModificationBoxBlock(Settings settings, Type type) {
         super(settings);
         this.type = type;
     }
