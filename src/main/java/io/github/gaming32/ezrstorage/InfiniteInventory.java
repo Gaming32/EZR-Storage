@@ -143,12 +143,15 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         return items.get(index);
     }
 
-    public boolean remove(InfiniteItemStack.Contents contents) {
-        final int index = indexOf(contents);
-        if (index < 0) return false;
+    public boolean remove(int index) {
+        if (index < 0 || index >= items.size()) return false;
         items.remove(index);
         markDirty();
         return true;
+    }
+
+    public boolean remove(InfiniteItemStack.Contents contents) {
+        return remove(indexOf(contents));
     }
 
     public SortType getSortType() {

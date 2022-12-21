@@ -8,7 +8,7 @@
   "block.ezrstorage.ultra_storage_box": "Ultra-Lagerungskiste",
   "block.ezrstorage.hyper_storage_box": "Hyper-Lagerungskiste",
   "block.ezrstorage.input_port": "Eingangsanschluss",
-  "block.ezrstorage.output_port": "Ausgangsanschluss",
+  "block.ezrstorage.ejection_port": "Ausgangsanschluss",
   "block.ezrstorage.extract_port": "Extraktionsanschluss",
   "block.ezrstorage.crafting_box": "Werkkiste",
   "block.ezrstorage.search_box": "Suchkiste",

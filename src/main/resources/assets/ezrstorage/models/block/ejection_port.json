@@ -2,7 +2,7 @@
     "parent": "block/cube",
     "textures": {
         "down": "ezrstorage:blocks/box_side",
-        "up": "ezrstorage:blocks/output_port",
+        "up": "ezrstorage:blocks/ejection_port",
         "north": "ezrstorage:blocks/box_side",
         "south": "ezrstorage:blocks/box_side",
         "east": "ezrstorage:blocks/box_side",

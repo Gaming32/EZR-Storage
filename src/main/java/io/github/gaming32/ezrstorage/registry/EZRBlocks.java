@@ -65,6 +65,9 @@ public class EZRBlocks {
     public static final Pair<Block, Item> INPUT_PORT = EZRReg.registerBlock(
         new InputPortBlock(METAL), "input_port", ITEM_SETTINGS
     );
+    public static final Pair<Block, Item> EJECTION_PORT = EZRReg.registerBlock(
+        new EjectionPortBlock(METAL), "ejection_port", ITEM_SETTINGS
+    );
 
     public static void registerBlocks() {
     }

@@ -8,7 +8,7 @@
   "block.ezrstorage.ultra_storage_box": "Ultra Storage Box",
   "block.ezrstorage.hyper_storage_box": "Hyper Storage Box",
   "block.ezrstorage.input_port": "Input Port",
-  "block.ezrstorage.output_port": "Ejection Port",
+  "block.ezrstorage.ejection_port": "Ejection Port",
   "block.ezrstorage.extract_port": "Extraction Port",
   "block.ezrstorage.crafting_box": "Crafting Box",
   "block.ezrstorage.search_box": "Search Box",

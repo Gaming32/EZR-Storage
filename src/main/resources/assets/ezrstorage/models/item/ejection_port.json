@@ -1,5 +1,5 @@
 {
-    "parent": "ezrstorage:block/output_port",
+    "parent": "ezrstorage:block/ejection_port",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

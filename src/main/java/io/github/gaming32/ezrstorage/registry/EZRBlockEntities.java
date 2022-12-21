@@ -1,9 +1,6 @@
 package io.github.gaming32.ezrstorage.registry;
 
-import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
-import io.github.gaming32.ezrstorage.block.entity.InputPortBlockEntity;
-import io.github.gaming32.ezrstorage.block.entity.RefBlockEntity;
-import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
+import io.github.gaming32.ezrstorage.block.entity.*;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
 
@@ -47,6 +44,14 @@ public class EZRBlockEntities {
             EZRBlocks.INPUT_PORT.getLeft()
         ).build(),
         "input_port"
+    );
+
+    public static final BlockEntityType<EjectionPortBlockEntity> EJECTION_PORT = EZRReg.registerBlockEntityType(
+        FabricBlockEntityTypeBuilder.create(
+            EjectionPortBlockEntity::new,
+            EZRBlocks.EJECTION_PORT.getLeft()
+        ).build(),
+        "ejection_port"
     );
 
     public static void registerBlockEntities() {
