@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
 public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
-    private final ItemStack[] INVENTORY = {ItemStack.EMPTY};
+    private ItemStack inventory = ItemStack.EMPTY;
 
     public InputPortBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.INPUT_PORT, pos, state);
@@ -22,9 +22,9 @@ public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
 
     public void tick() {
         getCoreBlockEntity().ifPresent(core -> {
-            final ItemStack stack = INVENTORY[0];
+            final ItemStack stack = inventory;
             if (!stack.isEmpty()) {
-                INVENTORY[0] = core.getInventory().moveFrom(stack);
+                inventory = core.getInventory().moveFrom(stack);
             }
         });
     }
@@ -36,17 +36,17 @@ public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
 
     @Override
     public boolean isEmpty() {
-        return INVENTORY[0].isEmpty();
+        return inventory.isEmpty();
     }
 
     @Override
     public ItemStack getStack(int slot) {
-        return slot == 0 ? INVENTORY[0] : ItemStack.EMPTY;
+        return slot == 0 ? inventory : ItemStack.EMPTY;
     }
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
-        return slot == 0 ? INVENTORY[0].split(amount) : ItemStack.EMPTY;
+        return slot == 0 ? inventory.split(amount) : ItemStack.EMPTY;
     }
 
     @Override
@@ -54,15 +54,15 @@ public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
         if (slot != 0) {
             return ItemStack.EMPTY;
         }
-        final ItemStack stack = INVENTORY[0];
-        INVENTORY[0] = ItemStack.EMPTY;
+        final ItemStack stack = inventory;
+        inventory = ItemStack.EMPTY;
         return stack;
     }
 
     @Override
     public void setStack(int slot, ItemStack stack) {
         if (slot != 0) return;
-        INVENTORY[0] = stack;
+        inventory = stack;
     }
 
     @Override
@@ -72,6 +72,6 @@ public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
 
     @Override
     public void clear() {
-        INVENTORY[0] = ItemStack.EMPTY;
+        inventory = ItemStack.EMPTY;
     }
 }
