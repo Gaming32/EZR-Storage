@@ -5,11 +5,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.Nullable;
 
-public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
+public class InputPortBlockEntity extends RefBlockEntity implements SidedInventory {
     private ItemStack inventory = ItemStack.EMPTY;
 
     public InputPortBlockEntity(BlockPos pos, BlockState state) {
@@ -73,5 +75,20 @@ public class InputPortBlockEntity extends RefBlockEntity implements Inventory {
     @Override
     public void clear() {
         inventory = ItemStack.EMPTY;
+    }
+
+    @Override
+    public int[] getAvailableSlots(Direction side) {
+        return new int[] {0};
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return world == null || !world.isReceivingRedstonePower(pos);
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+        return false;
     }
 }

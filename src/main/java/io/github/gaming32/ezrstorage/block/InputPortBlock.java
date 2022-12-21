@@ -1,10 +1,12 @@
 package io.github.gaming32.ezrstorage.block;
 
 import io.github.gaming32.ezrstorage.block.entity.InputPortBlockEntity;
+import io.github.gaming32.ezrstorage.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -27,5 +29,13 @@ public class InputPortBlock extends BoxBlock {
                 inputPort.tick();
             }
         };
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            world.getBlockEntity(pos, ModBlockEntities.INPUT_PORT).ifPresent(entity -> ItemScatterer.spawn(world, pos, entity));
+            super.onStateReplaced(state, world, pos, newState, moved);
+        }
     }
 }

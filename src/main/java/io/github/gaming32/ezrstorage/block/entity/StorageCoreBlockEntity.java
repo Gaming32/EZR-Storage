@@ -19,6 +19,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         super(ModBlockEntities.STORAGE_CORE, pos, state);
     }
 
-    public void scan(WorldAccess world) {
+    public void scan(WorldAccess world, @Nullable BlockEntity skipEntity) {
         for (final BlockPos pos : network) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof RefBlockEntity ref) {
@@ -43,7 +44,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         }
         network.clear();
         modifications.clear();
-        startRecursion(world);
+        startRecursion(world, skipEntity);
         inventory.setMaxCount(0L);
         for (final BlockPos otherPos : network) {
             final BlockState otherState = world.getBlockState(otherPos);
@@ -53,14 +54,14 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         }
     }
 
-    private void startRecursion(WorldAccess world) {
+    private void startRecursion(WorldAccess world, @Nullable BlockEntity skipEntity) {
         network.clear();
         for (Direction d : Direction.values()) {
             BlockEntity be = world.getBlockEntity(pos.offset(d));
-            if (be instanceof RefBlockEntity ref) {
+            if (be != skipEntity && be instanceof RefBlockEntity ref) {
                 addToNetwork(pos.offset(d), ref.getCachedState());
                 ref.setCore(pos);
-                ref.recurse(world, this);
+                ref.recurse(world, this, skipEntity);
             }
         }
     }

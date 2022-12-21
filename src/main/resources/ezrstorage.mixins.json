@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "MixinPistonBlock",
-    "MixinServerPlayerEntity_1",
-    "MixinWorldChunk"
+    "MixinServerPlayerEntity_1"
   ],
   "client": [
   ],

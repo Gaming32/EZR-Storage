@@ -32,7 +32,19 @@ public class BoxBlock extends BlockWithEntity {
         super.onPlaced(world, pos, state, placer, itemStack);
         final Set<StorageCoreBlockEntity> cores = findCores(world, pos);
         if (!cores.isEmpty()) {
-            cores.iterator().next().scan(world);
+            cores.iterator().next().scan(world, null);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock())) {
+            final BlockEntity entity = world.getBlockEntity(pos);
+            if (entity instanceof RefBlockEntity ref) {
+                ref.getCoreBlockEntity().ifPresent(core -> core.scan(world, entity));
+            }
+            super.onStateReplaced(state, world, pos, newState, moved);
         }
     }
 

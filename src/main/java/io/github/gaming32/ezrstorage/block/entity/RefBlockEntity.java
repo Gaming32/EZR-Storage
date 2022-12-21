@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -25,7 +26,7 @@ public class RefBlockEntity extends BlockEntity {
         super(type, pos, state);
     }
 
-    void recurse(WorldAccess world, StorageCoreBlockEntity coreEntity) {
+    void recurse(WorldAccess world, StorageCoreBlockEntity coreEntity, @Nullable BlockEntity skipEntity) {
         final Deque<BlockPos> queue = new ArrayDeque<>();
         queue.addLast(pos);
         while (!queue.isEmpty()) {
@@ -33,7 +34,7 @@ public class RefBlockEntity extends BlockEntity {
             for (Direction d : Direction.values()) {
                 final BlockPos offsetPos = checkPos.offset(d);
                 BlockEntity be = world.getBlockEntity(offsetPos);
-                if (be instanceof RefBlockEntity ref && !coreEntity.networkContains(offsetPos)) {
+                if (be != skipEntity && be instanceof RefBlockEntity ref && !coreEntity.networkContains(offsetPos)) {
                     coreEntity.addToNetwork(offsetPos, ref.getCachedState());
                     ref.core = core;
                     queue.addLast(offsetPos);

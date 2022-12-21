@@ -55,7 +55,7 @@ public class StorageCoreBlock extends BlockWithEntity {
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         super.onPlaced(world, pos, state, placer, itemStack);
         world.getBlockEntity(pos, ModBlockEntities.STORAGE_CORE)
-            .ifPresent(entity -> entity.scan(world));
+            .ifPresent(entity -> entity.scan(world, null));
     }
 
     @Override
