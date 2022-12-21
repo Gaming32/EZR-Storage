@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "ezrstorage:input_port",
+    "ezrstorage:ejection_port"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#ezrstorage:boxes",
+    "#ezrstorage:ports",
+    "ezrstorage:storage_core",
+    "ezrstorage:access_terminal"
+  ]
+}
