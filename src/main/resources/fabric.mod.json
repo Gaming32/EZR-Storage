@@ -15,11 +15,14 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
+    "main": [
+      "io.github.gaming32.ezrstorage.EZRStorage"
+    ],
     "client": [
       "io.github.gaming32.ezrstorage.client.EZRStorageClient"
     ],
-    "main": [
-      "io.github.gaming32.ezrstorage.EZRStorage"
+    "preLaunch": [
+      "io.github.gaming32.ezrstorage.EZRStoragePreLaunch"
     ]
   },
   "mixins": [
