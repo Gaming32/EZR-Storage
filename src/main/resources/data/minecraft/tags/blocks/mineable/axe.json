@@ -3,7 +3,6 @@
   "values": [
     "ezrstorage:blank_box",
     "ezrstorage:storage_box",
-    "ezrstorage:condensed_storage_box",
     "ezrstorage:sorting_box"
   ]
 }

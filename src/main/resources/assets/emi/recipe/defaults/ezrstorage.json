@@ -9,6 +9,7 @@
     "ezrstorage:storage_box",
     "ezrstorage:search_box",
     "ezrstorage:access_terminal",
-    "ezrstorage:condensed_storage_box"
+    "ezrstorage:condensed_storage_box",
+    "ezrstorage:input_port"
   ]
 }

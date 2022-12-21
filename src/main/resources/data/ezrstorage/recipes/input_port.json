@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "HQH",
+    "PBP",
+    "PHP"
+  ],
+  "key": {
+    "H": {
+      "tag": "c:hoppers"
+    },
+    "Q": {
+      "tag": "c:quartz_blocks"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "B": {
+      "item": "ezrstorage:blank_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:input_port"
+  }
+}
