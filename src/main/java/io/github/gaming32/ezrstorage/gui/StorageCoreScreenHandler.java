@@ -59,8 +59,18 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     }
 
     @Override
+    public void sendContentUpdates() {
+        super.sendContentUpdates();
+        sync();
+    }
+
+    @Override
     public void syncState() {
         super.syncState();
+        sync();
+    }
+
+    private void sync() {
         if (syncHandler instanceof HasServerPlayerOuterClass playerSyncHandler) {
             syncToClient(playerSyncHandler.getPlayer());
         }
