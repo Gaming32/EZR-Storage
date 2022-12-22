@@ -12,6 +12,7 @@
     "ezrstorage:condensed_storage_box",
     "ezrstorage:input_port",
     "ezrstorage:ejection_port",
-    "ezrstorage:crafting_box"
+    "ezrstorage:crafting_box",
+    "ezrstorage:extraction_port"
   ]
 }

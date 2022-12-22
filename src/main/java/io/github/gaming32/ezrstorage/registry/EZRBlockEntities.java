@@ -54,6 +54,14 @@ public class EZRBlockEntities {
         "ejection_port"
     );
 
+    public static final BlockEntityType<ExtractionPortBlockEntity> EXTRACTION_PORT = EZRReg.registerBlockEntityType(
+        FabricBlockEntityTypeBuilder.create(
+            ExtractionPortBlockEntity::new,
+            EZRBlocks.EXTRACTION_PORT.getLeft()
+        ).build(),
+        "extraction_port"
+    );
+
     public static void registerBlockEntities() {
     }
 }

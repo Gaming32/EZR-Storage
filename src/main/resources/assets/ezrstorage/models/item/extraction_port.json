@@ -1,5 +1,5 @@
 {
-    "parent": "ezrstorage:block/extract_port",
+    "parent": "ezrstorage:block/extraction_port",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

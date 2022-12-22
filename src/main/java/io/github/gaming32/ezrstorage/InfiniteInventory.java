@@ -1,12 +1,14 @@
 package io.github.gaming32.ezrstorage;
 
 import com.google.common.collect.Iterators;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     private final Runnable markDirty;
     private SortType sortType = SortType.COUNT_DOWN;
     private long maxCount;
+    private int robinIndex = 0;
 
     public InfiniteInventory() {
         this(() -> {});
@@ -78,6 +81,8 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         return null;
     }
 
+    @NotNull
+    @Contract("_ -> param1")
     public ItemStack moveFrom(ItemStack stack) {
         if (stack.isEmpty()) return stack;
         final long toMove = Math.min(maxCount - getCount(), stack.getCount());
@@ -114,6 +119,31 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
     public ItemStack extractStack(ItemStack stack) {
         return extract(new InfiniteItemStack(stack), stack.getCount());
+    }
+
+    public ItemStack getMatchingStack(int size, ExtractListMode mode, Inventory extractList) {
+        if (robinIndex >= items.size()) robinIndex = 0;
+
+        if (items.isEmpty()) return ItemStack.EMPTY;
+        if (mode == ExtractListMode.IGNORE) {
+            return extract(items.get(0), size);
+        }
+
+        for (int i = 0; i < extractList.size(); i++) {
+            final ItemStack checkStack = extractList.getStack(i);
+            if (checkStack.isEmpty()) continue;
+            final InfiniteItemStack.Contents check = new InfiniteItemStack.Contents(checkStack);
+
+            for (final InfiniteItemStack item : items) {
+                if (item.getContents().equals(check)) {
+                    if (mode == ExtractListMode.BLACKLIST) continue;
+                } else {
+                    if (mode == ExtractListMode.WHITELIST) continue;
+                }
+                return extract(item, size);
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     public void reSort() {
@@ -212,6 +242,25 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         }
 
         public SortType rotate() {
+            return values()[(ordinal() + 1) % values().length];
+        }
+    }
+
+    public enum ExtractListMode implements StringIdentifiable {
+        IGNORE("ignore"), WHITELIST("whitelist"), BLACKLIST("blacklist");
+
+        public final String id;
+
+        ExtractListMode(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public String asString() {
+            return id;
+        }
+
+        public ExtractListMode rotate() {
             return values()[(ordinal() + 1) % values().length];
         }
     }

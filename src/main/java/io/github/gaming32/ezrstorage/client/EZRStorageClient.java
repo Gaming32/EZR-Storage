@@ -2,6 +2,7 @@ package io.github.gaming32.ezrstorage.client;
 
 import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
+import io.github.gaming32.ezrstorage.client.gui.ExtractionPortScreen;
 import io.github.gaming32.ezrstorage.client.gui.StorageCoreScreen;
 import io.github.gaming32.ezrstorage.client.gui.StorageCoreScreenWithCrafting;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
@@ -26,6 +27,7 @@ public class EZRStorageClient implements ClientModInitializer {
     public void onInitializeClient() {
         HandledScreens.register(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, StorageCoreScreen::new);
         HandledScreens.register(EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING, StorageCoreScreenWithCrafting::new);
+        HandledScreens.register(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, ExtractionPortScreen::new);
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> EZRStorage.clientTicks++);
         ClientTickEvents.END_CLIENT_TICK.register(client -> EZRStorage.clientTicks++);

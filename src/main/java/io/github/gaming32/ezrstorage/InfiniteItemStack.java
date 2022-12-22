@@ -105,7 +105,7 @@ public final class InfiniteItemStack {
     public ItemStack extract(int n) {
         if (isEmpty()) return ItemStack.EMPTY;
         if (n > count) n = (int)count;
-        //noinspection DataFlowIssue
+        assert contents.item != null;
         if (n > contents.item.getMaxCount()) n = contents.item.getMaxCount();
         count -= n;
         final ItemStack stack = new ItemStack(contents.item, n);

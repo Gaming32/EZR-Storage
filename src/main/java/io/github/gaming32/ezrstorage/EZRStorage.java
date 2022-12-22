@@ -1,6 +1,7 @@
 package io.github.gaming32.ezrstorage;
 
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
+import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
 import io.github.gaming32.ezrstorage.registry.EZRBlocks;
@@ -37,6 +38,12 @@ public class EZRStorage implements ModInitializer {
         Registry.SCREEN_HANDLER,
         EZRReg.id("storage_core_with_crafting"),
         new ScreenHandlerType<>(StorageCoreScreenHandlerWithCrafting::new)
+    );
+
+    public static final ScreenHandlerType<ExtractionPortScreenHandler> EXTRACTION_PORT_SCREEN_HANDLER = Registry.register(
+        Registry.SCREEN_HANDLER,
+        EZRReg.id("extraction_port"),
+        new ScreenHandlerType<>(ExtractionPortScreenHandler::new)
     );
 
     public static final ItemGroup EZR_GROUP = FabricItemGroupBuilder.build(

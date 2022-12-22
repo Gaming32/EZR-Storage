@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "ezrstorage:input_port",
-    "ezrstorage:ejection_port"
+    "ezrstorage:ejection_port",
+    "ezrstorage:extraction_port"
   ]
 }

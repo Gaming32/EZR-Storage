@@ -30,6 +30,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
             final ItemStack stack = inventory;
             if (!stack.isEmpty()) {
                 inventory = core.getInventory().moveFrom(stack);
+                markDirty();
             }
         });
     }
@@ -51,6 +52,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
+        markDirty();
         return slot == 0 ? inventory.split(amount) : ItemStack.EMPTY;
     }
 
@@ -61,6 +63,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
         }
         final ItemStack stack = inventory;
         inventory = ItemStack.EMPTY;
+        markDirty();
         return stack;
     }
 
@@ -68,6 +71,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
     public void setStack(int slot, ItemStack stack) {
         if (slot != 0) return;
         inventory = stack;
+        markDirty();
     }
 
     @Override
@@ -78,6 +82,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
     @Override
     public void clear() {
         inventory = ItemStack.EMPTY;
+        markDirty();
     }
 
     @Override
