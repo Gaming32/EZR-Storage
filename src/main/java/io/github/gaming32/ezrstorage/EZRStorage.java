@@ -1,6 +1,7 @@
 package io.github.gaming32.ezrstorage;
 
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
+import io.github.gaming32.ezrstorage.compat.create.CreateCompat;
 import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
@@ -12,6 +13,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -78,6 +80,10 @@ public class EZRStorage implements ModInitializer {
             final SlotActionType mode = buf.readEnumConstant(SlotActionType.class);
             ((StorageCoreScreenHandler)player.currentScreenHandler).customSlotClick(index, mode);
         });
+
+        if (FabricLoader.getInstance().isModLoaded("create")) {
+            CreateCompat.init();
+        }
     }
 
     private static void registerGlobalReceiver(Identifier packet, ServerPlayNetworking.PlayChannelHandler packetHandler) {

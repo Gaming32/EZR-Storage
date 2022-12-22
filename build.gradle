@@ -11,6 +11,17 @@ repositories {
     maven {
         url = "https://jitpack.io"
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -21,6 +32,8 @@ dependencies {
 
     include implementation("com.github.LlamaLad7:MixinExtras:0.1.1")
     annotationProcessor "com.github.LlamaLad7:MixinExtras:0.1.1"
+
+    modCompileOnly "maven.modrinth:create-fabric:0.5.0g-792"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"

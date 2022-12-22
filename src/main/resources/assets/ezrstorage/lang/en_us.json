@@ -43,5 +43,11 @@
   "tag.c.wood_sticks": "Sticks",
   "tag.c.wooden_chests": "Wooden Chests",
   "tag.c.wooden_rods": "Wooden Rods",
-  "tag.c.workbench": "Crafting Tables"
+  "tag.c.workbench": "Crafting Tables",
+  "create.generic.unit.items": "Items",
+  "ezrstorage.display_source.ezrstorage": "Storage Core",
+  "create.display_source.ezrstorage.unique": "Unique Items",
+  "create.display_source.ezrstorage.total": "Total Items",
+  "create.display_source.ezrstorage.max": "Max Items",
+  "create.display_source.ezrstorage.remaining": "Remaining Items"
 }
