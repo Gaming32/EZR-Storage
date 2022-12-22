@@ -6,12 +6,18 @@
   "description": "A fabric/quilt port of EZ Storage 2 to 1.18.2 and above",
   "authors": [
     "Gaming32",
-    "Quizzly_ (Artist)",
-    "stygigoth"
+    "Quizzly_ (Artist)"
+  ],
+  "contributors": [
+    "stygigoth",
+    "Nebulae (LOLCAT translation)"
   ],
   "contact": {
-    "repo": "https://github.com/stygigoth/EZR-Storage"
+    "homepage": "https://modrinth.com/mod/ezrstorage",
+    "issues": "https://github.com/Gaming32/EZR-Storage/issues",
+    "sources": "https://github.com/Gaming32/EZR-Storage"
   },
+  "icon": "assets/ezrstorage/icon.png",
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
