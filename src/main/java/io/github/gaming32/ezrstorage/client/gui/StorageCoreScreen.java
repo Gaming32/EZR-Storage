@@ -46,6 +46,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     private TextFieldWidget searchField;
     private ButtonWidget sortTypeSelector;
+    protected ButtonWidget craftClearButton;
 
     public StorageCoreScreen(StorageCoreScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -72,13 +73,20 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             button -> client.interactionManager.clickButton(handler.syncId, 0)
         ));
         sortTypeSelector.visible = false;
+
+        //noinspection DataFlowIssue
+        addDrawableChild(craftClearButton = new BlueButtonWidget(
+            x + 20, y + 100, 14, 14, Text.of("x"),
+            button -> client.interactionManager.clickButton(handler.syncId, 1)
+        ));
+        craftClearButton.visible = false;
     }
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, BACKGROUND);
+        RenderSystem.setShaderTexture(0, getBackground());
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
 
         sortTypeSelector.visible = handler.getModifications().contains(ModificationBoxBlock.Type.SORTING);
@@ -135,7 +143,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         infiniteItemRenderer.zOffset = 100f;
 
         outer:
-        for (int row = 0, y = 18; row < 6; row++, y += 18) {
+        for (int row = 0, y = 18; row < rowsVisible(); row++, y += 18) {
             for (int column = 0, x = 8; column < 9; column++, x += 18) {
                 final int index = scrollRow * 9 + row * 9 + column;
                 if (index >= getSlotCount()) {
@@ -347,7 +355,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             final int column = clickedX / 18;
             if (column < 9) {
                 final int row = clickedY / 18;
-                if (row < 6) {
+                if (row < rowsVisible()) {
                     return scrollRow * 9 + row * 9 + column;
                 }
             }
@@ -356,7 +364,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     private void scrollTo(float scroll) {
-        int i = (this.handler.getCoreInventory().getUniqueCount() + 8) / 9 - 6;
+        int i = (this.handler.getCoreInventory().getUniqueCount() + 8) / 9 - rowsVisible();
         int j = (int) (scroll * i + 0.5D);
         if (j < 0) {
             j = 0;
@@ -376,5 +384,13 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     private InfiniteItemStack getSlot(int index) {
         return skipSearch() ? handler.getCoreInventory().getStack(index) : filteredItems.get(index);
+    }
+
+    protected Identifier getBackground() {
+        return BACKGROUND;
+    }
+
+    protected int rowsVisible() {
+        return 6;
     }
 }

@@ -4,6 +4,7 @@ import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
 import io.github.gaming32.ezrstorage.block.StorageBoxBlock;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.MoreCollectors;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
@@ -14,6 +15,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.*;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
@@ -98,7 +100,9 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
 
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
+        return modifications.contains(ModificationBoxBlock.Type.CRAFTING)
+            ? new StorageCoreScreenHandlerWithCrafting(syncId, inv, inventory, modifications, ScreenHandlerContext.create(world, pos))
+            : new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
     }
 
     @Override

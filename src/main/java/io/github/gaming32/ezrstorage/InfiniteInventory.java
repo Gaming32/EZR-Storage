@@ -112,6 +112,10 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         return result;
     }
 
+    public ItemStack extractStack(ItemStack stack) {
+        return extract(new InfiniteItemStack(stack), stack.getCount());
+    }
+
     public void reSort() {
         items.sort(sortType.comparator);
         markDirty();

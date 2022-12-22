@@ -1,7 +1,6 @@
 package io.github.gaming32.ezrstorage.gui;
 
 import io.github.gaming32.ezrstorage.EZRStorage;
-import io.github.gaming32.ezrstorage.HasServerPlayerOuterClass;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.InfiniteItemStack;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
@@ -15,6 +14,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,6 +25,7 @@ import java.util.Set;
 public class StorageCoreScreenHandler extends ScreenHandler {
     private final InfiniteInventory coreInventory;
     private final Set<ModificationBoxBlock.Type> modifications;
+    protected final PlayerEntity player;
 
     public StorageCoreScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, new InfiniteInventory(), EnumSet.noneOf(ModificationBoxBlock.Type.class));
@@ -36,12 +37,23 @@ public class StorageCoreScreenHandler extends ScreenHandler {
         InfiniteInventory coreInventory,
         Set<ModificationBoxBlock.Type> modifications
     ) {
-        super(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, syncId);
+        this(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, syncId, playerInventory, coreInventory, modifications);
+    }
+
+    protected StorageCoreScreenHandler(
+        ScreenHandlerType<?> type,
+        int syncId,
+        PlayerInventory playerInventory,
+        InfiniteInventory coreInventory,
+        Set<ModificationBoxBlock.Type> modifications
+    ) {
+        super(type, syncId);
         this.coreInventory = coreInventory;
         this.modifications = modifications;
+        this.player = playerInventory.player;
 
-        final Inventory inventory = new SimpleInventory(54);
-        for (int row = 0; row < 6; row++) {
+        final Inventory inventory = new SimpleInventory(rowCount() * 9);
+        for (int row = 0; row < rowCount(); row++) {
             for (int column = 0; column < 9; column++) {
                 addSlot(new Slot(inventory, column + row * 9, 8 + column * 18, 18 + row * 18));
             }
@@ -49,12 +61,12 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, 140 + row * 18));
+                addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, playerInventoryY() + row * 18));
             }
         }
 
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(playerInventory, column, 8 + column * 18, 140 + 58));
+            addSlot(new Slot(playerInventory, column, 8 + column * 18, playerInventoryY() + 58));
         }
     }
 
@@ -71,12 +83,12 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     }
 
     private void sync() {
-        if (syncHandler instanceof HasServerPlayerOuterClass playerSyncHandler) {
-            syncToClient(playerSyncHandler.getPlayer());
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            syncToClient(serverPlayer);
         }
     }
 
-    public void syncToClient(ServerPlayerEntity player) {
+    protected void syncToClient(ServerPlayerEntity player) {
         final PacketByteBuf buf = PacketByteBufs.create();
         buf.writeByte(syncId);
         buf.writeNbt(coreInventory.writeNbt());
@@ -100,8 +112,12 @@ public class StorageCoreScreenHandler extends ScreenHandler {
                 yield true;
             }
             case 1 -> {
-                // TODO: implement crafting grid
-                yield true;
+                if (this instanceof StorageCoreScreenHandlerWithCrafting withCrafting) {
+                    withCrafting.clearGrid(player);
+                    coreInventory.reSort();
+                    yield true;
+                }
+                yield false;
             }
             default -> false;
         };
@@ -123,8 +139,11 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (slotIndex >= 54 || slotIndex < 0) {
+        if (slotIndex >= rowCount() * 9 || slotIndex < 0) {
             super.onSlotClick(slotIndex, button, actionType, player);
+            if (actionType == SlotActionType.QUICK_MOVE) {
+                getCoreInventory().reSort();
+            }
         }
     }
 
@@ -138,7 +157,7 @@ public class StorageCoreScreenHandler extends ScreenHandler {
             }
             final ItemStack stack = coreInventory.extractStack(infiniteStack);
             if (actionType == SlotActionType.QUICK_MOVE) {
-                if (!insertItem(stack, 54, 90, true)) {
+                if (!insertItem(stack, rowCount() * 9, rowCount() * 9 + 36, true)) {
                     coreInventory.moveFrom(stack);
                 }
             } else {
@@ -163,5 +182,13 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
     public Set<ModificationBoxBlock.Type> getModifications() {
         return modifications;
+    }
+
+    protected int playerInventoryY() {
+        return 140;
+    }
+
+    protected int rowCount() {
+        return 6;
     }
 }

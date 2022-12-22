@@ -4,8 +4,7 @@
   "package": "io.github.gaming32.ezrstorage.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "MixinPistonBlock",
-    "MixinServerPlayerEntity_1"
+    "MixinPistonBlock"
   ],
   "client": [
   ],

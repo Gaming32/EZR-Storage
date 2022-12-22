@@ -1,3 +1,3 @@
 accessWidener	v1	named
 accessible	method	net/minecraft/client/render/item/ItemRenderer	renderGuiQuad	(Lnet/minecraft/client/render/BufferBuilder;IIIIIIII)V
-accessible	field	net/minecraft/screen/ScreenHandler	syncHandler	Lnet/minecraft/screen/ScreenHandlerSyncHandler;
+accessible	method	net/minecraft/screen/CraftingScreenHandler	updateResult	(Lnet/minecraft/screen/ScreenHandler;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/inventory/CraftingInventory;Lnet/minecraft/inventory/CraftingResultInventory;)V

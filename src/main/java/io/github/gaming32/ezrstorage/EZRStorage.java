@@ -2,10 +2,12 @@ package io.github.gaming32.ezrstorage;
 
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
 import io.github.gaming32.ezrstorage.registry.EZRBlocks;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemGroup;
@@ -31,10 +33,19 @@ public class EZRStorage implements ModInitializer {
         new ScreenHandlerType<>(StorageCoreScreenHandler::new)
     );
 
+    public static final ScreenHandlerType<StorageCoreScreenHandler> STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING = Registry.register(
+        Registry.SCREEN_HANDLER,
+        EZRReg.id("storage_core_with_crafting"),
+        new ScreenHandlerType<>(StorageCoreScreenHandlerWithCrafting::new)
+    );
+
     public static final ItemGroup EZR_GROUP = FabricItemGroupBuilder.build(
         new Identifier(MOD_ID, MOD_ID),
         () -> new ItemStack(EZRBlocks.STORAGE_CORE.getLeft())
     );
+
+    public static long serverTicks;
+    public static long clientTicks;
 
     @Override
     public void onInitialize() {
@@ -43,6 +54,9 @@ public class EZRStorage implements ModInitializer {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) ->
             !(blockEntity instanceof StorageCoreBlockEntity core) || core.getInventory().getCount() <= 0L
         );
+
+        ServerTickEvents.START_SERVER_TICK.register(server -> serverTicks++);
+        ServerTickEvents.END_SERVER_TICK.register(server -> serverTicks++);
 
         registerGlobalReceiver(CUSTOM_SLOT_CLICK, (server, player, handler, buf, responseSender) -> {
             final int syncId = buf.readUnsignedByte();
