@@ -28,5 +28,8 @@
   "sortType.modAz.desc": "Goez up mod naem then by down thign numbr wen sam naem mod.",
   "sortType.modZa": "Go Down Mod Naem?",
   "sortType.modZa.desc": "Goez down mod naem, then by up thign numbr wen sam naem mod.",
-  "item.ezrstorage.key": "Thign That Open Loc on Bocks Thign"
+  "item.ezrstorage.key": "Unloc Thign"
+  "extractListType.ignore": "Forget",
+  "extractListType.whitelist": "Let In!",
+  "extractListType.blacklist": "Don't Let In!",
 }
