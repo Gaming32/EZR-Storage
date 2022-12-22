@@ -5,8 +5,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
@@ -90,5 +93,19 @@ public class InputPortBlockEntity extends RefBlockEntity implements SidedInvento
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         return false;
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        Inventories.writeNbt(nbt, DefaultedList.copyOf(ItemStack.EMPTY, inventory));
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        final DefaultedList<ItemStack> list = DefaultedList.ofSize(1, ItemStack.EMPTY);
+        Inventories.readNbt(nbt, list);
+        inventory = list.get(0);
     }
 }
