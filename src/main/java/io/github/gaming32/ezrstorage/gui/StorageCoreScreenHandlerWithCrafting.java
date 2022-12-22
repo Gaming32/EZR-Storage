@@ -161,6 +161,12 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
         return 4;
     }
 
+    @Override
+    public void close(PlayerEntity player) {
+        super.close(player);
+        clearGrid(player);
+    }
+
     public void clearGrid(PlayerEntity player) {
         for (int i = 0; i < 9; i++) {
             final ItemStack stack = craftingGrid.getStack(i);
