@@ -5,10 +5,14 @@ import com.simibubi.create.content.logistics.block.display.source.NumericSingleL
 import com.simibubi.create.content.logistics.block.display.target.DisplayTargetStats;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.LangNumberFormat;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
+
+import java.util.Arrays;
 
 public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
     @Override
@@ -30,7 +34,8 @@ public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
             case 2 -> inventory.getMaxCount();
             default -> inventory.getMaxCount() - inventory.getCount();
         };
-        return Lang.number(amount)
+        return Lang.builder("ezrstorage")
+            .text(LangNumberFormat.format(amount))
             .space()
             .translate("generic.unit.items")
             .component();
@@ -46,8 +51,11 @@ public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
         super.initConfigurationWidgets(context, builder, isFirstLine);
         if (isFirstLine) return;
         builder.addSelectionScrollInput(0, 95, (selectionScrollInput, label) -> {
-            selectionScrollInput.forOptions(Lang.translatedOptions(
-                "display_source.ezrstorage", "total", "unique", "max", "remaining"
+            selectionScrollInput.forOptions(Arrays.asList(
+                new TranslatableText("ezrstorage.display_source.ezrstorage.total"),
+                new TranslatableText("ezrstorage.display_source.ezrstorage.unique"),
+                new TranslatableText("ezrstorage.display_source.ezrstorage.max"),
+                new TranslatableText("ezrstorage.display_source.ezrstorage.remaining")
             ));
         }, "Type");
     }
