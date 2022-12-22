@@ -38,5 +38,6 @@
   "tag.c.quartz_blocks": "Quartz Blocks",
   "tag.c.wood_sticks": "Sticks",
   "tag.c.wooden_chests": "Wooden Chests",
-  "tag.c.wooden_rods": "Wooden Rods"
+  "tag.c.wooden_rods": "Wooden Rods",
+  "tag.c.workbench": "Crafting Tables"
 }

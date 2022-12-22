@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "EDE",
+    "CBC",
+    "CEC"
+  ],
+  "key": {
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "D": {
+      "tag": "c:diamonds"
+    },
+    "C": {
+      "tag": "c:workbench"
+    },
+    "B": {
+      "item": "ezrstorage:blank_box"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:crafting_box"
+  }
+}

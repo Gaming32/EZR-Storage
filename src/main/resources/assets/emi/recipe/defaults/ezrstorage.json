@@ -11,6 +11,7 @@
     "ezrstorage:access_terminal",
     "ezrstorage:condensed_storage_box",
     "ezrstorage:input_port",
-    "ezrstorage:ejection_port"
+    "ezrstorage:ejection_port",
+    "ezrstorage:crafting_box"
   ]
 }
