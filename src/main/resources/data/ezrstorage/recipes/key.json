@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXI",
+    "XX "
+  ],
+  "key": {
+    "X": {
+      "tag": "c:gold_nuggets"
+    },
+    "I": {
+      "tag": "c:gold_ingots"
+    }
+  },
+  "result": {
+    "item": "ezrstorage:key"
+  }
+}

@@ -13,6 +13,7 @@
     "ezrstorage:input_port",
     "ezrstorage:ejection_port",
     "ezrstorage:crafting_box",
-    "ezrstorage:extraction_port"
+    "ezrstorage:extraction_port",
+    "ezrstorage:key"
   ]
 }

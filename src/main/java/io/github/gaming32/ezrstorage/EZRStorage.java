@@ -10,7 +10,9 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -51,12 +53,16 @@ public class EZRStorage implements ModInitializer {
         () -> new ItemStack(EZRBlocks.STORAGE_CORE.getLeft())
     );
 
+    public static final Item KEY_ITEM = new Item(new FabricItemSettings().group(EZR_GROUP));
+
     public static long serverTicks;
     public static long clientTicks;
 
     @Override
     public void onInitialize() {
         EZRReg.registerMod();
+
+        Registry.register(Registry.ITEM, EZRReg.id("key"), KEY_ITEM);
 
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) ->
             !(blockEntity instanceof StorageCoreBlockEntity core) || core.getInventory().getCount() <= 0L
