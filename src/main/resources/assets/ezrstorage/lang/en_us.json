@@ -49,5 +49,6 @@
   "ezrstorage.display_source.ezrstorage.unique": "Unique Items",
   "ezrstorage.display_source.ezrstorage.total": "Total Items",
   "ezrstorage.display_source.ezrstorage.max": "Max Items",
-  "ezrstorage.display_source.ezrstorage.remaining": "Remaining Items"
+  "ezrstorage.display_source.ezrstorage.remaining": "Remaining Items",
+  "ezrstorage.emiSync": "EMI Search Sync"
 }

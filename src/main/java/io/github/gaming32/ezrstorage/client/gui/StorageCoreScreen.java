@@ -1,6 +1,9 @@
 package io.github.gaming32.ezrstorage.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.screen.EmiScreenManager;
+import dev.emi.emi.search.EmiSearch;
 import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.InfiniteItemStack;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
@@ -9,8 +12,10 @@ import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -24,10 +29,14 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     public static final DecimalFormat COUNT_FORMATTER = new DecimalFormat("#,###");
@@ -46,12 +55,16 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     private TextFieldWidget searchField;
     private ButtonWidget sortTypeSelector;
     protected ButtonWidget craftClearButton;
+    protected CheckboxWidget emiSyncButton;
 
     public StorageCoreScreen(StorageCoreScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         backgroundWidth = 195;
         backgroundHeight = 222;
         handler.setUpdateNotification(() -> {
+            if (emiSyncButton.isChecked()) {
+                searchField.setText(EmiScreenManager.search.getText());
+            }
             if (!skipSearch()) {
                 updateFilteredItems();
             }
@@ -84,6 +97,17 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             button -> client.interactionManager.clickButton(handler.syncId, 1)
         ));
         craftClearButton.visible = false;
+
+        final boolean supportEmiSync = FabricLoader.getInstance().isModLoaded("emi");
+        addDrawableChild(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
+            searchField.x + searchField.getWidth(), searchField.y - 2,
+            searchField.getHeight() + 2, searchField.getHeight() + 2,
+            new TranslatableText("ezrstorage.emiSync"), false, this
+        ));
+        emiSyncButton.visible = supportEmiSync;
+        if (supportEmiSync) {
+            searchField.setWidth(searchField.getWidth() - searchField.getHeight());
+        }
     }
 
     @Override
@@ -237,12 +261,29 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             searchField.setText(newText);
         }
 
+        if (emiSyncButton.isChecked()) {
+            EmiScreenManager.search.setText(searchField.getText());
+            return;
+        }
+
         updateFilteredItems();
         scrollTo(currentScroll = 0f);
     }
 
     private void updateFilteredItems() {
         filteredItems.clear();
+
+        if (emiSyncButton.isChecked()) {
+            final Set<Identifier> allowedItems = EmiSearch.stacks.stream()
+                .flatMap(s -> s.getEmiStacks().stream())
+                .map(EmiStack::getId)
+                .collect(Collectors.toSet());
+            StreamSupport.stream(handler.getCoreInventory().spliterator(), false)
+                .filter(s -> allowedItems.contains(Registry.ITEM.getId(s.getItem())))
+                .forEach(filteredItems::add);
+            return;
+        }
+
         final String searchText = searchField.getText().toLowerCase();
 
         if (searchText.isEmpty()) return;
@@ -378,9 +419,10 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     private boolean skipSearch() {
-        return
-            searchField.getText().isEmpty() ||
-            !handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
+        if (!handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH)) {
+            return true;
+        }
+        return searchField.getText().isEmpty();
     }
 
     private int getSlotCount() {
