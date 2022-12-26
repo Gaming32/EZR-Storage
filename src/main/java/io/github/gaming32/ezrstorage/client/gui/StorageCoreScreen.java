@@ -431,6 +431,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     private InfiniteItemStack getSlot(int index) {
+        if (index < 0 || index >= getSlotCount()) return InfiniteItemStack.EMPTY;
         return skipSearch() ? handler.getCoreInventory().getStack(index) : filteredItems.get(index);
     }
 
