@@ -16,14 +16,17 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandler {
     private final CraftingInventory craftingGrid = new CraftingInventory(this, 3, 3);
     private final CraftingResultInventory craftingResult = new CraftingResultInventory();
+    private final Slot craftingResultSlot;
     private final ScreenHandlerContext context;
-    private final PlayerEntity player;
+    private final List<Slot> craftingSlots = new ArrayList<>();
     private long lastTick = -1;
 
     public StorageCoreScreenHandlerWithCrafting(int syncId, PlayerInventory playerInventory) {
@@ -33,16 +36,28 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     public StorageCoreScreenHandlerWithCrafting(int syncId, PlayerInventory playerInventory, InfiniteInventory coreInventory, Set<ModificationBoxBlock.Type> modifications, ScreenHandlerContext context) {
         super(EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING, syncId, playerInventory, coreInventory, modifications);
         this.context = context;
-        this.player = playerInventory.player;
 
-        addSlot(new CraftingResultSlot(playerInventory.player, craftingGrid, craftingResult, 0, 116, 117));
+        addSlot(craftingResultSlot = new CraftingResultSlot(playerInventory.player, craftingGrid, craftingResult, 0, 116, 117));
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
-                addSlot(new Slot(craftingGrid, column + row * 3, 44 + column * 18, 99 + row * 18));
+                addCraftingSlot(new Slot(craftingGrid, column + row * 3, 44 + column * 18, 99 + row * 18));
             }
         }
         onContentChanged(craftingGrid);
+    }
+
+    private void addCraftingSlot(Slot slot) {
+        super.addInputSource(slot);
+        craftingSlots.add(slot);
+    }
+
+    public List<Slot> getCraftingSlots() {
+        return craftingSlots;
+    }
+
+    public Slot getCraftingResultSlot() {
+        return craftingResultSlot;
     }
 
     @Override

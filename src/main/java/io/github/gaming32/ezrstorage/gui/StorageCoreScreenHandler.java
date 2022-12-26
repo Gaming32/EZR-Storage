@@ -19,12 +19,15 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 public class StorageCoreScreenHandler extends ScreenHandler {
     private final InfiniteInventory coreInventory;
     private final Set<ModificationBoxBlock.Type> modifications;
+    private final List<Slot> inputSources = new ArrayList<>();
     protected final PlayerEntity player;
     private Runnable updateNotification;
 
@@ -62,13 +65,22 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, playerInventoryY() + row * 18));
+                addInputSource(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, playerInventoryY() + row * 18));
             }
         }
 
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(playerInventory, column, 8 + column * 18, playerInventoryY() + 58));
+            addInputSource(new Slot(playerInventory, column, 8 + column * 18, playerInventoryY() + 58));
         }
+    }
+
+    protected final void addInputSource(Slot slot) {
+        inputSources.add(slot);
+        addSlot(slot);
+    }
+
+    public List<Slot> getInputSources() {
+        return inputSources;
     }
 
     @Override

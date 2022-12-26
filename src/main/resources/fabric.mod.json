@@ -29,6 +29,9 @@
     ],
     "preLaunch": [
       "io.github.gaming32.ezrstorage.EZRStoragePreLaunch"
+    ],
+    "emi": [
+      "io.github.gaming32.ezrstorage.compat.emi.EmiCompat"
     ]
   },
   "mixins": [

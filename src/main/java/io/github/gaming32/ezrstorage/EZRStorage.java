@@ -38,7 +38,7 @@ public class EZRStorage implements ModInitializer {
         new ScreenHandlerType<>(StorageCoreScreenHandler::new)
     );
 
-    public static final ScreenHandlerType<StorageCoreScreenHandler> STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING = Registry.register(
+    public static final ScreenHandlerType<StorageCoreScreenHandlerWithCrafting> STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING = Registry.register(
         Registry.SCREEN_HANDLER,
         EZRReg.id("storage_core_with_crafting"),
         new ScreenHandlerType<>(StorageCoreScreenHandlerWithCrafting::new)

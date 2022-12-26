@@ -102,7 +102,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         addDrawableChild(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
             searchField.x + searchField.getWidth(), searchField.y - 2,
             searchField.getHeight() + 2, searchField.getHeight() + 2,
-            new TranslatableText("ezrstorage.emiSync"), false, this
+            new TranslatableText("ezrstorage.emiSync"), supportEmiSync, this
         ));
         emiSyncButton.visible = supportEmiSync;
         if (supportEmiSync) {
