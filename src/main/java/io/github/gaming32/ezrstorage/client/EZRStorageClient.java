@@ -41,6 +41,9 @@ public class EZRStorageClient implements ClientModInitializer {
                     screenHandler.getCoreInventory().readNbt(inventoryData);
                     screenHandler.getModifications().clear();
                     screenHandler.getModifications().addAll(modifications);
+                    if (screenHandler.getUpdateNotification() != null) {
+                        screenHandler.getUpdateNotification().run();
+                    }
                 }
             }
         });

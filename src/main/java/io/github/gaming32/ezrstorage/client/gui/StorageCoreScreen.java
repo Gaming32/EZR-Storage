@@ -51,6 +51,11 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         super(handler, inventory, title);
         backgroundWidth = 195;
         backgroundHeight = 222;
+        handler.setUpdateNotification(() -> {
+            if (!skipSearch()) {
+                updateFilteredItems();
+            }
+        });
     }
 
     @Override

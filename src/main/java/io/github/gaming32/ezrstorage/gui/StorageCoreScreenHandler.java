@@ -26,6 +26,7 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     private final InfiniteInventory coreInventory;
     private final Set<ModificationBoxBlock.Type> modifications;
     protected final PlayerEntity player;
+    private Runnable updateNotification;
 
     public StorageCoreScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, new InfiniteInventory(), EnumSet.noneOf(ModificationBoxBlock.Type.class));
@@ -190,5 +191,13 @@ public class StorageCoreScreenHandler extends ScreenHandler {
 
     protected int rowCount() {
         return 6;
+    }
+
+    public Runnable getUpdateNotification() {
+        return updateNotification;
+    }
+
+    public void setUpdateNotification(Runnable updateNotification) {
+        this.updateNotification = updateNotification;
     }
 }
