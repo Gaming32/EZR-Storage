@@ -14,7 +14,8 @@ public class StorageCoreStackProvider<T extends StorageCoreScreen> implements Em
             screen.getStack(x, y)
                 .filter(s -> !s.isEmpty())
                 .map(s -> (EmiStack)new ItemEmiStack(s.toItemStack(), s.getCount()))
-                .orElse(EmptyEmiStack.EMPTY) // Empty means check the next stack provider, which is correct for the non-special slots
+                .orElse(EmptyEmiStack.EMPTY), // Empty means check the next stack provider, which is correct for the non-special slots
+            null, false
         );
     }
 }
