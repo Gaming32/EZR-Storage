@@ -24,7 +24,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -210,7 +209,8 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             searchBoxChange(null);
             return true;
         }
-        if (keyCode >= GLFW.GLFW_KEY_A && keyCode <= GLFW.GLFW_KEY_Z) return false;
+        assert client != null;
+        if (client.options.inventoryKey.matchesKey(keyCode, scanCode)) return false;
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 

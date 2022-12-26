@@ -4,13 +4,13 @@ import com.simibubi.create.content.logistics.block.display.DisplayLinkContext;
 import com.simibubi.create.content.logistics.block.display.source.NumericSingleLineDisplaySource;
 import com.simibubi.create.content.logistics.block.display.target.DisplayTargetStats;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
+import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.foundation.utility.LangNumberFormat;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.TranslatableText;
 
 import java.util.Arrays;
 
@@ -52,10 +52,10 @@ public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
         if (isFirstLine) return;
         builder.addSelectionScrollInput(0, 95, (selectionScrollInput, label) -> {
             selectionScrollInput.forOptions(Arrays.asList(
-                new TranslatableText("ezrstorage.display_source.ezrstorage.total"),
-                new TranslatableText("ezrstorage.display_source.ezrstorage.unique"),
-                new TranslatableText("ezrstorage.display_source.ezrstorage.max"),
-                new TranslatableText("ezrstorage.display_source.ezrstorage.remaining")
+                Components.translatable("ezrstorage.display_source.ezrstorage.total"),
+                Components.translatable("ezrstorage.display_source.ezrstorage.unique"),
+                Components.translatable("ezrstorage.display_source.ezrstorage.max"),
+                Components.translatable("ezrstorage.display_source.ezrstorage.remaining")
             ));
         }, "Type");
     }
