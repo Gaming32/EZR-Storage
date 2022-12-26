@@ -34,6 +34,7 @@ import net.minecraft.util.registry.Registry;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -439,5 +440,13 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     protected int rowsVisible() {
         return 6;
+    }
+
+    public Optional<InfiniteItemStack> getStack(int x, int y) {
+        final Integer slot = getSlotAt(x, y);
+        if (slot == null) {
+            return Optional.empty();
+        }
+        return Optional.of(getSlot(slot));
     }
 }
