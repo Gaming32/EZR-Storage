@@ -23,10 +23,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -103,7 +101,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         addDrawableChild(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
             searchField.x + searchField.getWidth(), searchField.y - 2,
             searchField.getHeight() + 2, searchField.getHeight() + 2,
-            new TranslatableText("ezrstorage.emiSync"), supportEmiSync, this
+            Text.translatable("ezrstorage.emiSync"), supportEmiSync, this
         ));
         emiSyncButton.visible = supportEmiSync;
         if (supportEmiSync) {
@@ -152,12 +150,12 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         }
 
         if (sortTypeSelector.visible) {
-            sortTypeSelector.setMessage(new TranslatableText("sortType." + handler.getCoreInventory().getSortType().asString()));
-            textRenderer.draw(matrices, new TranslatableText("sortType"), -100, 6, 0x404040);
+            sortTypeSelector.setMessage(Text.translatable("sortType." + handler.getCoreInventory().getSortType().asString()));
+            textRenderer.draw(matrices, Text.translatable("sortType"), -100, 6, 0x404040);
             matrices.push();
             matrices.scale(0.7f, 0.7f, 0.7f);
             int drawY = (int)(42 / 0.7);
-            for (final OrderedText line : textRenderer.wrapLines(new TranslatableText("sortType." + handler.getCoreInventory().getSortType().asString() + ".desc"), (int)(96 / 0.7))) {
+            for (final OrderedText line : textRenderer.wrapLines(Text.translatable("sortType." + handler.getCoreInventory().getSortType().asString() + ".desc"), (int)(96 / 0.7))) {
                 textRenderer.draw(matrices, line, (int)(-100 / 0.7), drawY, 0x404040);
                 drawY += 9;
             }
@@ -223,7 +221,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         assert client != null;
         final List<Text> lines = getTooltipFromItem(stack);
         lines.add(
-            new LiteralText("Count: " + COUNT_FORMATTER.format(infiniteStack.getCount()))
+            Text.literal("Count: " + COUNT_FORMATTER.format(infiniteStack.getCount()))
                 .styled(style -> style.withItalic(true))
         );
         renderTooltip(matrices, lines, x, y);
@@ -296,7 +294,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
                 continue;
             }
             for (final Text line : getTooltipFromItem(stack.toItemStack())) {
-                if (line.asString().toLowerCase().contains(searchText)) {
+                if (line.getString().toLowerCase().contains(searchText)) {
                     filteredItems.add(stack);
                     continue stackIter;
                 }
