@@ -3,7 +3,7 @@
   "id": "ezrstorage",
   "version": "${version}",
   "name": "EZR Storage",
-  "description": "A fabric/quilt port of EZ Storage 2 to 1.18.2 and above",
+  "description": "A fabric/quilt port of EZ Storage 2 to 1.19.2 and above",
   "authors": [
     "Gaming32",
     "Quizzly_ (Artist)"
@@ -41,7 +41,7 @@
   "depends": {
     "fabricloader": ">=0.14.10",
     "fabric": "*",
-    "minecraft": "1.19.2"
+    "minecraft": ">=1.19.2"
   },
   "suggests": {
     "create": "*"
