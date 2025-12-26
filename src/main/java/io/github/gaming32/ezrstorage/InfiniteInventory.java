@@ -126,7 +126,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
         if (items.isEmpty()) return ItemStack.EMPTY;
         if (mode == ExtractListMode.IGNORE) {
-            return extract(items.getFirst(), size);
+            return extract(items.get(0), size);
         }
 
         for (int i = 0; i < extractList.getContainerSize(); i++) {

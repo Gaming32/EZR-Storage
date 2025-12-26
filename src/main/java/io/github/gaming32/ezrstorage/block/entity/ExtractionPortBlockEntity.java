@@ -156,7 +156,7 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuPro
 
         final NonNullList<ItemStack> list = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, list);
-        buffer = list.getFirst();
+        buffer = list.get(0);
 
         extractList.fromTag(nbt.getList("ExtractList", Tag.TAG_COMPOUND));
     }

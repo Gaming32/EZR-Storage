@@ -112,6 +112,6 @@ public class InputPortBlockEntity extends RefBlockEntity implements WorldlyConta
         super.load(nbt);
         final NonNullList<ItemStack> list = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, list);
-        inventory = list.getFirst();
+        inventory = list.get(0);
     }
 }
