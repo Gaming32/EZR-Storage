@@ -1,6 +1,11 @@
 package io.github.gaming32.ezrstorage.registry;
 
-import io.github.gaming32.ezrstorage.block.entity.*;
+import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
+import io.github.gaming32.ezrstorage.block.entity.EjectionPortBlockEntity;
+import io.github.gaming32.ezrstorage.block.entity.ExtractionPortBlockEntity;
+import io.github.gaming32.ezrstorage.block.entity.InputPortBlockEntity;
+import io.github.gaming32.ezrstorage.block.entity.RefBlockEntity;
+import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 

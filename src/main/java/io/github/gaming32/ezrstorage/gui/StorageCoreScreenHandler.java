@@ -5,24 +5,23 @@ import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.InfiniteItemStack;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
 import io.github.gaming32.ezrstorage.util.MoreBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class StorageCoreScreenHandler extends AbstractContainerMenu {
     private final InfiniteInventory coreInventory;
@@ -65,7 +64,12 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addInputSource(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, playerInventoryY() + row * 18));
+                addInputSource(new Slot(
+                    playerInventory,
+                    column + row * 9 + 9,
+                    8 + column * 18,
+                    playerInventoryY() + row * 18
+                ));
             }
         }
 

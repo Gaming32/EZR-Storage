@@ -1,15 +1,14 @@
 package io.github.gaming32.ezrstorage;
 
+import java.util.Objects;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public final class InfiniteItemStack {
     public record Contents(@Nullable Item item, @NotNull CompoundTag nbt) {
@@ -104,7 +103,7 @@ public final class InfiniteItemStack {
 
     public ItemStack extract(int n) {
         if (isEmpty()) return ItemStack.EMPTY;
-        if (n > count) n = (int)count;
+        if (n > count) n = (int) count;
         assert contents.item != null;
         if (n > contents.item.getMaxStackSize()) n = contents.item.getMaxStackSize();
         count -= n;
@@ -118,7 +117,7 @@ public final class InfiniteItemStack {
     public ItemStack toItemStack() {
         if (isEmpty()) return ItemStack.EMPTY;
         assert contents.item != null;
-        final ItemStack result = new ItemStack(contents.item, (int)Math.min(count, contents.item.getMaxStackSize()));
+        final ItemStack result = new ItemStack(contents.item, (int) Math.min(count, contents.item.getMaxStackSize()));
         if (!contents.nbt.isEmpty()) {
             result.setTag(contents.nbt);
         }
@@ -129,7 +128,7 @@ public final class InfiniteItemStack {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InfiniteItemStack that = (InfiniteItemStack)o;
+        InfiniteItemStack that = (InfiniteItemStack) o;
         return count == that.count && contents.equals(that.contents);
     }
 

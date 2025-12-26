@@ -1,9 +1,8 @@
 package io.github.gaming32.ezrstorage.util;
 
-import net.minecraft.network.FriendlyByteBuf;
-
 import java.util.EnumSet;
 import java.util.Set;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class MoreBufs {
     public static <T extends Enum<T>> void writeEnumSet(FriendlyByteBuf buf, Set<T> set) {

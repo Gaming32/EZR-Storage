@@ -3,15 +3,15 @@ package io.github.gaming32.ezrstorage.gui;
 import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.InfiniteInventory.ExtractListMode;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class ExtractionPortScreenHandler extends AbstractContainerMenu {
@@ -23,7 +23,12 @@ public class ExtractionPortScreenHandler extends AbstractContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(9), ContainerLevelAccess.NULL);
     }
 
-    public ExtractionPortScreenHandler(int syncId, Inventory playerInventory, SimpleContainer extractList, ContainerLevelAccess context) {
+    public ExtractionPortScreenHandler(
+        int syncId,
+        Inventory playerInventory,
+        SimpleContainer extractList,
+        ContainerLevelAccess context
+    ) {
         super(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, syncId);
         this.extractList = extractList;
         this.context = context;

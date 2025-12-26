@@ -1,15 +1,21 @@
 package io.github.gaming32.ezrstorage.registry;
 
 import io.github.gaming32.ezrstorage.EZRStorage;
-import io.github.gaming32.ezrstorage.block.*;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import io.github.gaming32.ezrstorage.block.AccessTerminalBlock;
+import io.github.gaming32.ezrstorage.block.BoxBlock;
+import io.github.gaming32.ezrstorage.block.EjectionPortBlock;
+import io.github.gaming32.ezrstorage.block.ExtractionPortBlock;
+import io.github.gaming32.ezrstorage.block.InputPortBlock;
+import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
+import io.github.gaming32.ezrstorage.block.StorageBoxBlock;
+import io.github.gaming32.ezrstorage.block.StorageCoreBlock;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.util.Tuple;
 
 public class EZRBlocks {
     private static final BlockBehaviour.Properties METAL = BlockBehaviour.Properties.of(Material.METAL)
@@ -22,7 +28,9 @@ public class EZRBlocks {
     private static final Item.Properties ITEM_SETTINGS = new Item.Properties().tab(EZRStorage.EZR_GROUP);
 
     public static final Tuple<Block, Item> STORAGE_CORE = EZRReg.registerBlock(
-        new StorageCoreBlock(FabricBlockSettings.copyOf(METAL).explosionResistance(6080f)), "storage_core", ITEM_SETTINGS
+        new StorageCoreBlock(FabricBlockSettings.copyOf(METAL).explosionResistance(6080f)),
+        "storage_core",
+        ITEM_SETTINGS
     );
     public static final Tuple<Block, Item> ACCESS_TERMINAL = EZRReg.registerBlock(
         new AccessTerminalBlock(METAL), "access_terminal", ITEM_SETTINGS

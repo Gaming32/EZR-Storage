@@ -1,20 +1,19 @@
 package io.github.gaming32.ezrstorage;
 
 import com.google.common.collect.Iterators;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.core.Registry;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     private final List<InfiniteItemStack> items = new ArrayList<>();
@@ -24,7 +23,8 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     private int robinIndex = 0;
 
     public InfiniteInventory() {
-        this(() -> {});
+        this(() -> {
+        });
     }
 
     public InfiniteInventory(Runnable markDirty) {
@@ -50,7 +50,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         items.clear();
         in.getList("Items", Tag.TAG_COMPOUND)
             .stream()
-            .map(element -> InfiniteItemStack.readNbt((CompoundTag)element))
+            .map(element -> InfiniteItemStack.readNbt((CompoundTag) element))
             .forEach(items::add);
         return this;
     }
@@ -94,7 +94,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
                 items.add(to = new InfiniteItemStack(contents, 0));
             }
             to.setCount(to.getCount() + toMove);
-            stack.setCount((int)(stack.getCount() - toMove));
+            stack.setCount((int) (stack.getCount() - toMove));
             reSort();
         }
         return stack;
@@ -209,9 +209,11 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
     private static final Comparator<InfiniteItemStack> COUNT_UP_BASE = Comparator.comparingLong(InfiniteItemStack::getCount);
     private static final Comparator<InfiniteItemStack> COUNT_DOWN_BASE = COUNT_UP_BASE.reversed();
-    private static final Comparator<InfiniteItemStack> AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getKey(x.getItem()).getPath());
+    private static final Comparator<InfiniteItemStack> AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getKey(x.getItem())
+        .getPath());
     private static final Comparator<InfiniteItemStack> ZA_BASE = AZ_BASE.reversed();
-    private static final Comparator<InfiniteItemStack> MOD_AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getKey(x.getItem()).getNamespace());
+    private static final Comparator<InfiniteItemStack> MOD_AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getKey(x.getItem())
+        .getNamespace());
     private static final Comparator<InfiniteItemStack> MOD_ZA_BASE = MOD_AZ_BASE.reversed();
 
     public enum SortType implements Comparator<InfiniteItemStack>, StringRepresentable {
@@ -220,8 +222,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         AZ("az", AZ_BASE.thenComparing(COUNT_DOWN_BASE)),
         ZA("za", ZA_BASE.thenComparing(COUNT_UP_BASE)),
         MOD_AZ("modAz", MOD_AZ_BASE.thenComparing(COUNT_DOWN_BASE)),
-        MOD_ZA("modZa", MOD_ZA_BASE.thenComparing(COUNT_UP_BASE))
-        ;
+        MOD_ZA("modZa", MOD_ZA_BASE.thenComparing(COUNT_UP_BASE));
 
         public final String id;
         public final Comparator<InfiniteItemStack> comparator;

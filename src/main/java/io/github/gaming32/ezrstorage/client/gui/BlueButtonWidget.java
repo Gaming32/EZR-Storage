@@ -1,13 +1,12 @@
 package io.github.gaming32.ezrstorage.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.renderer.GameRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -36,7 +35,12 @@ public class BlueButtonWidget extends Button {
         this.renderBg(matrices, minecraftClient, mouseX, mouseY);
         int j = this.active ? 16777215 : 10526880;
         drawCenteredString(
-            matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24
+            matrices,
+            textRenderer,
+            this.getMessage(),
+            this.x + this.width / 2,
+            this.y + (this.height - 8) / 2,
+            j | Mth.ceil(this.alpha * 255.0F) << 24
         );
 
         if (this.isHoveredOrFocused()) {

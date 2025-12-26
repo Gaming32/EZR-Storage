@@ -32,22 +32,25 @@ public class EZRStorageClient implements ClientModInitializer {
         ClientTickEvents.START_CLIENT_TICK.register(client -> EZRStorage.clientTicks++);
         ClientTickEvents.END_CLIENT_TICK.register(client -> EZRStorage.clientTicks++);
 
-        registerGlobalReceiver(EZRStorage.SYNC_INVENTORY, (client, handler, buf, responseSender) -> {
-            final int syncId = buf.readUnsignedByte();
-            if (client.player.containerMenu instanceof StorageCoreScreenHandler screenHandler && screenHandler.containerId
-                                                                                                 == syncId) {
-                final CompoundTag inventoryData = buf.readNbt();
-                final var modifications = MoreBufs.readEnumSet(buf, ModificationBoxBlock.Type.class);
-                if (inventoryData != null) {
-                    screenHandler.getCoreInventory().readNbt(inventoryData);
-                    screenHandler.getModifications().clear();
-                    screenHandler.getModifications().addAll(modifications);
-                    if (screenHandler.getUpdateNotification() != null) {
-                        screenHandler.getUpdateNotification().run();
+        registerGlobalReceiver(
+            EZRStorage.SYNC_INVENTORY, (client, handler, buf, responseSender) -> {
+                final int syncId = buf.readUnsignedByte();
+                if (client.player.containerMenu instanceof StorageCoreScreenHandler screenHandler
+                    && screenHandler.containerId
+                       == syncId) {
+                    final CompoundTag inventoryData = buf.readNbt();
+                    final var modifications = MoreBufs.readEnumSet(buf, ModificationBoxBlock.Type.class);
+                    if (inventoryData != null) {
+                        screenHandler.getCoreInventory().readNbt(inventoryData);
+                        screenHandler.getModifications().clear();
+                        screenHandler.getModifications().addAll(modifications);
+                        if (screenHandler.getUpdateNotification() != null) {
+                            screenHandler.getUpdateNotification().run();
+                        }
                     }
                 }
             }
-        });
+        );
 
         if (!ResourceManagerHelper.registerBuiltinResourcePack(
             EZRReg.id("classic_resources"),
@@ -59,28 +62,33 @@ public class EZRStorageClient implements ClientModInitializer {
         }
     }
 
-    private static void registerGlobalReceiver(ResourceLocation packet, ClientPlayNetworking.PlayChannelHandler packetHandler) {
-        ClientPlayNetworking.registerGlobalReceiver(packet, (client, handler, buf, responseSender) -> {
-            if (client.isSameThread()) {
-                packetHandler.receive(client, handler, buf, responseSender);
-            } else {
-                final FriendlyByteBuf newBuf = new FriendlyByteBuf(buf.copy());
-                client.executeIfPossible(() -> {
-                    if (handler.getConnection().isConnected()) {
-                        try {
-                            packetHandler.receive(client, handler, newBuf, responseSender);
-                        } catch (Exception e) {
-                            if (handler.shouldPropagateHandlingExceptions()) {
-                                throw e;
-                            }
+    private static void registerGlobalReceiver(
+        ResourceLocation packet,
+        ClientPlayNetworking.PlayChannelHandler packetHandler
+    ) {
+        ClientPlayNetworking.registerGlobalReceiver(
+            packet, (client, handler, buf, responseSender) -> {
+                if (client.isSameThread()) {
+                    packetHandler.receive(client, handler, buf, responseSender);
+                } else {
+                    final FriendlyByteBuf newBuf = new FriendlyByteBuf(buf.copy());
+                    client.executeIfPossible(() -> {
+                        if (handler.getConnection().isConnected()) {
+                            try {
+                                packetHandler.receive(client, handler, newBuf, responseSender);
+                            } catch (Exception e) {
+                                if (handler.shouldPropagateHandlingExceptions()) {
+                                    throw e;
+                                }
 
-                            EZRStorage.LOGGER.error("Failed to handle packet " + packet + ", suppressing error", e);
+                                EZRStorage.LOGGER.error("Failed to handle packet " + packet + ", suppressing error", e);
+                            }
+                        } else {
+                            EZRStorage.LOGGER.debug("Ignoring packet due to disconnection: {}", packet);
                         }
-                    } else {
-                        EZRStorage.LOGGER.debug("Ignoring packet due to disconnection: {}", packet);
-                    }
-                });
+                    });
+                }
             }
-        });
+        );
     }
 }

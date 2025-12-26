@@ -1,8 +1,8 @@
 package io.github.gaming32.ezrstorage.util;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.core.BlockPos;
 
 public class NbtUtil {
     public static IntArrayTag blockPosToNbt(BlockPos pos) {

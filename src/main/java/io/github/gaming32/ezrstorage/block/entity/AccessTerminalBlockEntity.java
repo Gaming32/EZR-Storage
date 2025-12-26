@@ -2,15 +2,15 @@ package io.github.gaming32.ezrstorage.block.entity;
 
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.network.chat.Component;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class AccessTerminalBlockEntity extends RefBlockEntity implements MenuProvider {
     public AccessTerminalBlockEntity(BlockPos pos, BlockState state) {

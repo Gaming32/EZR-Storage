@@ -1,15 +1,15 @@
 package io.github.gaming32.ezrstorage.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ExtractionPortScreen extends AbstractContainerScreen<ExtractionPortScreenHandler> {
     private static final ResourceLocation BACKGROUND = EZRReg.id("textures/gui/extract_port.png");
@@ -46,7 +46,8 @@ public class ExtractionPortScreen extends AbstractContainerScreen<ExtractionPort
         RenderSystem.setShaderTexture(0, BACKGROUND);
         blit(matrices, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 
-        listModeButton.setMessage(Component.translatable("extractListType." + menu.getExtractListMode().getSerializedName()));
+        listModeButton.setMessage(Component.translatable(
+            "extractListType." + menu.getExtractListMode().getSerializedName()));
     }
 
     @Override

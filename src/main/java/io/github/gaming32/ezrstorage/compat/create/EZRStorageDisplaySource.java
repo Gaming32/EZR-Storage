@@ -10,9 +10,8 @@ import com.simibubi.create.foundation.utility.LangNumberFormat;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
-import net.minecraft.network.chat.MutableComponent;
-
 import java.util.Arrays;
+import net.minecraft.network.chat.MutableComponent;
 
 public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
     @Override

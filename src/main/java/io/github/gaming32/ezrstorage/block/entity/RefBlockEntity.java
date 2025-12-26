@@ -2,18 +2,17 @@ package io.github.gaming32.ezrstorage.block.entity;
 
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.LevelAccessor;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public class RefBlockEntity extends BlockEntity {
     private BlockPos core;
@@ -48,7 +47,10 @@ public class RefBlockEntity extends BlockEntity {
     }
 
     public Optional<StorageCoreBlockEntity> getCoreBlockEntity() {
-        return core == null || level == null ? Optional.empty() : level.getBlockEntity(core, EZRBlockEntities.STORAGE_CORE);
+        return core == null || level == null ? Optional.empty() : level.getBlockEntity(
+            core,
+            EZRBlockEntities.STORAGE_CORE
+        );
     }
 
     public void setCore(BlockPos core) {

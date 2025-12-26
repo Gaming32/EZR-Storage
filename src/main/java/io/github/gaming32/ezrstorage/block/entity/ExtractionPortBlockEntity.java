@@ -3,24 +3,24 @@ package io.github.gaming32.ezrstorage.block.entity;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.network.chat.Component;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuProvider, WorldlyContainer {
@@ -59,10 +59,12 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuPro
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return new ExtractionPortScreenHandler(syncId, inv, extractList, ContainerLevelAccess.create(
+        return new ExtractionPortScreenHandler(
+            syncId, inv, extractList, ContainerLevelAccess.create(
             level,
             worldPosition
-        ));
+        )
+        );
     }
 
     public InfiniteInventory.ExtractListMode getListMode() {

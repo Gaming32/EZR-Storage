@@ -2,10 +2,10 @@ package io.github.gaming32.ezrstorage.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.components.Checkbox;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -14,7 +14,15 @@ public class ResizableTooltipOnlyCheckboxWidget extends Checkbox {
 
     private final Screen screen;
 
-    public ResizableTooltipOnlyCheckboxWidget(int x, int y, int width, int height, Component message, boolean checked, Screen screen) {
+    public ResizableTooltipOnlyCheckboxWidget(
+        int x,
+        int y,
+        int width,
+        int height,
+        Component message,
+        boolean checked,
+        Screen screen
+    ) {
         super(x, y, width, height, message, checked);
         this.screen = screen;
     }
@@ -37,7 +45,17 @@ public class ResizableTooltipOnlyCheckboxWidget extends Checkbox {
         final float xScale = width / 20f;
         final float yScale = width / 20f;
         matrices.scale(xScale, yScale, 1f);
-        blit(matrices, (int)(x / xScale), (int)(y / yScale), isFocused() ? 20.0F : 0.0F, selected() ? 20.0F : 0.0F, 20, 20, 64, 64);
+        blit(
+            matrices,
+            (int) (x / xScale),
+            (int) (y / yScale),
+            isFocused() ? 20.0F : 0.0F,
+            selected() ? 20.0F : 0.0F,
+            20,
+            20,
+            64,
+            64
+        );
         matrices.popPose();
         renderBg(matrices, minecraftClient, mouseX, mouseY);
         if (isHoveredOrFocused()) {

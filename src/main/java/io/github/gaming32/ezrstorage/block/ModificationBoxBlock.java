@@ -1,7 +1,6 @@
 package io.github.gaming32.ezrstorage.block;
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class ModificationBoxBlock extends BoxBlock {
     public final Type type;

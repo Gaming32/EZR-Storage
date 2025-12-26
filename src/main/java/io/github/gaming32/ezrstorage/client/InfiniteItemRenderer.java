@@ -1,17 +1,17 @@
 package io.github.gaming32.ezrstorage.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.player.LocalPlayer;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.LightTexture;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class InfiniteItemRenderer extends ItemRenderer {
@@ -32,7 +32,7 @@ public class InfiniteItemRenderer extends ItemRenderer {
                 if (count > 999999999999L) {
                     string = String.valueOf((int) Math.floor(count / 1000000000000.0)) + 'T';
                 } else if (count > 9999999999L) {
-                    string = "." + (int)Math.floor(count / 1000000000000.0) + 'T';
+                    string = "." + (int) Math.floor(count / 1000000000000.0) + 'T';
                 } else if (count > 999999999L) {
                     string = String.valueOf((int) Math.floor(count / 1000000000.0)) + 'B';
                 } else if (count > 99999999L) {
@@ -47,11 +47,12 @@ public class InfiniteItemRenderer extends ItemRenderer {
 
                 matrixStack.translate(0.0, 0.0, this.blitOffset + 200.0F);
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+                MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance()
+                    .getBuilder());
                 renderer.drawInBatch(
                     string,
-                    (float)(x + 19 - 2 - renderer.width(string) * 0.5) * 2,
-                    (float)(y + 6 + 3 + 3.5) * 2,
+                    (float) (x + 19 - 2 - renderer.width(string) * 0.5) * 2,
+                    (float) (y + 6 + 3 + 3.5) * 2,
                     16777215,
                     true,
                     matrixStack.last().pose(),
@@ -81,7 +82,8 @@ public class InfiniteItemRenderer extends ItemRenderer {
             LocalPlayer clientPlayerEntity = Minecraft.getInstance().player;
             float f = clientPlayerEntity == null
                 ? 0.0F
-                : clientPlayerEntity.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
+                : clientPlayerEntity.getCooldowns()
+                .getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
             if (f > 0.0F) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.disableTexture();
@@ -89,7 +91,17 @@ public class InfiniteItemRenderer extends ItemRenderer {
                 RenderSystem.defaultBlendFunc();
                 Tesselator tessellator2 = Tesselator.getInstance();
                 BufferBuilder bufferBuilder2 = tessellator2.getBuilder();
-                this.fillRect(bufferBuilder2, x, y + Mth.floor(16.0F * (1.0F - f)), 16, Mth.ceil(16.0F * f), 255, 255, 255, 127);
+                this.fillRect(
+                    bufferBuilder2,
+                    x,
+                    y + Mth.floor(16.0F * (1.0F - f)),
+                    16,
+                    Mth.ceil(16.0F * f),
+                    255,
+                    255,
+                    255,
+                    127
+                );
                 RenderSystem.enableTexture();
                 RenderSystem.enableDepthTest();
             }

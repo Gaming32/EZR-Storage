@@ -14,14 +14,14 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,41 +73,48 @@ public class EZRStorage implements ModInitializer {
         ServerTickEvents.START_SERVER_TICK.register(server -> serverTicks++);
         ServerTickEvents.END_SERVER_TICK.register(server -> serverTicks++);
 
-        registerGlobalReceiver(CUSTOM_SLOT_CLICK, (server, player, handler, buf, responseSender) -> {
-            final int syncId = buf.readUnsignedByte();
-            if (player.containerMenu.containerId != syncId) return;
-            final int index = buf.readVarInt();
-            final ClickType mode = buf.readEnum(ClickType.class);
-            ((StorageCoreScreenHandler)player.containerMenu).customSlotClick(index, mode);
-        });
+        registerGlobalReceiver(
+            CUSTOM_SLOT_CLICK, (server, player, handler, buf, responseSender) -> {
+                final int syncId = buf.readUnsignedByte();
+                if (player.containerMenu.containerId != syncId) return;
+                final int index = buf.readVarInt();
+                final ClickType mode = buf.readEnum(ClickType.class);
+                ((StorageCoreScreenHandler) player.containerMenu).customSlotClick(index, mode);
+            }
+        );
 
         if (FabricLoader.getInstance().isModLoaded("create")) {
             CreateCompat.init();
         }
     }
 
-    private static void registerGlobalReceiver(ResourceLocation packet, ServerPlayNetworking.PlayChannelHandler packetHandler) {
-        ServerPlayNetworking.registerGlobalReceiver(packet, (server, player, handler, buf, responseSender) -> {
-            if (server.isSameThread()) {
-                packetHandler.receive(server, player, handler, buf, responseSender);
-            } else {
-                final FriendlyByteBuf newBuf = new FriendlyByteBuf(buf.copy());
-                server.executeIfPossible(() -> {
-                    if (handler.getConnection().isConnected()) {
-                        try {
-                            packetHandler.receive(server, player, handler, newBuf, responseSender);
-                        } catch (Exception e) {
-                            if (handler.shouldPropagateHandlingExceptions()) {
-                                throw e;
-                            }
+    private static void registerGlobalReceiver(
+        ResourceLocation packet,
+        ServerPlayNetworking.PlayChannelHandler packetHandler
+    ) {
+        ServerPlayNetworking.registerGlobalReceiver(
+            packet, (server, player, handler, buf, responseSender) -> {
+                if (server.isSameThread()) {
+                    packetHandler.receive(server, player, handler, buf, responseSender);
+                } else {
+                    final FriendlyByteBuf newBuf = new FriendlyByteBuf(buf.copy());
+                    server.executeIfPossible(() -> {
+                        if (handler.getConnection().isConnected()) {
+                            try {
+                                packetHandler.receive(server, player, handler, newBuf, responseSender);
+                            } catch (Exception e) {
+                                if (handler.shouldPropagateHandlingExceptions()) {
+                                    throw e;
+                                }
 
-                            EZRStorage.LOGGER.error("Failed to handle packet " + packet + ", suppressing error", e);
+                                EZRStorage.LOGGER.error("Failed to handle packet " + packet + ", suppressing error", e);
+                            }
+                        } else {
+                            EZRStorage.LOGGER.debug("Ignoring packet due to disconnection: {}", packet);
                         }
-                    } else {
-                        EZRStorage.LOGGER.debug("Ignoring packet due to disconnection: {}", packet);
-                    }
-                });
+                    });
+                }
             }
-        });
+        );
     }
 }

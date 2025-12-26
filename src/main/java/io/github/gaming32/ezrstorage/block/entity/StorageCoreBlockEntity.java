@@ -8,29 +8,27 @@ import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.MoreCollectors;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.nbt.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.network.chat.Component;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
 
 public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider {
     private final Set<BlockPos> network = new HashSet<>();
@@ -105,10 +103,12 @@ public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider 
     @Override
     public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return modifications.contains(ModificationBoxBlock.Type.CRAFTING)
-            ? new StorageCoreScreenHandlerWithCrafting(syncId, inv, inventory, modifications, ContainerLevelAccess.create(
+            ? new StorageCoreScreenHandlerWithCrafting(
+            syncId, inv, inventory, modifications, ContainerLevelAccess.create(
             level,
             worldPosition
-        ))
+        )
+        )
             : new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
     }
 
@@ -148,7 +148,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider 
         network.clear();
         nbt.getList("Network", Tag.TAG_INT_ARRAY)
             .stream()
-            .map(element -> NbtUtil.nbtToBlockPos((IntArrayTag)element))
+            .map(element -> NbtUtil.nbtToBlockPos((IntArrayTag) element))
             .forEach(network::add);
     }
 }

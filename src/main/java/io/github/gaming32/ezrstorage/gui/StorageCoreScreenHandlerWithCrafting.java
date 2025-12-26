@@ -3,23 +3,22 @@ package io.github.gaming32.ezrstorage.gui;
 import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.ResultContainer;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.ResultSlot;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.server.level.ServerPlayer;
-
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.inventory.ResultSlot;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandler {
     private final CraftingContainer craftingGrid = new CraftingContainer(this, 3, 3);
@@ -30,11 +29,29 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     private long lastTick = -1;
 
     public StorageCoreScreenHandlerWithCrafting(int syncId, Inventory playerInventory) {
-        this(syncId, playerInventory, new InfiniteInventory(), EnumSet.noneOf(ModificationBoxBlock.Type.class), ContainerLevelAccess.NULL);
+        this(
+            syncId,
+            playerInventory,
+            new InfiniteInventory(),
+            EnumSet.noneOf(ModificationBoxBlock.Type.class),
+            ContainerLevelAccess.NULL
+        );
     }
 
-    public StorageCoreScreenHandlerWithCrafting(int syncId, Inventory playerInventory, InfiniteInventory coreInventory, Set<ModificationBoxBlock.Type> modifications, ContainerLevelAccess context) {
-        super(EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING, syncId, playerInventory, coreInventory, modifications);
+    public StorageCoreScreenHandlerWithCrafting(
+        int syncId,
+        Inventory playerInventory,
+        InfiniteInventory coreInventory,
+        Set<ModificationBoxBlock.Type> modifications,
+        ContainerLevelAccess context
+    ) {
+        super(
+            EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING,
+            syncId,
+            playerInventory,
+            coreInventory,
+            modifications
+        );
         this.context = context;
 
         addSlot(craftingResultSlot = new ResultSlot(playerInventory.player, craftingGrid, craftingResult, 0, 116, 117));
@@ -62,7 +79,13 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
 
     @Override
     public void slotsChanged(Container inventory) {
-        context.execute((world, pos) -> CraftingMenu.slotChangedCraftingGrid(this, world, player, craftingGrid, craftingResult));
+        context.execute((world, pos) -> CraftingMenu.slotChangedCraftingGrid(
+            this,
+            world,
+            player,
+            craftingGrid,
+            craftingResult
+        ));
     }
 
     @Override
