@@ -43,6 +43,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     private static final Identifier SEARCH_BAR = new Identifier("textures/gui/container/creative_inventory/tab_item_search.png");
     private static final Identifier SORT_GUI = EZRReg.id("textures/gui/custom_gui.png");
     private static final Identifier BACKGROUND = EZRReg.id("textures/gui/storage_scroll_gui.png");
+    private static final boolean SUPPORT_EMI_SYNC = FabricLoader.getInstance().isModLoaded("emi");
 
     private boolean scrolling;
     private float currentScroll = 0f;
@@ -97,14 +98,13 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         ));
         craftClearButton.visible = false;
 
-        final boolean supportEmiSync = FabricLoader.getInstance().isModLoaded("emi");
         addDrawableChild(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
             searchField.x + searchField.getWidth(), searchField.y - 2,
             searchField.getHeight() + 2, searchField.getHeight() + 2,
-            Text.translatable("ezrstorage.emiSync"), supportEmiSync, this
+            Text.translatable("ezrstorage.emiSync"), SUPPORT_EMI_SYNC, this
         ));
-        emiSyncButton.visible = supportEmiSync;
-        if (supportEmiSync) {
+        emiSyncButton.visible = SUPPORT_EMI_SYNC;
+        if (SUPPORT_EMI_SYNC) {
             searchField.setWidth(searchField.getWidth() - searchField.getHeight());
         }
     }
@@ -123,6 +123,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         }
 
         searchField.visible = handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
+        emiSyncButton.visible = searchField.visible && SUPPORT_EMI_SYNC;
         if (searchField.visible) {
             RenderSystem.setShaderTexture(0, SEARCH_BAR);
             drawTexture(matrices, x + 8, y + 4, 80, 4, searchField.getInnerWidth() + 10, 12);

@@ -1,7 +1,7 @@
 package io.github.gaming32.ezrstorage.compat.create;
 
-import com.simibubi.create.content.logistics.block.display.AllDisplayBehaviours;
-import com.simibubi.create.content.logistics.block.display.DisplayBehaviour;
+import com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours;
+import com.simibubi.create.content.redstone.displayLink.DisplayBehaviour;
 import io.github.gaming32.ezrstorage.registry.EZRBlocks;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
 

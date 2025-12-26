@@ -1,8 +1,8 @@
 package io.github.gaming32.ezrstorage.compat.create;
 
-import com.simibubi.create.content.logistics.block.display.DisplayLinkContext;
-import com.simibubi.create.content.logistics.block.display.source.NumericSingleLineDisplaySource;
-import com.simibubi.create.content.logistics.block.display.target.DisplayTargetStats;
+import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
+import com.simibubi.create.content.redstone.displayLink.source.NumericSingleLineDisplaySource;
+import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.Lang;
@@ -18,10 +18,10 @@ public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
     @Override
     protected MutableText provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
         final StorageCoreBlockEntity core;
-        if (context.getSourceTE() instanceof AccessTerminalBlockEntity accessTerminal) {
+        if (context.getSourceBlockEntity() instanceof AccessTerminalBlockEntity accessTerminal) {
             core = accessTerminal.getCoreBlockEntity().orElse(null);
-        } else if (context.getSourceTE() instanceof StorageCoreBlockEntity) {
-            core = (StorageCoreBlockEntity)context.getSourceTE();
+        } else if (context.getSourceBlockEntity() instanceof StorageCoreBlockEntity) {
+            core = (StorageCoreBlockEntity) context.getSourceBlockEntity();
         } else {
             core = null;
         }
@@ -47,17 +47,21 @@ public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
     }
 
     @Override
-    public void initConfigurationWidgets(DisplayLinkContext context, ModularGuiLineBuilder builder, boolean isFirstLine) {
+    public void initConfigurationWidgets(
+        DisplayLinkContext context,
+        ModularGuiLineBuilder builder,
+        boolean isFirstLine
+    ) {
         super.initConfigurationWidgets(context, builder, isFirstLine);
         if (isFirstLine) return;
-        builder.addSelectionScrollInput(0, 95, (selectionScrollInput, label) -> {
-            selectionScrollInput.forOptions(Arrays.asList(
+        builder.addSelectionScrollInput(
+            0, 95, (selectionScrollInput, label) -> selectionScrollInput.forOptions(Arrays.asList(
                 Components.translatable("ezrstorage.display_source.ezrstorage.total"),
                 Components.translatable("ezrstorage.display_source.ezrstorage.unique"),
                 Components.translatable("ezrstorage.display_source.ezrstorage.max"),
                 Components.translatable("ezrstorage.display_source.ezrstorage.remaining")
-            ));
-        }, "Type");
+            )), "Type"
+        );
     }
 
     @Override

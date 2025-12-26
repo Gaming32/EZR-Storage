@@ -1,15 +1,14 @@
 package io.github.gaming32.ezrstorage.compat.emi;
 
-import dev.emi.emi.api.EmiRecipeHandler;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
+import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
+import java.util.List;
 import net.minecraft.screen.slot.Slot;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class StorageCoreRecipeHandler implements EmiRecipeHandler<StorageCoreScreenHandlerWithCrafting> {
+public class StorageCoreRecipeHandler implements StandardRecipeHandler<StorageCoreScreenHandlerWithCrafting> {
     @Override
     public List<Slot> getInputSources(StorageCoreScreenHandlerWithCrafting handler) {
         return handler.getInputSources();

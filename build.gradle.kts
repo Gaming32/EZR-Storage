@@ -17,7 +17,7 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
-    maven("https://maven.terraformersmc.com/") {
+    maven("https://maven.terraformersmc.com/releases") {
         name = "TerraformersMC"
     }
 }
@@ -26,16 +26,13 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:1.19.2")
     mappings("net.fabricmc:yarn:1.19.2+build.28:v2")
-    modImplementation("net.fabricmc:fabric-loader:0.14.10")
+    modImplementation("net.fabricmc:fabric-loader:0.18.4")
 
-    include(implementation("com.github.LlamaLad7:MixinExtras:0.1.1")!!)
-    annotationProcessor("com.github.LlamaLad7:MixinExtras:0.1.1")
-
-    modCompileOnly("maven.modrinth:create-fabric:0.5.0.g-796+1.19.2")
-    modCompileOnly("dev.emi:emi:0.5.3+1.19.2")
+    modCompileOnly("maven.modrinth:create-fabric:0.5.1-i-build.1630+mc1.19.2")
+    modCompileOnly("dev.emi:emi-fabric:1.1.22+1.19.2")
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.72.0+1.19.2")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.77.0+1.19.2")
 }
 
 loom {
