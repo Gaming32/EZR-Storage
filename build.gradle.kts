@@ -2,7 +2,7 @@ plugins {
     id("fabric-loom") version "1.14.10"
 }
 
-version = "1.1.1"
+version = "1.1.2"
 group = "io.github.gaming32"
 
 repositories {
@@ -55,23 +55,17 @@ tasks.processResources {
     }
 }
 
-val targetJavaVersion = 21
 tasks.withType<JavaCompile> {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
     // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
     // If Javadoc is generated, this must be specified in that task too.
     options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
+    options.release = 17
 }
 
 java {
-    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
     // If you remove this line, sources will not be generated.
