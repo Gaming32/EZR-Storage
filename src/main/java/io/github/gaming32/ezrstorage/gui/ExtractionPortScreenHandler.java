@@ -13,9 +13,9 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class ExtractionPortScreenHandler extends AbstractContainerMenu {
-    private final SimpleContainer extractList;
     private final DataSlot listModeProperty;
     private final ContainerLevelAccess context;
 
@@ -30,7 +30,6 @@ public class ExtractionPortScreenHandler extends AbstractContainerMenu {
         ContainerLevelAccess context
     ) {
         super(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, syncId);
-        this.extractList = extractList;
         this.context = context;
 
         for (int i = 0; i < 9; i++) {
@@ -90,7 +89,7 @@ public class ExtractionPortScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = slots.get(index);
         //noinspection ConstantValue

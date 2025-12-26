@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExtractionPortBlock extends BoxBlock {
@@ -28,7 +29,7 @@ public class ExtractionPortBlock extends BoxBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public InteractionResult use(
+    public @NotNull InteractionResult use(
         BlockState state,
         Level world,
         BlockPos pos,

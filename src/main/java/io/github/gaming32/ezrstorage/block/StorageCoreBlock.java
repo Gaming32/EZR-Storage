@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class StorageCoreBlock extends BaseEntityBlock {
@@ -66,7 +67,7 @@ public class StorageCoreBlock extends BaseEntityBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public InteractionResult use(
+    public @NotNull InteractionResult use(
         BlockState state,
         Level world,
         BlockPos pos,
@@ -84,7 +85,7 @@ public class StorageCoreBlock extends BaseEntityBlock {
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 }

@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class InputPortBlockEntity extends RefBlockEntity implements WorldlyContainer {
@@ -46,18 +47,18 @@ public class InputPortBlockEntity extends RefBlockEntity implements WorldlyConta
     }
 
     @Override
-    public ItemStack getItem(int slot) {
+    public @NotNull ItemStack getItem(int slot) {
         return slot == 0 ? inventory : ItemStack.EMPTY;
     }
 
     @Override
-    public ItemStack removeItem(int slot, int amount) {
+    public @NotNull ItemStack removeItem(int slot, int amount) {
         setChanged();
         return slot == 0 ? inventory.split(amount) : ItemStack.EMPTY;
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int slot) {
+    public @NotNull ItemStack removeItemNoUpdate(int slot) {
         if (slot != 0) {
             return ItemStack.EMPTY;
         }
@@ -86,7 +87,7 @@ public class InputPortBlockEntity extends RefBlockEntity implements WorldlyConta
     }
 
     @Override
-    public int[] getSlotsForFace(Direction side) {
+    public int @NotNull [] getSlotsForFace(Direction side) {
         return new int[] {0};
     }
 
@@ -111,6 +112,6 @@ public class InputPortBlockEntity extends RefBlockEntity implements WorldlyConta
         super.load(nbt);
         final NonNullList<ItemStack> list = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, list);
-        inventory = list.get(0);
+        inventory = list.getFirst();
     }
 }

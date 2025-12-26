@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 
 public class AccessTerminalBlock extends BoxBlock {
     public AccessTerminalBlock(Properties settings) {
@@ -24,7 +25,7 @@ public class AccessTerminalBlock extends BoxBlock {
 
     @Override
     @SuppressWarnings("deprecation")
-    public InteractionResult use(
+    public @NotNull InteractionResult use(
         BlockState state,
         Level world,
         BlockPos pos,

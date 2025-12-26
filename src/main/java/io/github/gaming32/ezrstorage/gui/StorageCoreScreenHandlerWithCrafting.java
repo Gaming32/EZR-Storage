@@ -19,6 +19,7 @@ import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandler {
     private final CraftingContainer craftingGrid = new CraftingContainer(this, 3, 3);
@@ -89,7 +90,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(Player player, int index) {
         if (player instanceof ServerPlayer serverPlayer) {
             if (EZRStorage.serverTicks == lastTick) {
                 syncToClient(serverPlayer);

@@ -107,7 +107,7 @@ public class EZRStorage implements ModInitializer {
                                     throw e;
                                 }
 
-                                EZRStorage.LOGGER.error("Failed to handle packet " + packet + ", suppressing error", e);
+                                EZRStorage.LOGGER.error("Failed to handle packet {}, suppressing error", packet, e);
                             }
                         } else {
                             EZRStorage.LOGGER.debug("Ignoring packet due to disconnection: {}", packet);

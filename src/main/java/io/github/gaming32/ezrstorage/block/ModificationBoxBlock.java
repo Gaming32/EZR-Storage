@@ -1,6 +1,7 @@
 package io.github.gaming32.ezrstorage.block;
 
 import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.NotNull;
 
 public class ModificationBoxBlock extends BoxBlock {
     public final Type type;
@@ -23,7 +24,7 @@ public class ModificationBoxBlock extends BoxBlock {
         }
 
         @Override
-        public String getSerializedName() {
+        public @NotNull String getSerializedName() {
             return id;
         }
     }

@@ -35,6 +35,7 @@ public class EZRStorageClient implements ClientModInitializer {
         registerGlobalReceiver(
             EZRStorage.SYNC_INVENTORY, (client, handler, buf, responseSender) -> {
                 final int syncId = buf.readUnsignedByte();
+                assert client.player != null;
                 if (client.player.containerMenu instanceof StorageCoreScreenHandler screenHandler
                     && screenHandler.containerId
                        == syncId) {
@@ -81,7 +82,7 @@ public class EZRStorageClient implements ClientModInitializer {
                                     throw e;
                                 }
 
-                                EZRStorage.LOGGER.error("Failed to handle packet " + packet + ", suppressing error", e);
+                                EZRStorage.LOGGER.error("Failed to handle packet {}, suppressing error", packet, e);
                             }
                         } else {
                             EZRStorage.LOGGER.debug("Ignoring packet due to disconnection: {}", packet);

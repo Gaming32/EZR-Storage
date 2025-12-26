@@ -28,6 +28,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider {
@@ -113,7 +114,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider 
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 

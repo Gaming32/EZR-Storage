@@ -22,6 +22,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class StorageCoreScreenHandler extends AbstractContainerMenu {
     private final InfiniteInventory coreInventory;
@@ -141,7 +142,7 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(Player player, int index) {
         final Slot slot = slots.get(index);
         //noinspection ConstantValue
         if (slot != null && slot.hasItem()) {

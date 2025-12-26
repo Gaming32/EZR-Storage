@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 public class AccessTerminalBlockEntity extends RefBlockEntity implements MenuProvider {
     public AccessTerminalBlockEntity(BlockPos pos, BlockState state) {
@@ -29,7 +30,7 @@ public class AccessTerminalBlockEntity extends RefBlockEntity implements MenuPro
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 }

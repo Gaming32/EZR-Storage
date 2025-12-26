@@ -126,7 +126,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
         if (items.isEmpty()) return ItemStack.EMPTY;
         if (mode == ExtractListMode.IGNORE) {
-            return extract(items.get(0), size);
+            return extract(items.getFirst(), size);
         }
 
         for (int i = 0; i < extractList.getContainerSize(); i++) {
@@ -233,7 +233,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         }
 
         @Override
-        public String getSerializedName() {
+        public @NotNull String getSerializedName() {
             return id;
         }
 
@@ -257,7 +257,7 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
         }
 
         @Override
-        public String getSerializedName() {
+        public @NotNull String getSerializedName() {
             return id;
         }
 
