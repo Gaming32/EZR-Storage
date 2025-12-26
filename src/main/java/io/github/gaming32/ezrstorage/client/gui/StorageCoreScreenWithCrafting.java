@@ -2,17 +2,17 @@ package io.github.gaming32.ezrstorage.client.gui;
 
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class StorageCoreScreenWithCrafting extends StorageCoreScreen {
-    private static final Identifier BACKGROUND = EZRReg.id("textures/gui/storage_crafting_gui.png");
+    private static final ResourceLocation BACKGROUND = EZRReg.id("textures/gui/storage_crafting_gui.png");
 
-    public StorageCoreScreenWithCrafting(StorageCoreScreenHandler handler, PlayerInventory inventory, Text title) {
+    public StorageCoreScreenWithCrafting(StorageCoreScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        backgroundWidth = 195;
-        backgroundHeight = 244;
+        imageWidth = 195;
+        imageHeight = 244;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class StorageCoreScreenWithCrafting extends StorageCoreScreen {
     }
 
     @Override
-    protected Identifier getBackground() {
+    protected ResourceLocation getBackground() {
         return BACKGROUND;
     }
 

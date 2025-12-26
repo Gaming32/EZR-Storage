@@ -3,54 +3,54 @@ package io.github.gaming32.ezrstorage.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.GameRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
-public class ExtractionPortScreen extends HandledScreen<ExtractionPortScreenHandler> {
-    private static final Identifier BACKGROUND = EZRReg.id("textures/gui/extract_port.png");
+public class ExtractionPortScreen extends AbstractContainerScreen<ExtractionPortScreenHandler> {
+    private static final ResourceLocation BACKGROUND = EZRReg.id("textures/gui/extract_port.png");
 
-    private ButtonWidget listModeButton;
+    private Button listModeButton;
 
-    public ExtractionPortScreen(ExtractionPortScreenHandler handler, PlayerInventory inventory, Text title) {
+    public ExtractionPortScreen(ExtractionPortScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        backgroundWidth = 176;
-        backgroundHeight = 151;
+        imageWidth = 176;
+        imageHeight = 151;
     }
 
     @Override
     protected void init() {
         super.init();
         //noinspection DataFlowIssue
-        addDrawableChild(listModeButton = new ButtonWidget(
-            x + 53, y + 42, 70, 20, Text.of(""),
-            button -> client.interactionManager.clickButton(handler.syncId, 0)
+        addRenderableWidget(listModeButton = new Button(
+            leftPos + 53, topPos + 42, 70, 20, Component.nullToEmpty(""),
+            button -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0)
         ));
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+        this.renderTooltip(matrices, mouseX, mouseY);
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, BACKGROUND);
-        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
+        blit(matrices, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 
-        listModeButton.setMessage(Text.translatable("extractListType." + handler.getExtractListMode().asString()));
+        listModeButton.setMessage(Component.translatable("extractListType." + menu.getExtractListMode().getSerializedName()));
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        textRenderer.draw(matrices, title, (float)titleX, (float)titleY, 0x404040);
+    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
+        font.draw(matrices, title, (float) titleLabelX, (float) titleLabelY, 0x404040);
     }
 }

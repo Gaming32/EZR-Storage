@@ -10,13 +10,13 @@ import com.simibubi.create.foundation.utility.LangNumberFormat;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.entity.AccessTerminalBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
-import net.minecraft.text.MutableText;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.Arrays;
 
 public class EZRStorageDisplaySource extends NumericSingleLineDisplaySource {
     @Override
-    protected MutableText provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
+    protected MutableComponent provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
         final StorageCoreBlockEntity core;
         if (context.getSourceBlockEntity() instanceof AccessTerminalBlockEntity accessTerminal) {
             core = accessTerminal.getCoreBlockEntity().orElse(null);

@@ -20,12 +20,19 @@ repositories {
     maven("https://maven.terraformersmc.com/releases") {
         name = "TerraformersMC"
     }
+    maven("https://maven.parchmentmc.org") {
+        name = "ParchmentMC"
+    }
 }
 
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:1.19.2")
-    mappings("net.fabricmc:yarn:1.19.2+build.28:v2")
+    @Suppress("UnstableApiUsage")
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.19.2:2022.11.27@zip")
+    })
     modImplementation("net.fabricmc:fabric-loader:0.18.4")
 
     modCompileOnly("maven.modrinth:create-fabric:0.5.1-i-build.1630+mc1.19.2")

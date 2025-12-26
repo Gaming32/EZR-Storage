@@ -2,29 +2,30 @@ package io.github.gaming32.ezrstorage.block;
 
 import io.github.gaming32.ezrstorage.block.entity.InputPortBlockEntity;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.Containers;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 public class InputPortBlock extends BoxBlock {
-    public InputPortBlock(Settings settings) {
+    public InputPortBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new InputPortBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : (world1, pos, state1, blockEntity) -> {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return world.isClientSide ? null : (world1, pos, state1, blockEntity) -> {
             if (blockEntity instanceof InputPortBlockEntity inputPort) {
                 inputPort.tick();
             }
@@ -32,10 +33,10 @@ public class InputPortBlock extends BoxBlock {
     }
 
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.isOf(newState.getBlock())) {
-            world.getBlockEntity(pos, EZRBlockEntities.INPUT_PORT).ifPresent(entity -> ItemScatterer.spawn(world, pos, entity));
-            super.onStateReplaced(state, world, pos, newState, moved);
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.is(newState.getBlock())) {
+            world.getBlockEntity(pos, EZRBlockEntities.INPUT_PORT).ifPresent(entity -> Containers.dropContents(world, pos, entity));
+            super.onRemove(state, world, pos, newState, moved);
         }
     }
 }

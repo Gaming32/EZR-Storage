@@ -5,7 +5,7 @@ import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
 import java.util.List;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
 public class StorageCoreRecipeHandler implements StandardRecipeHandler<StorageCoreScreenHandlerWithCrafting> {

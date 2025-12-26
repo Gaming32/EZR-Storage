@@ -8,18 +8,23 @@ import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.MoreCollectors;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.nbt.*;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -27,16 +32,16 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
+public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider {
     private final Set<BlockPos> network = new HashSet<>();
-    private final InfiniteInventory inventory = new InfiniteInventory(this::markDirty);
+    private final InfiniteInventory inventory = new InfiniteInventory(this::setChanged);
     private final Set<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(EZRBlockEntities.STORAGE_CORE, pos, state);
     }
 
-    public void scan(WorldAccess world, @Nullable BlockEntity skipEntity) {
+    public void scan(LevelAccessor world, @Nullable BlockEntity skipEntity) {
         for (final BlockPos pos : network) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof RefBlockEntity ref) {
@@ -55,13 +60,13 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         }
     }
 
-    private void startRecursion(WorldAccess world, @Nullable BlockEntity skipEntity) {
+    private void startRecursion(LevelAccessor world, @Nullable BlockEntity skipEntity) {
         network.clear();
         for (Direction d : Direction.values()) {
-            BlockEntity be = world.getBlockEntity(pos.offset(d));
+            BlockEntity be = world.getBlockEntity(worldPosition.relative(d));
             if (be != skipEntity && be instanceof RefBlockEntity ref) {
-                addToNetwork(pos.offset(d), ref.getCachedState());
-                ref.setCore(pos);
+                addToNetwork(worldPosition.relative(d), ref.getBlockState());
+                ref.setCore(worldPosition);
                 ref.recurse(world, this, skipEntity);
             }
         }
@@ -72,7 +77,7 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
         if (state.getBlock() instanceof ModificationBoxBlock modification) {
             modifications.add(modification.type);
         }
-        markDirty();
+        setChanged();
     }
 
     public boolean networkContains(BlockPos pos) {
@@ -80,9 +85,9 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
     }
 
     public void notifyBreak() {
-        if (world == null) return;
+        if (level == null) return;
         for (final BlockPos pos : network) {
-            final BlockEntity entity = world.getBlockEntity(pos);
+            final BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof RefBlockEntity ref) {
                 ref.setCore(null);
             }
@@ -98,49 +103,52 @@ public class StorageCoreBlockEntity extends BlockEntity implements NamedScreenHa
     }
 
     @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
         return modifications.contains(ModificationBoxBlock.Type.CRAFTING)
-            ? new StorageCoreScreenHandlerWithCrafting(syncId, inv, inventory, modifications, ScreenHandlerContext.create(world, pos))
+            ? new StorageCoreScreenHandlerWithCrafting(syncId, inv, inventory, modifications, ContainerLevelAccess.create(
+            level,
+            worldPosition
+        ))
             : new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
     }
 
     @Override
-    public Text getDisplayName() {
-        return Text.translatable(getCachedState().getBlock().getTranslationKey());
+    public Component getDisplayName() {
+        return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt) {
+    protected void saveAdditional(CompoundTag nbt) {
         nbt.put("Inventory", inventory.writeNbt());
         nbt.put(
             "Modifications",
             modifications.stream()
-                .map(ModificationBoxBlock.Type::asString)
-                .map(NbtString::of)
-                .collect(MoreCollectors.customCollection(NbtList::new))
+                .map(ModificationBoxBlock.Type::getSerializedName)
+                .map(StringTag::valueOf)
+                .collect(MoreCollectors.customCollection(ListTag::new))
         );
         nbt.put(
             "Network",
             network.stream()
                 .map(NbtUtil::blockPosToNbt)
-                .collect(MoreCollectors.customCollection(NbtList::new))
+                .collect(MoreCollectors.customCollection(ListTag::new))
         );
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
+    public void load(CompoundTag nbt) {
         inventory.readNbt(nbt.getCompound("Inventory"));
 
         modifications.clear();
-        nbt.getList("Modifications", NbtElement.STRING_TYPE)
+        nbt.getList("Modifications", Tag.TAG_STRING)
             .stream()
-            .map(element -> ModificationBoxBlock.Type.valueOf(element.asString().toUpperCase(Locale.ROOT)))
+            .map(element -> ModificationBoxBlock.Type.valueOf(element.getAsString().toUpperCase(Locale.ROOT)))
             .forEach(modifications::add);
 
         network.clear();
-        nbt.getList("Network", NbtElement.INT_ARRAY_TYPE)
+        nbt.getList("Network", Tag.TAG_INT_ARRAY)
             .stream()
-            .map(element -> NbtUtil.nbtToBlockPos((NbtIntArray)element))
+            .map(element -> NbtUtil.nbtToBlockPos((IntArrayTag)element))
             .forEach(network::add);
     }
 }

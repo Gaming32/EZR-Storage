@@ -3,27 +3,27 @@ package io.github.gaming32.ezrstorage.gui;
 import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.InfiniteInventory.ExtractListMode;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.Property;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.level.Level;
 
-public class ExtractionPortScreenHandler extends ScreenHandler {
-    private final SimpleInventory extractList;
-    private final Property listModeProperty;
-    private final ScreenHandlerContext context;
+public class ExtractionPortScreenHandler extends AbstractContainerMenu {
+    private final SimpleContainer extractList;
+    private final DataSlot listModeProperty;
+    private final ContainerLevelAccess context;
 
-    public ExtractionPortScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new SimpleInventory(9), ScreenHandlerContext.EMPTY);
+    public ExtractionPortScreenHandler(int syncId, Inventory playerInventory) {
+        this(syncId, playerInventory, new SimpleContainer(9), ContainerLevelAccess.NULL);
     }
 
-    public ExtractionPortScreenHandler(int syncId, PlayerInventory playerInventory, SimpleInventory extractList, ScreenHandlerContext context) {
+    public ExtractionPortScreenHandler(int syncId, Inventory playerInventory, SimpleContainer extractList, ContainerLevelAccess context) {
         super(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, syncId);
         this.extractList = extractList;
         this.context = context;
@@ -41,43 +41,43 @@ public class ExtractionPortScreenHandler extends ScreenHandler {
             addSlot(new Slot(playerInventory, i, 8 + i * 18, 127));
         }
 
-        listModeProperty = addProperty(Property.create());
-        context.run((world, pos) ->
+        listModeProperty = addDataSlot(DataSlot.standalone());
+        context.execute((world, pos) ->
             world.getBlockEntity(pos, EZRBlockEntities.EXTRACTION_PORT).ifPresent(extractionPort ->
                 listModeProperty.set(extractionPort.getListMode().ordinal())
             )
         );
 
-        addListener(new ScreenHandlerListener() {
+        addSlotListener(new ContainerListener() {
             @Override
-            public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-                context.run(World::markDirty);
+            public void slotChanged(AbstractContainerMenu handler, int slotId, ItemStack stack) {
+                context.execute(Level::blockEntityChanged);
             }
 
             @Override
-            public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+            public void dataChanged(AbstractContainerMenu handler, int property, int value) {
             }
         });
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public boolean onButtonClick(PlayerEntity player, int id) {
+    public boolean clickMenuButton(Player player, int id) {
         if (id == 0) {
             final ExtractListMode newMode = getExtractListMode().rotate();
             listModeProperty.set(newMode.ordinal());
-            context.run((world, pos) ->
+            context.execute((world, pos) ->
                 world.getBlockEntity(pos, EZRBlockEntities.EXTRACTION_PORT).ifPresent(extractionPort -> {
                     extractionPort.setListMode(newMode);
-                    extractionPort.markDirty();
+                    extractionPort.setChanged();
                 })
             );
         }
-        return super.onButtonClick(player, id);
+        return super.clickMenuButton(player, id);
     }
 
     public ExtractListMode getExtractListMode() {
@@ -85,25 +85,25 @@ public class ExtractionPortScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = slots.get(index);
         //noinspection ConstantValue
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemStack2 = slot.getItem();
             itemStack = itemStack2.copy();
             if (index < 9) {
-                if (!insertItem(itemStack2, 9, slots.size(), true)) {
+                if (!moveItemStackTo(itemStack2, 9, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!insertItem(itemStack2, 0, 9, false)) {
+            } else if (!moveItemStackTo(itemStack2, 0, 9, false)) {
                 return ItemStack.EMPTY;
             }
 
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot.setChanged();
             }
         }
 

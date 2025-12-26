@@ -1,23 +1,23 @@
 package io.github.gaming32.ezrstorage;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public final class InfiniteItemStack {
-    public record Contents(@Nullable Item item, @NotNull NbtCompound nbt) {
+    public record Contents(@Nullable Item item, @NotNull CompoundTag nbt) {
         public Contents(ItemStack stack) {
             //noinspection DataFlowIssue
             this(
                 stack.getItem(),
-                stack.hasNbt() ? stack.getNbt() : new NbtCompound()
+                stack.hasTag() ? stack.getTag() : new CompoundTag()
             );
         }
     }
@@ -28,7 +28,7 @@ public final class InfiniteItemStack {
     private long count;
 
     public InfiniteItemStack(@NotNull Item item, long count) {
-        contents = new Contents(item, new NbtCompound());
+        contents = new Contents(item, new CompoundTag());
         this.count = count;
     }
 
@@ -42,16 +42,16 @@ public final class InfiniteItemStack {
         count = stack.getCount();
     }
 
-    private InfiniteItemStack(NbtCompound in) {
+    private InfiniteItemStack(CompoundTag in) {
         contents = new Contents(
-            Registry.ITEM.get(new Identifier(in.getString("Item"))),
+            Registry.ITEM.get(new ResourceLocation(in.getString("Item"))),
             in.getCompound("Nbt")
         );
         count = in.getLong("Count");
     }
 
-    public NbtCompound writeNbt(NbtCompound out) {
-        out.putString("Item", Registry.ITEM.getId(contents.item).toString());
+    public CompoundTag writeNbt(CompoundTag out) {
+        out.putString("Item", Registry.ITEM.getKey(contents.item).toString());
         if (!contents.nbt.isEmpty()) {
             out.put("Nbt", contents.nbt);
         }
@@ -59,11 +59,11 @@ public final class InfiniteItemStack {
         return out;
     }
 
-    public NbtCompound writeNbt() {
-        return writeNbt(new NbtCompound());
+    public CompoundTag writeNbt() {
+        return writeNbt(new CompoundTag());
     }
 
-    public static InfiniteItemStack readNbt(NbtCompound in) {
+    public static InfiniteItemStack readNbt(CompoundTag in) {
         return new InfiniteItemStack(in);
     }
 
@@ -75,7 +75,7 @@ public final class InfiniteItemStack {
         return contents.item;
     }
 
-    public NbtCompound getNbt() {
+    public CompoundTag getNbt() {
         return contents.nbt;
     }
 
@@ -92,9 +92,9 @@ public final class InfiniteItemStack {
     }
 
     public boolean add(ItemStack itemStack) {
-        if (!itemStack.isOf(contents.item)) return false;
-        if (itemStack.hasNbt()) {
-            if (!contents.nbt.equals(itemStack.getNbt())) return false;
+        if (!itemStack.is(contents.item)) return false;
+        if (itemStack.hasTag()) {
+            if (!contents.nbt.equals(itemStack.getTag())) return false;
         } else {
             if (!contents.nbt.isEmpty()) return false;
         }
@@ -106,11 +106,11 @@ public final class InfiniteItemStack {
         if (isEmpty()) return ItemStack.EMPTY;
         if (n > count) n = (int)count;
         assert contents.item != null;
-        if (n > contents.item.getMaxCount()) n = contents.item.getMaxCount();
+        if (n > contents.item.getMaxStackSize()) n = contents.item.getMaxStackSize();
         count -= n;
         final ItemStack stack = new ItemStack(contents.item, n);
         if (!contents.nbt.isEmpty()) {
-            stack.setNbt(contents.nbt.copy());
+            stack.setTag(contents.nbt.copy());
         }
         return stack;
     }
@@ -118,9 +118,9 @@ public final class InfiniteItemStack {
     public ItemStack toItemStack() {
         if (isEmpty()) return ItemStack.EMPTY;
         assert contents.item != null;
-        final ItemStack result = new ItemStack(contents.item, (int)Math.min(count, contents.item.getMaxCount()));
+        final ItemStack result = new ItemStack(contents.item, (int)Math.min(count, contents.item.getMaxStackSize()));
         if (!contents.nbt.isEmpty()) {
-            result.setNbt(contents.nbt);
+            result.setTag(contents.nbt);
         }
         return result;
     }

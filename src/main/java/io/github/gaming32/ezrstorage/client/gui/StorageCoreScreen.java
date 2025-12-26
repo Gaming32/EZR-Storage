@@ -13,21 +13,21 @@ import io.github.gaming32.ezrstorage.registry.EZRReg;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.renderer.GameRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.core.Registry;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -37,12 +37,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
+public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreenHandler> {
     public static final DecimalFormat COUNT_FORMATTER = new DecimalFormat("#,###");
-    private static final Identifier CREATIVE_INVENTORY_TABS = new Identifier("textures/gui/container/creative_inventory/tabs.png");
-    private static final Identifier SEARCH_BAR = new Identifier("textures/gui/container/creative_inventory/tab_item_search.png");
-    private static final Identifier SORT_GUI = EZRReg.id("textures/gui/custom_gui.png");
-    private static final Identifier BACKGROUND = EZRReg.id("textures/gui/storage_scroll_gui.png");
+    private static final ResourceLocation CREATIVE_INVENTORY_TABS = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+    private static final ResourceLocation SEARCH_BAR = new ResourceLocation("textures/gui/container/creative_inventory/tab_item_search.png");
+    private static final ResourceLocation SORT_GUI = EZRReg.id("textures/gui/custom_gui.png");
+    private static final ResourceLocation BACKGROUND = EZRReg.id("textures/gui/storage_scroll_gui.png");
     private static final boolean SUPPORT_EMI_SYNC = FabricLoader.getInstance().isModLoaded("emi");
 
     private boolean scrolling;
@@ -52,18 +52,18 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     private final List<InfiniteItemStack> filteredItems = new ArrayList<>();
 
-    private TextFieldWidget searchField;
-    private ButtonWidget sortTypeSelector;
-    protected ButtonWidget craftClearButton;
-    protected CheckboxWidget emiSyncButton;
+    private EditBox searchField;
+    private Button sortTypeSelector;
+    protected Button craftClearButton;
+    protected Checkbox emiSyncButton;
 
-    public StorageCoreScreen(StorageCoreScreenHandler handler, PlayerInventory inventory, Text title) {
+    public StorageCoreScreen(StorageCoreScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
-        backgroundWidth = 195;
-        backgroundHeight = 222;
+        imageWidth = 195;
+        imageHeight = 222;
         handler.setUpdateNotification(() -> {
-            if (emiSyncButton.isChecked()) {
-                searchField.setText(EmiScreenManager.search.getText());
+            if (emiSyncButton.selected()) {
+                searchField.setValue(EmiScreenManager.search.getValue());
             }
             if (!skipSearch()) {
                 updateFilteredItems();
@@ -75,33 +75,33 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     protected void init() {
         super.init();
 
-        searchField = new TextFieldWidget(textRenderer, x + 10, y + 6, 80, textRenderer.fontHeight, Text.of(""));
+        searchField = new EditBox(font, leftPos + 10, topPos + 6, 80, font.lineHeight, Component.nullToEmpty(""));
         searchField.setMaxLength(20);
-        searchField.setDrawsBackground(false);
-        searchField.setFocusUnlocked(true);
-        searchField.setEditableColor(0xffffff);
-        searchField.setTextFieldFocused(true);
-        searchField.setText("");
-        addDrawableChild(searchField);
+        searchField.setBordered(false);
+        searchField.setCanLoseFocus(true);
+        searchField.setTextColor(0xffffff);
+        searchField.setFocus(true);
+        searchField.setValue("");
+        addRenderableWidget(searchField);
 
         //noinspection DataFlowIssue
-        addDrawableChild(sortTypeSelector = new ButtonWidget(
-            x - 100, y + 16, 90, 20, Text.of(""),
-            button -> client.interactionManager.clickButton(handler.syncId, 0)
+        addRenderableWidget(sortTypeSelector = new Button(
+            leftPos - 100, topPos + 16, 90, 20, Component.nullToEmpty(""),
+            button -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0)
         ));
         sortTypeSelector.visible = false;
 
         //noinspection DataFlowIssue
-        addDrawableChild(craftClearButton = new BlueButtonWidget(
-            x + 20, y + 100, 14, 14, Text.of("x"),
-            button -> client.interactionManager.clickButton(handler.syncId, 1)
+        addRenderableWidget(craftClearButton = new BlueButtonWidget(
+            leftPos + 20, topPos + 100, 14, 14, Component.nullToEmpty("x"),
+            button -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1)
         ));
         craftClearButton.visible = false;
 
-        addDrawableChild(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
+        addRenderableWidget(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
             searchField.x + searchField.getWidth(), searchField.y - 2,
             searchField.getHeight() + 2, searchField.getHeight() + 2,
-            Text.translatable("ezrstorage.emiSync"), SUPPORT_EMI_SYNC, this
+            Component.translatable("ezrstorage.emiSync"), SUPPORT_EMI_SYNC, this
         ));
         emiSyncButton.visible = SUPPORT_EMI_SYNC;
         if (SUPPORT_EMI_SYNC) {
@@ -110,65 +110,65 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, getBackground());
-        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
+        blit(matrices, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 
-        sortTypeSelector.visible = handler.getModifications().contains(ModificationBoxBlock.Type.SORTING);
+        sortTypeSelector.visible = menu.getModifications().contains(ModificationBoxBlock.Type.SORTING);
         if (sortTypeSelector.visible) {
             RenderSystem.setShaderTexture(0, SORT_GUI);
-            drawTexture(matrices, x - 108, y, 0, 128, 112, 128);
+            blit(matrices, leftPos - 108, topPos, 0, 128, 112, 128);
         }
 
-        searchField.visible = handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
+        searchField.visible = menu.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
         emiSyncButton.visible = searchField.visible && SUPPORT_EMI_SYNC;
         if (searchField.visible) {
             RenderSystem.setShaderTexture(0, SEARCH_BAR);
-            drawTexture(matrices, x + 8, y + 4, 80, 4, searchField.getInnerWidth() + 10, 12);
+            blit(matrices, leftPos + 8, topPos + 4, 80, 4, searchField.getInnerWidth() + 10, 12);
         }
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        final String totalCount = COUNT_FORMATTER.format(handler.getCoreInventory().getCount());
-        final String max = COUNT_FORMATTER.format(handler.getCoreInventory().getMaxCount());
+    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
+        final String totalCount = COUNT_FORMATTER.format(menu.getCoreInventory().getCount());
+        final String max = COUNT_FORMATTER.format(menu.getCoreInventory().getMaxCount());
         final String amount = totalCount + '/' + max;
 
-        final int stringWidth = textRenderer.getWidth(amount);
+        final int stringWidth = font.width(amount);
 
         if (stringWidth > 88) {
             final float scaleFactor = 0.7f;
             final float rScaleFactor = 1 / scaleFactor;
-            matrices.push();
+            matrices.pushPose();
             matrices.scale(scaleFactor, scaleFactor, scaleFactor);
             final int x = (int)((187 - stringWidth * scaleFactor) * rScaleFactor);
-            textRenderer.draw(matrices, amount, x, 10, 0x404040);
-            matrices.pop();
+            font.draw(matrices, amount, x, 10, 0x404040);
+            matrices.popPose();
         } else {
-            textRenderer.draw(matrices, amount, 187 - stringWidth, 6, 0x404040);
+            font.draw(matrices, amount, 187 - stringWidth, 6, 0x404040);
         }
 
         if (sortTypeSelector.visible) {
-            sortTypeSelector.setMessage(Text.translatable("sortType." + handler.getCoreInventory().getSortType().asString()));
-            textRenderer.draw(matrices, Text.translatable("sortType"), -100, 6, 0x404040);
-            matrices.push();
+            sortTypeSelector.setMessage(Component.translatable("sortType." + menu.getCoreInventory().getSortType().getSerializedName()));
+            font.draw(matrices, Component.translatable("sortType"), -100, 6, 0x404040);
+            matrices.pushPose();
             matrices.scale(0.7f, 0.7f, 0.7f);
             int drawY = (int)(42 / 0.7);
-            for (final OrderedText line : textRenderer.wrapLines(Text.translatable("sortType." + handler.getCoreInventory().getSortType().asString() + ".desc"), (int)(96 / 0.7))) {
-                textRenderer.draw(matrices, line, (int)(-100 / 0.7), drawY, 0x404040);
+            for (final FormattedCharSequence line : font.split(Component.translatable("sortType." + menu.getCoreInventory().getSortType().getSerializedName() + ".desc"), (int)(96 / 0.7))) {
+                font.draw(matrices, line, (int)(-100 / 0.7), drawY, 0x404040);
                 drawY += 9;
             }
-            matrices.pop();
+            matrices.popPose();
         }
 
-        setZOffset(100);
-        itemRenderer.zOffset = 100f;
+        setBlitOffset(100);
+        itemRenderer.blitOffset = 100f;
         if (infiniteItemRenderer == null) {
             infiniteItemRenderer = new InfiniteItemRenderer();
         }
-        infiniteItemRenderer.zOffset = 100f;
+        infiniteItemRenderer.blitOffset = 100f;
 
         outer:
         for (int row = 0, y = 18; row < rowsVisible(); row++, y += 18) {
@@ -181,8 +181,8 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
                 final InfiniteItemStack infiniteStack = getSlot(index);
                 final ItemStack stack = infiniteStack.toItemStack();
 
-                itemRenderer.renderInGui(stack, x, y);
-                infiniteItemRenderer.renderGuiItemOverlay(textRenderer, stack, x, y, Long.toString(infiniteStack.getCount()));
+                itemRenderer.renderAndDecorateFakeItem(stack, x, y);
+                infiniteItemRenderer.renderGuiItemDecorations(font, stack, x, y, Long.toString(infiniteStack.getCount()));
             }
         }
 
@@ -191,13 +191,13 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
         final int i = 175;
         final int j = 18;
         final int k = j + 108;
-        drawTexture(matrices, i, j + (int)((float)(k - j - 17) * currentScroll), 232, 0, 12, 15);
-        setZOffset(0);
-        itemRenderer.zOffset = 0f;
+        blit(matrices, i, j + (int)((float)(k - j - 17) * currentScroll), 232, 0, 12, 15);
+        setBlitOffset(0);
+        itemRenderer.blitOffset = 0f;
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         final Integer slot = getSlotAt(mouseX, mouseY);
@@ -206,7 +206,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
             if (slot < getSlotCount()) {
                 final InfiniteItemStack infiniteStack = getSlot(slot);
                 if (!infiniteStack.isEmpty()) {
-                    index = handler.getCoreInventory().indexOf(infiniteStack);
+                    index = menu.getCoreInventory().indexOf(infiniteStack);
                     if (index < 0) {
                         return;
                     }
@@ -214,41 +214,41 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
                 }
             }
         }
-        drawMouseoverTooltip(matrices, mouseX, mouseY);
+        renderTooltip(matrices, mouseX, mouseY);
     }
 
-    protected void renderTooltip(MatrixStack matrices, InfiniteItemStack infiniteStack, int x, int y) {
+    protected void renderTooltip(PoseStack matrices, InfiniteItemStack infiniteStack, int x, int y) {
         final ItemStack stack = infiniteStack.toItemStack();
-        assert client != null;
-        final List<Text> lines = getTooltipFromItem(stack);
+        assert minecraft != null;
+        final List<Component> lines = getTooltipFromItem(stack);
         lines.add(
-            Text.literal("Count: " + COUNT_FORMATTER.format(infiniteStack.getCount()))
-                .styled(style -> style.withItalic(true))
+            Component.literal("Count: " + COUNT_FORMATTER.format(infiniteStack.getCount()))
+                .withStyle(style -> style.withItalic(true))
         );
-        renderTooltip(matrices, lines, x, y);
+        renderComponentTooltip(matrices, lines, x, y);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (
-            handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH) &&
-                searchField.isFocused() &&
-                searchField.keyPressed(keyCode, scanCode, modifiers)
+            menu.getModifications().contains(ModificationBoxBlock.Type.SEARCH) &&
+            searchField.isFocused() &&
+            searchField.keyPressed(keyCode, scanCode, modifiers)
         ) {
             searchBoxChange(null);
             return true;
         }
-        assert client != null;
-        if (client.options.inventoryKey.matchesKey(keyCode, scanCode)) return false;
+        assert minecraft != null;
+        if (minecraft.options.keyInventory.matches(keyCode, scanCode)) return false;
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean charTyped(char chr, int modifiers) {
         if (
-            handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH) &&
-                searchField.isFocused() &&
-                searchField.charTyped(chr, modifiers)
+            menu.getModifications().contains(ModificationBoxBlock.Type.SEARCH) &&
+            searchField.isFocused() &&
+            searchField.charTyped(chr, modifiers)
         ) {
             searchBoxChange(null);
             return true;
@@ -258,11 +258,11 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     private void searchBoxChange(String newText) {
         if (newText != null) {
-            searchField.setText(newText);
+            searchField.setValue(newText);
         }
 
-        if (emiSyncButton.isChecked()) {
-            EmiScreenManager.search.setText(searchField.getText());
+        if (emiSyncButton.selected()) {
+            EmiScreenManager.search.setValue(searchField.getValue());
             return;
         }
 
@@ -273,28 +273,28 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     private void updateFilteredItems() {
         filteredItems.clear();
 
-        if (emiSyncButton.isChecked()) {
-            final Set<Identifier> allowedItems = EmiSearch.stacks.stream()
+        if (emiSyncButton.selected()) {
+            final Set<ResourceLocation> allowedItems = EmiSearch.stacks.stream()
                 .flatMap(s -> s.getEmiStacks().stream())
                 .map(EmiStack::getId)
                 .collect(Collectors.toSet());
-            StreamSupport.stream(handler.getCoreInventory().spliterator(), false)
-                .filter(s -> allowedItems.contains(Registry.ITEM.getId(s.getItem())))
+            StreamSupport.stream(menu.getCoreInventory().spliterator(), false)
+                .filter(s -> allowedItems.contains(Registry.ITEM.getKey(s.getItem())))
                 .forEach(filteredItems::add);
             return;
         }
 
-        final String searchText = searchField.getText().toLowerCase();
+        final String searchText = searchField.getValue().toLowerCase();
 
         if (searchText.isEmpty()) return;
 
         stackIter:
-        for (final InfiniteItemStack stack : handler.getCoreInventory()) {
-            if (stack.getItem().getName().getString().toLowerCase().contains(searchText)) {
+        for (final InfiniteItemStack stack : menu.getCoreInventory()) {
+            if (stack.getItem().getDescription().getString().toLowerCase().contains(searchText)) {
                 filteredItems.add(stack);
                 continue;
             }
-            for (final Text line : getTooltipFromItem(stack.toItemStack())) {
+            for (final Component line : getTooltipFromItem(stack.toItemStack())) {
                 if (line.getString().toLowerCase().contains(searchText)) {
                     filteredItems.add(stack);
                     continue stackIter;
@@ -312,23 +312,23 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
         final Integer slot = getSlotAt((int)mouseX, (int)mouseY);
         if (slot != null) {
-            final SlotActionType mode = hasShiftDown() ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP;
-            int index = handler.getCoreInventory().getUniqueCount();
+            final ClickType mode = hasShiftDown() ? ClickType.QUICK_MOVE : ClickType.PICKUP;
+            int index = menu.getCoreInventory().getUniqueCount();
             if (slot < getSlotCount()) {
                 final InfiniteItemStack infiniteStack = getSlot(slot);
                 if (!infiniteStack.isEmpty()) {
-                    index = handler.getCoreInventory().indexOf(infiniteStack);
+                    index = menu.getCoreInventory().indexOf(infiniteStack);
                     if (index < 0) {
                         return false;
                     }
                 }
             }
-            assert client != null;
-            handler.customSlotClick(index, mode);
-            final PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeByte(handler.syncId);
+            assert minecraft != null;
+            menu.customSlotClick(index, mode);
+            final FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeByte(menu.containerId);
             buf.writeVarInt(index);
-            buf.writeEnumConstant(mode);
+            buf.writeEnum(mode);
             ClientPlayNetworking.send(EZRStorage.CUSTOM_SLOT_CLICK, buf);
         } else {
             final int elementX = searchField.x;
@@ -340,9 +340,9 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
                 if (button == 1 || hasShiftDown()) {
                     searchBoxChange("");
                 }
-                searchField.setTextFieldFocused(true);
+                searchField.setFocus(true);
             } else {
-                searchField.setTextFieldFocused(false);
+                searchField.setFocus(false);
             }
         }
 
@@ -361,10 +361,10 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (this.scrolling) {
-            int i = this.y + 18;
+            int i = this.topPos + 18;
             int j = i + 112;
             this.currentScroll = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
-            this.currentScroll = MathHelper.clamp(this.currentScroll, 0.0F, 1.0F);
+            this.currentScroll = Mth.clamp(this.currentScroll, 0.0F, 1.0F);
             scrollTo(this.currentScroll);
             return true;
         }
@@ -373,16 +373,16 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        int i = (this.handler.getCoreInventory().getUniqueCount() + 9 - 1) / 9 - 5;
+        int i = (this.menu.getCoreInventory().getUniqueCount() + 9 - 1) / 9 - 5;
         float f = (float)(amount / (double)i);
-        this.currentScroll = MathHelper.clamp(this.currentScroll - f, 0.0F, 1.0F);
+        this.currentScroll = Mth.clamp(this.currentScroll - f, 0.0F, 1.0F);
         scrollTo(this.currentScroll);
         return true;
     }
 
     protected boolean isClickInScrollbar(double mouseX, double mouseY) {
-        int i = this.x;
-        int j = this.y;
+        int i = this.leftPos;
+        int j = this.topPos;
         int k = i + 175;
         int l = j + 18;
         int m = k + 14;
@@ -391,8 +391,8 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     private Integer getSlotAt(int x, int y) {
-        final int startX = this.x + 7;
-        final int startY = this.y + 17;
+        final int startX = this.leftPos + 7;
+        final int startY = this.topPos + 17;
 
         final int clickedX = x - startX;
         final int clickedY = y - startY;
@@ -410,7 +410,7 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     private void scrollTo(float scroll) {
-        int i = (this.handler.getCoreInventory().getUniqueCount() + 8) / 9 - rowsVisible();
+        int i = (this.menu.getCoreInventory().getUniqueCount() + 8) / 9 - rowsVisible();
         int j = (int) (scroll * i + 0.5D);
         if (j < 0) {
             j = 0;
@@ -419,22 +419,22 @@ public class StorageCoreScreen extends HandledScreen<StorageCoreScreenHandler> {
     }
 
     private boolean skipSearch() {
-        if (!handler.getModifications().contains(ModificationBoxBlock.Type.SEARCH)) {
+        if (!menu.getModifications().contains(ModificationBoxBlock.Type.SEARCH)) {
             return true;
         }
-        return searchField.getText().isEmpty();
+        return searchField.getValue().isEmpty();
     }
 
     private int getSlotCount() {
-        return skipSearch() ? handler.getCoreInventory().getUniqueCount() : filteredItems.size();
+        return skipSearch() ? menu.getCoreInventory().getUniqueCount() : filteredItems.size();
     }
 
     private InfiniteItemStack getSlot(int index) {
         if (index < 0 || index >= getSlotCount()) return InfiniteItemStack.EMPTY;
-        return skipSearch() ? handler.getCoreInventory().getStack(index) : filteredItems.get(index);
+        return skipSearch() ? menu.getCoreInventory().getStack(index) : filteredItems.get(index);
     }
 
-    protected Identifier getBackground() {
+    protected ResourceLocation getBackground() {
         return BACKGROUND;
     }
 

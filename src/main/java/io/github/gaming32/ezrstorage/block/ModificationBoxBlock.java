@@ -1,16 +1,17 @@
 package io.github.gaming32.ezrstorage.block;
 
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 
 public class ModificationBoxBlock extends BoxBlock {
     public final Type type;
 
-    public ModificationBoxBlock(Settings settings, Type type) {
+    public ModificationBoxBlock(Properties settings, Type type) {
         super(settings);
         this.type = type;
     }
 
-    public enum Type implements StringIdentifiable {
+    public enum Type implements StringRepresentable {
         CRAFTING("crafting"),
         SEARCH("search"),
         SORTING("sorting"),
@@ -23,7 +24,7 @@ public class ModificationBoxBlock extends BoxBlock {
         }
 
         @Override
-        public String asString() {
+        public String getSerializedName() {
             return id;
         }
     }

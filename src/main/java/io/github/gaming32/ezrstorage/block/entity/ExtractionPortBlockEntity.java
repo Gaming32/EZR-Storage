@@ -3,28 +3,28 @@ package io.github.gaming32.ezrstorage.block.entity;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 
-public class ExtractionPortBlockEntity extends RefBlockEntity implements NamedScreenHandlerFactory, SidedInventory {
-    private final SimpleInventory extractList = new SimpleInventory(9);
+public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuProvider, WorldlyContainer {
+    private final SimpleContainer extractList = new SimpleContainer(9);
     private ItemStack buffer = ItemStack.EMPTY;
 
     private InfiniteInventory.ExtractListMode listMode = InfiniteInventory.ExtractListMode.IGNORE;
@@ -38,28 +38,31 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements NamedSc
     }
 
     public void tick() {
-        if (world == null || world.isClient) return;
+        if (level == null || level.isClientSide) return;
         getCoreBlockEntity().ifPresent(core -> {
-            if (buffer.isEmpty() && !world.isReceivingRedstonePower(pos)) {
+            if (buffer.isEmpty() && !level.hasNeighborSignal(worldPosition)) {
                 buffer = core.getInventory().getMatchingStack(1, listMode, extractList);
-                markDirty();
+                setChanged();
             }
-            if (!buffer.isEmpty() && world.getTime() % 20 == 0) {
+            if (!buffer.isEmpty() && level.getGameTime() % 20 == 0) {
                 core.getInventory().moveFrom(buffer);
-                markDirty();
+                setChanged();
             }
         });
     }
 
     @Override
-    public Text getDisplayName() {
-        return Text.translatable(getCachedState().getBlock().getTranslationKey());
+    public Component getDisplayName() {
+        return Component.translatable(getBlockState().getBlock().getDescriptionId());
     }
 
     @Nullable
     @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new ExtractionPortScreenHandler(syncId, inv, extractList, ScreenHandlerContext.create(world, pos));
+    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
+        return new ExtractionPortScreenHandler(syncId, inv, extractList, ContainerLevelAccess.create(
+            level,
+            worldPosition
+        ));
     }
 
     public InfiniteInventory.ExtractListMode getListMode() {
@@ -71,7 +74,7 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements NamedSc
     }
 
     @Override
-    public int size() {
+    public int getContainerSize() {
         return 1;
     }
 
@@ -81,81 +84,81 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements NamedSc
     }
 
     @Override
-    public ItemStack getStack(int slot) {
+    public ItemStack getItem(int slot) {
         return slot == 0 ? buffer : ItemStack.EMPTY;
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount) {
-        markDirty();
+    public ItemStack removeItem(int slot, int amount) {
+        setChanged();
         return slot == 0 ? buffer.split(amount) : ItemStack.EMPTY;
     }
 
     @Override
-    public ItemStack removeStack(int slot) {
+    public ItemStack removeItemNoUpdate(int slot) {
         if (slot != 0) {
             return ItemStack.EMPTY;
         }
         final ItemStack stack = buffer;
         buffer = ItemStack.EMPTY;
-        markDirty();
+        setChanged();
         return stack;
     }
 
     @Override
-    public void setStack(int slot, ItemStack stack) {
+    public void setItem(int slot, ItemStack stack) {
         if (slot != 0) return;
         buffer = stack;
-        markDirty();
+        setChanged();
     }
 
     @Override
-    public boolean canPlayerUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return false;
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         buffer = ItemStack.EMPTY;
-        markDirty();
+        setChanged();
     }
 
     @Override
-    public int[] getAvailableSlots(Direction side) {
+    public int[] getSlotsForFace(Direction side) {
         return new int[] {0};
     }
 
     @Override
-    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
         return false;
     }
 
     @Override
-    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
         return true;
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("ListMode", listMode.ordinal());
-        Inventories.writeNbt(nbt, DefaultedList.copyOf(ItemStack.EMPTY, buffer));
-        nbt.put("ExtractList", extractList.toNbtList());
+        ContainerHelper.saveAllItems(nbt, NonNullList.of(ItemStack.EMPTY, buffer));
+        nbt.put("ExtractList", extractList.createTag());
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         listMode = InfiniteInventory.ExtractListMode.values()[nbt.getInt("ListMode")];
 
-        final DefaultedList<ItemStack> list = DefaultedList.ofSize(1, ItemStack.EMPTY);
-        Inventories.readNbt(nbt, list);
+        final NonNullList<ItemStack> list = NonNullList.withSize(1, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(nbt, list);
         buffer = list.get(0);
 
-        extractList.readNbtList(nbt.getList("ExtractList", NbtElement.COMPOUND_TYPE));
+        extractList.fromTag(nbt.getList("ExtractList", Tag.TAG_COMPOUND));
     }
 
-    public SimpleInventory getExtractList() {
+    public SimpleContainer getExtractList() {
         return extractList;
     }
 }

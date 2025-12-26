@@ -7,37 +7,37 @@ import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
 import io.github.gaming32.ezrstorage.util.MoreBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class StorageCoreScreenHandler extends ScreenHandler {
+public class StorageCoreScreenHandler extends AbstractContainerMenu {
     private final InfiniteInventory coreInventory;
     private final Set<ModificationBoxBlock.Type> modifications;
     private final List<Slot> inputSources = new ArrayList<>();
-    protected final PlayerEntity player;
+    protected final Player player;
     private Runnable updateNotification;
 
-    public StorageCoreScreenHandler(int syncId, PlayerInventory playerInventory) {
+    public StorageCoreScreenHandler(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new InfiniteInventory(), EnumSet.noneOf(ModificationBoxBlock.Type.class));
     }
 
     public StorageCoreScreenHandler(
         int syncId,
-        PlayerInventory playerInventory,
+        Inventory playerInventory,
         InfiniteInventory coreInventory,
         Set<ModificationBoxBlock.Type> modifications
     ) {
@@ -45,9 +45,9 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     }
 
     protected StorageCoreScreenHandler(
-        ScreenHandlerType<?> type,
+        MenuType<?> type,
         int syncId,
-        PlayerInventory playerInventory,
+        Inventory playerInventory,
         InfiniteInventory coreInventory,
         Set<ModificationBoxBlock.Type> modifications
     ) {
@@ -56,7 +56,7 @@ public class StorageCoreScreenHandler extends ScreenHandler {
         this.modifications = modifications;
         this.player = playerInventory.player;
 
-        final Inventory inventory = new SimpleInventory(rowCount() * 9);
+        final Container inventory = new SimpleContainer(rowCount() * 9);
         for (int row = 0; row < rowCount(); row++) {
             for (int column = 0; column < 9; column++) {
                 addSlot(new Slot(inventory, column + row * 9, 8 + column * 18, 18 + row * 18));
@@ -84,42 +84,42 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void sendContentUpdates() {
-        super.sendContentUpdates();
+    public void broadcastChanges() {
+        super.broadcastChanges();
         sync();
     }
 
     @Override
-    public void syncState() {
-        super.syncState();
+    public void sendAllDataToRemote() {
+        super.sendAllDataToRemote();
         sync();
     }
 
     private void sync() {
-        if (player instanceof ServerPlayerEntity serverPlayer) {
+        if (player instanceof ServerPlayer serverPlayer) {
             syncToClient(serverPlayer);
         }
     }
 
-    protected void syncToClient(ServerPlayerEntity player) {
-        final PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeByte(syncId);
+    protected void syncToClient(ServerPlayer player) {
+        final FriendlyByteBuf buf = PacketByteBufs.create();
+        buf.writeByte(containerId);
         buf.writeNbt(coreInventory.writeNbt());
         MoreBufs.writeEnumSet(buf, modifications);
         ServerPlayNetworking.send(player, EZRStorage.SYNC_INVENTORY, buf);
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Override
-    public boolean onButtonClick(PlayerEntity player, int id) {
+    public boolean clickMenuButton(Player player, int id) {
         return switch (id) {
             case 0 -> {
                 coreInventory.setSortType(coreInventory.getSortType().rotate());
-                if (player instanceof ServerPlayerEntity serverPlayer) {
+                if (player instanceof ServerPlayer serverPlayer) {
                     syncToClient(serverPlayer);
                 }
                 yield true;
@@ -137,31 +137,31 @@ public class StorageCoreScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         final Slot slot = slots.get(index);
         //noinspection ConstantValue
-        if (slot != null && slot.hasStack()) {
-            final ItemStack stack = slot.getStack();
-            slot.setStack(coreInventory.moveFrom(stack));
+        if (slot != null && slot.hasItem()) {
+            final ItemStack stack = slot.getItem();
+            slot.set(coreInventory.moveFrom(stack));
         }
-        if (player instanceof ServerPlayerEntity serverPlayer) {
+        if (player instanceof ServerPlayer serverPlayer) {
             syncToClient(serverPlayer);
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+    public void clicked(int slotIndex, int button, ClickType actionType, Player player) {
         if (slotIndex >= rowCount() * 9 || slotIndex < 0) {
-            super.onSlotClick(slotIndex, button, actionType, player);
-            if (actionType == SlotActionType.QUICK_MOVE) {
+            super.clicked(slotIndex, button, actionType, player);
+            if (actionType == ClickType.QUICK_MOVE) {
                 getCoreInventory().reSort();
             }
         }
     }
 
-    public ItemStack customSlotClick(int slotIndex, SlotActionType actionType) {
-        final ItemStack heldStack = getCursorStack();
+    public ItemStack customSlotClick(int slotIndex, ClickType actionType) {
+        final ItemStack heldStack = getCarried();
 
         if (heldStack.isEmpty()) {
             final InfiniteItemStack infiniteStack = coreInventory.getStack(slotIndex);
@@ -169,23 +169,23 @@ public class StorageCoreScreenHandler extends ScreenHandler {
                 return ItemStack.EMPTY;
             }
             final ItemStack stack = coreInventory.extractStack(infiniteStack);
-            if (actionType == SlotActionType.QUICK_MOVE) {
-                if (!insertItem(stack, rowCount() * 9, rowCount() * 9 + 36, true)) {
+            if (actionType == ClickType.QUICK_MOVE) {
+                if (!moveItemStackTo(stack, rowCount() * 9, rowCount() * 9 + 36, true)) {
                     coreInventory.moveFrom(stack);
                 }
             } else {
-                setCursorStack(stack);
+                setCarried(stack);
             }
             return stack;
         } else {
-            setCursorStack(coreInventory.moveFrom(heldStack));
+            setCarried(coreInventory.moveFrom(heldStack));
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
+    public void removed(Player player) {
+        super.removed(player);
         coreInventory.reSort();
     }
 

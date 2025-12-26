@@ -14,48 +14,48 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EZRStorage implements ModInitializer {
     public static final String MOD_ID = "ezrstorage";
-    public static final Identifier SYNC_INVENTORY = EZRReg.id("sync_inventory");
-    public static final Identifier CUSTOM_SLOT_CLICK = EZRReg.id("custom_slot_click");
+    public static final ResourceLocation SYNC_INVENTORY = EZRReg.id("sync_inventory");
+    public static final ResourceLocation CUSTOM_SLOT_CLICK = EZRReg.id("custom_slot_click");
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final ScreenHandlerType<StorageCoreScreenHandler> STORAGE_CORE_SCREEN_HANDLER = Registry.register(
-        Registry.SCREEN_HANDLER,
+    public static final MenuType<StorageCoreScreenHandler> STORAGE_CORE_SCREEN_HANDLER = Registry.register(
+        Registry.MENU,
         EZRReg.id("storage_core"),
-        new ScreenHandlerType<>(StorageCoreScreenHandler::new)
+        new MenuType<>(StorageCoreScreenHandler::new)
     );
 
-    public static final ScreenHandlerType<StorageCoreScreenHandlerWithCrafting> STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING = Registry.register(
-        Registry.SCREEN_HANDLER,
+    public static final MenuType<StorageCoreScreenHandlerWithCrafting> STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING = Registry.register(
+        Registry.MENU,
         EZRReg.id("storage_core_with_crafting"),
-        new ScreenHandlerType<>(StorageCoreScreenHandlerWithCrafting::new)
+        new MenuType<>(StorageCoreScreenHandlerWithCrafting::new)
     );
 
-    public static final ScreenHandlerType<ExtractionPortScreenHandler> EXTRACTION_PORT_SCREEN_HANDLER = Registry.register(
-        Registry.SCREEN_HANDLER,
+    public static final MenuType<ExtractionPortScreenHandler> EXTRACTION_PORT_SCREEN_HANDLER = Registry.register(
+        Registry.MENU,
         EZRReg.id("extraction_port"),
-        new ScreenHandlerType<>(ExtractionPortScreenHandler::new)
+        new MenuType<>(ExtractionPortScreenHandler::new)
     );
 
-    public static final ItemGroup EZR_GROUP = FabricItemGroupBuilder.build(
-        new Identifier(MOD_ID, MOD_ID),
-        () -> new ItemStack(EZRBlocks.STORAGE_CORE.getLeft())
+    public static final CreativeModeTab EZR_GROUP = FabricItemGroupBuilder.build(
+        new ResourceLocation(MOD_ID, MOD_ID),
+        () -> new ItemStack(EZRBlocks.STORAGE_CORE.getA())
     );
 
-    public static final Item KEY_ITEM = new Item(new FabricItemSettings().group(EZR_GROUP));
+    public static final Item KEY_ITEM = new Item(new FabricItemSettings().tab(EZR_GROUP));
 
     public static long serverTicks;
     public static long clientTicks;
@@ -75,10 +75,10 @@ public class EZRStorage implements ModInitializer {
 
         registerGlobalReceiver(CUSTOM_SLOT_CLICK, (server, player, handler, buf, responseSender) -> {
             final int syncId = buf.readUnsignedByte();
-            if (player.currentScreenHandler.syncId != syncId) return;
+            if (player.containerMenu.containerId != syncId) return;
             final int index = buf.readVarInt();
-            final SlotActionType mode = buf.readEnumConstant(SlotActionType.class);
-            ((StorageCoreScreenHandler)player.currentScreenHandler).customSlotClick(index, mode);
+            final ClickType mode = buf.readEnum(ClickType.class);
+            ((StorageCoreScreenHandler)player.containerMenu).customSlotClick(index, mode);
         });
 
         if (FabricLoader.getInstance().isModLoaded("create")) {
@@ -86,18 +86,18 @@ public class EZRStorage implements ModInitializer {
         }
     }
 
-    private static void registerGlobalReceiver(Identifier packet, ServerPlayNetworking.PlayChannelHandler packetHandler) {
+    private static void registerGlobalReceiver(ResourceLocation packet, ServerPlayNetworking.PlayChannelHandler packetHandler) {
         ServerPlayNetworking.registerGlobalReceiver(packet, (server, player, handler, buf, responseSender) -> {
-            if (server.isOnThread()) {
+            if (server.isSameThread()) {
                 packetHandler.receive(server, player, handler, buf, responseSender);
             } else {
-                final PacketByteBuf newBuf = new PacketByteBuf(buf.copy());
-                server.executeSync(() -> {
-                    if (handler.getConnection().isOpen()) {
+                final FriendlyByteBuf newBuf = new FriendlyByteBuf(buf.copy());
+                server.executeIfPossible(() -> {
+                    if (handler.getConnection().isConnected()) {
                         try {
                             packetHandler.receive(server, player, handler, newBuf, responseSender);
                         } catch (Exception e) {
-                            if (handler.shouldCrashOnException()) {
+                            if (handler.shouldPropagateHandlingExceptions()) {
                                 throw e;
                             }
 

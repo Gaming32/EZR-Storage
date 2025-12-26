@@ -16,26 +16,27 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 
 @Environment(EnvType.CLIENT)
 public class EZRStorageClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        HandledScreens.register(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, StorageCoreScreen::new);
-        HandledScreens.register(EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING, StorageCoreScreenWithCrafting::new);
-        HandledScreens.register(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, ExtractionPortScreen::new);
+        MenuScreens.register(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, StorageCoreScreen::new);
+        MenuScreens.register(EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING, StorageCoreScreenWithCrafting::new);
+        MenuScreens.register(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, ExtractionPortScreen::new);
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> EZRStorage.clientTicks++);
         ClientTickEvents.END_CLIENT_TICK.register(client -> EZRStorage.clientTicks++);
 
         registerGlobalReceiver(EZRStorage.SYNC_INVENTORY, (client, handler, buf, responseSender) -> {
             final int syncId = buf.readUnsignedByte();
-            if (client.player.currentScreenHandler instanceof StorageCoreScreenHandler screenHandler && screenHandler.syncId == syncId) {
-                final NbtCompound inventoryData = buf.readNbt();
+            if (client.player.containerMenu instanceof StorageCoreScreenHandler screenHandler && screenHandler.containerId
+                                                                                                 == syncId) {
+                final CompoundTag inventoryData = buf.readNbt();
                 final var modifications = MoreBufs.readEnumSet(buf, ModificationBoxBlock.Type.class);
                 if (inventoryData != null) {
                     screenHandler.getCoreInventory().readNbt(inventoryData);
@@ -58,18 +59,18 @@ public class EZRStorageClient implements ClientModInitializer {
         }
     }
 
-    private static void registerGlobalReceiver(Identifier packet, ClientPlayNetworking.PlayChannelHandler packetHandler) {
+    private static void registerGlobalReceiver(ResourceLocation packet, ClientPlayNetworking.PlayChannelHandler packetHandler) {
         ClientPlayNetworking.registerGlobalReceiver(packet, (client, handler, buf, responseSender) -> {
-            if (client.isOnThread()) {
+            if (client.isSameThread()) {
                 packetHandler.receive(client, handler, buf, responseSender);
             } else {
-                final PacketByteBuf newBuf = new PacketByteBuf(buf.copy());
-                client.executeSync(() -> {
-                    if (handler.getConnection().isOpen()) {
+                final FriendlyByteBuf newBuf = new FriendlyByteBuf(buf.copy());
+                client.executeIfPossible(() -> {
+                    if (handler.getConnection().isConnected()) {
                         try {
                             packetHandler.receive(client, handler, newBuf, responseSender);
                         } catch (Exception e) {
-                            if (handler.shouldCrashOnException()) {
+                            if (handler.shouldPropagateHandlingExceptions()) {
                                 throw e;
                             }
 
