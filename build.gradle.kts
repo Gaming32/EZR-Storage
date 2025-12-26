@@ -81,6 +81,6 @@ java {
 tasks.jar {
     archiveBaseName = "ezrstorage"
     from("LICENSE") {
-        rename { "${it}_${archiveBaseName}" }
+        rename { "${it}_${archiveBaseName.get()}" }
     }
 }
