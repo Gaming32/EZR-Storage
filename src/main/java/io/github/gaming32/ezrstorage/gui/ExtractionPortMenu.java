@@ -15,21 +15,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class ExtractionPortScreenHandler extends AbstractContainerMenu {
+public class ExtractionPortMenu extends AbstractContainerMenu {
     private final DataSlot listModeProperty;
     private final ContainerLevelAccess context;
 
-    public ExtractionPortScreenHandler(int syncId, Inventory playerInventory) {
+    public ExtractionPortMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new SimpleContainer(9), ContainerLevelAccess.NULL);
     }
 
-    public ExtractionPortScreenHandler(
+    public ExtractionPortMenu(
         int syncId,
         Inventory playerInventory,
         SimpleContainer extractList,
         ContainerLevelAccess context
     ) {
-        super(EZRStorage.EXTRACTION_PORT_SCREEN_HANDLER, syncId);
+        super(EZRStorage.EXTRACTION_PORT_MENU, syncId);
         this.context = context;
 
         for (int i = 0; i < 9; i++) {
@@ -54,23 +54,23 @@ public class ExtractionPortScreenHandler extends AbstractContainerMenu {
 
         addSlotListener(new ContainerListener() {
             @Override
-            public void slotChanged(AbstractContainerMenu handler, int slotId, ItemStack stack) {
+            public void slotChanged(@NotNull AbstractContainerMenu handler, int slotId, @NotNull ItemStack stack) {
                 context.execute(Level::blockEntityChanged);
             }
 
             @Override
-            public void dataChanged(AbstractContainerMenu handler, int property, int value) {
+            public void dataChanged(@NotNull AbstractContainerMenu handler, int property, int value) {
             }
         });
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return true;
     }
 
     @Override
-    public boolean clickMenuButton(Player player, int id) {
+    public boolean clickMenuButton(@NotNull Player player, int id) {
         if (id == 0) {
             final ExtractListMode newMode = getExtractListMode().rotate();
             listModeProperty.set(newMode.ordinal());
@@ -89,7 +89,7 @@ public class ExtractionPortScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = slots.get(index);
         //noinspection ConstantValue

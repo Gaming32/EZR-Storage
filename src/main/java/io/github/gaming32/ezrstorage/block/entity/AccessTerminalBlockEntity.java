@@ -1,6 +1,6 @@
 package io.github.gaming32.ezrstorage.block.entity;
 
-import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.gaming32.ezrstorage.gui.StorageCoreMenu;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -23,10 +23,13 @@ public class AccessTerminalBlockEntity extends RefBlockEntity implements MenuPro
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return getCoreBlockEntity().map(core ->
-            new StorageCoreScreenHandler(syncId, inv, core.getInventory(), core.getModifications())
-        ).orElse(null);
+    public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory inv, @NotNull Player player) {
+        return getCoreBlockEntity().map(core -> new StorageCoreMenu(
+            syncId,
+            inv,
+            core.getInventory(),
+            core.getModifications()
+        )).orElse(null);
     }
 
     @Override

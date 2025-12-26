@@ -1,7 +1,7 @@
 package io.github.gaming32.ezrstorage.block.entity;
 
 import io.github.gaming32.ezrstorage.InfiniteInventory;
-import io.github.gaming32.ezrstorage.gui.ExtractionPortScreenHandler;
+import io.github.gaming32.ezrstorage.gui.ExtractionPortMenu;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -59,13 +59,9 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuPro
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return new ExtractionPortScreenHandler(
-            syncId, inv, extractList, ContainerLevelAccess.create(
-            level,
-            worldPosition
-        )
-        );
+    public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory inv, @NotNull Player player) {
+        assert level != null;
+        return new ExtractionPortMenu(syncId, inv, extractList, ContainerLevelAccess.create(level, worldPosition));
     }
 
     public InfiniteInventory.ExtractListMode getListMode() {
@@ -109,14 +105,14 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuPro
     }
 
     @Override
-    public void setItem(int slot, ItemStack stack) {
+    public void setItem(int slot, @NotNull ItemStack stack) {
         if (slot != 0) return;
         buffer = stack;
         setChanged();
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return false;
     }
 
@@ -127,22 +123,22 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuPro
     }
 
     @Override
-    public int @NotNull [] getSlotsForFace(Direction side) {
+    public int @NotNull [] getSlotsForFace(@NotNull Direction side) {
         return new int[] {0};
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
+    public boolean canPlaceItemThroughFace(int slot, @NotNull ItemStack stack, @Nullable Direction dir) {
         return false;
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
+    public boolean canTakeItemThroughFace(int slot, @NotNull ItemStack stack, @NotNull Direction dir) {
         return true;
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
+    public void saveAdditional(@NotNull CompoundTag nbt) {
         super.saveAdditional(nbt);
         nbt.putInt("ListMode", listMode.ordinal());
         ContainerHelper.saveAllItems(nbt, NonNullList.of(ItemStack.EMPTY, buffer));
@@ -150,7 +146,7 @@ public class ExtractionPortBlockEntity extends RefBlockEntity implements MenuPro
     }
 
     @Override
-    public void load(CompoundTag nbt) {
+    public void load(@NotNull CompoundTag nbt) {
         super.load(nbt);
         listMode = InfiniteInventory.ExtractListMode.values()[nbt.getInt("ListMode")];
 

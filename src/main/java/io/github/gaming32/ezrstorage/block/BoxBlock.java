@@ -23,45 +23,51 @@ public class BoxBlock extends BaseEntityBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new RefBlockEntity(pos, state);
     }
 
     @Override
     public void setPlacedBy(
-        Level world,
-        BlockPos pos,
-        BlockState state,
+        @NotNull Level level,
+        @NotNull BlockPos pos,
+        @NotNull BlockState state,
         @Nullable LivingEntity placer,
-        ItemStack itemStack
+        @NotNull ItemStack itemStack
     ) {
-        super.setPlacedBy(world, pos, state, placer, itemStack);
-        final Set<StorageCoreBlockEntity> cores = findCores(world, pos);
+        super.setPlacedBy(level, pos, state, placer, itemStack);
+        final Set<StorageCoreBlockEntity> cores = findCores(level, pos);
         if (!cores.isEmpty()) {
-            cores.iterator().next().scan(world, null);
+            cores.iterator().next().scan(level, null);
         }
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(
+        BlockState state,
+        @NotNull Level level,
+        @NotNull BlockPos pos,
+        BlockState newState,
+        boolean moved
+    ) {
         if (!state.is(newState.getBlock())) {
-            final BlockEntity entity = world.getBlockEntity(pos);
+            final BlockEntity entity = level.getBlockEntity(pos);
             if (entity instanceof RefBlockEntity ref) {
-                ref.getCoreBlockEntity().ifPresent(core -> core.scan(world, entity));
+                ref.getCoreBlockEntity().ifPresent(core -> core.scan(level, entity));
             }
-            super.onRemove(state, world, pos, newState, moved);
+            super.onRemove(state, level, pos, newState, moved);
         }
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(@NotNull BlockState state, @NotNull LevelReader world, @NotNull BlockPos pos) {
         return findCores(world, pos).size() < 2;
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
 

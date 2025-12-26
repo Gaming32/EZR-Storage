@@ -13,7 +13,7 @@ public class EZRBlockEntities {
     public static final BlockEntityType<StorageCoreBlockEntity> STORAGE_CORE = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
             StorageCoreBlockEntity::new,
-            EZRBlocks.STORAGE_CORE.getA()
+            EZRBlocks.STORAGE_CORE
         ).build(),
         "storage_core"
     );
@@ -21,7 +21,7 @@ public class EZRBlockEntities {
     public static final BlockEntityType<AccessTerminalBlockEntity> ACCESS_TERMINAL = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
             AccessTerminalBlockEntity::new,
-            EZRBlocks.ACCESS_TERMINAL.getA()
+            EZRBlocks.ACCESS_TERMINAL
         ).build(),
         "access_terminal"
     );
@@ -29,16 +29,16 @@ public class EZRBlockEntities {
     public static final BlockEntityType<RefBlockEntity> BOX = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
             RefBlockEntity::new,
-            EZRBlocks.BLANK_BOX.getA(),
-            EZRBlocks.CRAFTING_BOX.getA(),
-            EZRBlocks.SEARCH_BOX.getA(),
-            EZRBlocks.SECURITY_BOX.getA(),
-            EZRBlocks.SORTING_BOX.getA(),
-            EZRBlocks.STORAGE_BOX.getA(),
-            EZRBlocks.CONDENSED_STORAGE_BOX.getA(),
-            EZRBlocks.SUPER_STORAGE_BOX.getA(),
-            EZRBlocks.ULTRA_STORAGE_BOX.getA(),
-            EZRBlocks.HYPER_STORAGE_BOX.getA()
+            EZRBlocks.BLANK_BOX,
+            EZRBlocks.CRAFTING_BOX,
+            EZRBlocks.SEARCH_BOX,
+            EZRBlocks.SECURITY_BOX,
+            EZRBlocks.SORTING_BOX,
+            EZRBlocks.STORAGE_BOX,
+            EZRBlocks.CONDENSED_STORAGE_BOX,
+            EZRBlocks.SUPER_STORAGE_BOX,
+            EZRBlocks.ULTRA_STORAGE_BOX,
+            EZRBlocks.HYPER_STORAGE_BOX
         ).build(),
         "box"
     );
@@ -46,7 +46,7 @@ public class EZRBlockEntities {
     public static final BlockEntityType<InputPortBlockEntity> INPUT_PORT = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
             InputPortBlockEntity::new,
-            EZRBlocks.INPUT_PORT.getA()
+            EZRBlocks.INPUT_PORT
         ).build(),
         "input_port"
     );
@@ -54,7 +54,7 @@ public class EZRBlockEntities {
     public static final BlockEntityType<EjectionPortBlockEntity> EJECTION_PORT = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
             EjectionPortBlockEntity::new,
-            EZRBlocks.EJECTION_PORT.getA()
+            EZRBlocks.EJECTION_PORT
         ).build(),
         "ejection_port"
     );
@@ -62,7 +62,7 @@ public class EZRBlockEntities {
     public static final BlockEntityType<ExtractionPortBlockEntity> EXTRACTION_PORT = EZRReg.registerBlockEntityType(
         FabricBlockEntityTypeBuilder.create(
             ExtractionPortBlockEntity::new,
-            EZRBlocks.EXTRACTION_PORT.getA()
+            EZRBlocks.EXTRACTION_PORT
         ).build(),
         "extraction_port"
     );

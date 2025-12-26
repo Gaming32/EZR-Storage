@@ -19,25 +19,25 @@ public class AccessTerminalBlock extends BoxBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new AccessTerminalBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public @NotNull InteractionResult use(
-        BlockState state,
-        Level world,
-        BlockPos pos,
-        Player player,
-        InteractionHand hand,
-        BlockHitResult hit
+        @NotNull BlockState state,
+        Level level,
+        @NotNull BlockPos pos,
+        @NotNull Player player,
+        @NotNull InteractionHand hand,
+        @NotNull BlockHitResult hit
     ) {
-        if (!world.isClientSide) {
+        if (!level.isClientSide) {
             final AccessTerminalBlockEntity blockEntity =
-                world.getBlockEntity(pos, EZRBlockEntities.ACCESS_TERMINAL).orElse(null);
+                level.getBlockEntity(pos, EZRBlockEntities.ACCESS_TERMINAL).orElse(null);
             if (blockEntity == null || blockEntity.getCore() == null) return InteractionResult.PASS;
-            final MenuProvider factory = state.getMenuProvider(world, pos);
+            final MenuProvider factory = state.getMenuProvider(level, pos);
             if (factory != null) {
                 player.openMenu(factory);
             }

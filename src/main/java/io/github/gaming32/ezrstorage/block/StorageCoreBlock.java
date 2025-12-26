@@ -28,13 +28,13 @@ public class StorageCoreBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new StorageCoreBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(@NotNull BlockState state, @NotNull LevelReader world, @NotNull BlockPos pos) {
         for (final Direction direction : Direction.values()) {
             final BlockEntity entity = world.getBlockEntity(pos.relative(direction));
             if (
@@ -46,37 +46,42 @@ public class StorageCoreBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
-        world.getBlockEntity(pos, EZRBlockEntities.STORAGE_CORE)
+    public void playerWillDestroy(
+        Level level,
+        @NotNull BlockPos pos,
+        @NotNull BlockState state,
+        @NotNull Player player
+    ) {
+        level.getBlockEntity(pos, EZRBlockEntities.STORAGE_CORE)
             .ifPresent(StorageCoreBlockEntity::notifyBreak);
-        super.playerWillDestroy(world, pos, state, player);
+        super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
     public void setPlacedBy(
-        Level world,
-        BlockPos pos,
-        BlockState state,
+        @NotNull Level level,
+        @NotNull BlockPos pos,
+        @NotNull BlockState state,
         @Nullable LivingEntity placer,
-        ItemStack itemStack
+        @NotNull ItemStack itemStack
     ) {
-        super.setPlacedBy(world, pos, state, placer, itemStack);
-        world.getBlockEntity(pos, EZRBlockEntities.STORAGE_CORE)
-            .ifPresent(entity -> entity.scan(world, null));
+        super.setPlacedBy(level, pos, state, placer, itemStack);
+        level.getBlockEntity(pos, EZRBlockEntities.STORAGE_CORE)
+            .ifPresent(entity -> entity.scan(level, null));
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public @NotNull InteractionResult use(
-        BlockState state,
-        Level world,
-        BlockPos pos,
-        Player player,
-        InteractionHand hand,
-        BlockHitResult hit
+        @NotNull BlockState state,
+        Level level,
+        @NotNull BlockPos pos,
+        @NotNull Player player,
+        @NotNull InteractionHand hand,
+        @NotNull BlockHitResult hit
     ) {
-        if (!world.isClientSide) {
-            final MenuProvider factory = state.getMenuProvider(world, pos);
+        if (!level.isClientSide) {
+            final MenuProvider factory = state.getMenuProvider(level, pos);
             if (factory != null) {
                 player.openMenu(factory);
             }
@@ -85,7 +90,7 @@ public class StorageCoreBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(BlockState state) {
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
 }

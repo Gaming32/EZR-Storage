@@ -2,8 +2,8 @@ package io.github.gaming32.ezrstorage.registry;
 
 import io.github.gaming32.ezrstorage.EZRStorage;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -20,26 +20,23 @@ public class EZRReg {
         EZRBlocks.registerBlocks();
     }
 
-    public static <T extends Item> Item registerItem(T item, String name) {
-        return Registry.register(Registry.ITEM, id(name), item);
+    public static <T extends Item> T registerItem(T item, String name) {
+        return Registry.register(BuiltInRegistries.ITEM, id(name), item);
     }
 
-    public static <T extends Block> Block registerBlock(T block, String name) {
-        return Registry.register(Registry.BLOCK, id(name), block);
-    }
-
-    public static <T extends Block> Tuple<Block, Item> registerBlock(
+    public static <T extends Block> T registerBlockAndItem(
         T block,
-        String name,
-        Item.Properties blockItemSettings
+        String name
     ) {
-        return new Tuple<>(registerBlock(block, name), registerItem(new BlockItem(block, blockItemSettings), name));
+        Registry.register(BuiltInRegistries.BLOCK, id(name), block);
+        registerItem(new BlockItem(block, new Item.Properties()), name);
+        return block;
     }
 
     public static <T extends BlockEntity> BlockEntityType<T> registerBlockEntityType(
         BlockEntityType<T> type,
         String name
     ) {
-        return Registry.register(Registry.BLOCK_ENTITY_TYPE, id(name), type);
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, id(name), type);
     }
 }

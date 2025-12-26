@@ -6,7 +6,6 @@ import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,18 +17,19 @@ import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandler {
-    private final CraftingContainer craftingGrid = new CraftingContainer(this, 3, 3);
+public class StorageCoreMenuWithCrafting extends StorageCoreMenu {
+    private final CraftingContainer craftingGrid = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer craftingResult = new ResultContainer();
     private final Slot craftingResultSlot;
     private final ContainerLevelAccess context;
     private final List<Slot> craftingSlots = new ArrayList<>();
     private long lastTick = -1;
 
-    public StorageCoreScreenHandlerWithCrafting(int syncId, Inventory playerInventory) {
+    public StorageCoreMenuWithCrafting(int syncId, Inventory playerInventory) {
         this(
             syncId,
             playerInventory,
@@ -39,15 +39,15 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
         );
     }
 
-    public StorageCoreScreenHandlerWithCrafting(
+    public StorageCoreMenuWithCrafting(
         int syncId,
         Inventory playerInventory,
         InfiniteInventory coreInventory,
-        Set<ModificationBoxBlock.Type> modifications,
+        EnumSet<ModificationBoxBlock.Type> modifications,
         ContainerLevelAccess context
     ) {
         super(
-            EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING,
+            EZRStorage.STORAGE_CORE_MENU_WITH_CRAFTING,
             syncId,
             playerInventory,
             coreInventory,
@@ -79,7 +79,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     }
 
     @Override
-    public void slotsChanged(Container inventory) {
+    public void slotsChanged(@NotNull Container inventory) {
         context.execute((world, pos) -> CraftingMenu.slotChangedCraftingGrid(
             this,
             world,
@@ -90,7 +90,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         if (player instanceof ServerPlayer serverPlayer) {
             if (EZRStorage.serverTicks == lastTick) {
                 syncToClient(serverPlayer);
@@ -119,7 +119,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
                 final int maxStackSize = craftingResult.getMaxStackSize();
                 final int crafting = craftingResult.getCount();
                 for (int i = 0; i < craftingResult.getMaxStackSize(); i++) {
-                    if (slot.hasItem() && slot.getItem().sameItemStackIgnoreDurability(craftingResult)) {
+                    if (slot.hasItem() && ItemStack.isSameItemSameTags(slot.getItem(), craftingResult)) {
                         if (crafting > maxStackSize) {
                             return ItemStack.EMPTY;
                         }
@@ -135,7 +135,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
                         slot.onQuickCraft(craftingResult, result);
                         slot.onTake(player, craftingResult);
 
-                        if (original.sameItemStackIgnoreDurability(slot.getItem())) continue;
+                        if (ItemStack.isSameItemSameTags(original, slot.getItem())) continue;
 
                         tryToPopulateCraftingGrid(recipe, player);
                     } else {
@@ -157,7 +157,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     }
 
     @Override
-    public void clicked(int slotIndex, int button, ClickType actionType, Player player) {
+    public void clicked(int slotIndex, int button, @NotNull ClickType actionType, @NotNull Player player) {
         if (slotIndex >= 0 && slotIndex < slots.size()) {
             final Slot slot = slots.get(slotIndex);
             if (slot instanceof ResultSlot) {
@@ -201,7 +201,7 @@ public class StorageCoreScreenHandlerWithCrafting extends StorageCoreScreenHandl
     }
 
     @Override
-    public void removed(Player player) {
+    public void removed(@NotNull Player player) {
         super.removed(player);
         clearGrid(player);
     }

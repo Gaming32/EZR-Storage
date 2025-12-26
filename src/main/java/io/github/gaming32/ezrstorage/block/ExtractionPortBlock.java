@@ -23,22 +23,22 @@ public class ExtractionPortBlock extends BoxBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new ExtractionPortBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public @NotNull InteractionResult use(
-        BlockState state,
-        Level world,
-        BlockPos pos,
-        Player player,
-        InteractionHand hand,
-        BlockHitResult hit
+        @NotNull BlockState state,
+        Level level,
+        @NotNull BlockPos pos,
+        @NotNull Player player,
+        @NotNull InteractionHand hand,
+        @NotNull BlockHitResult hit
     ) {
-        if (!world.isClientSide) {
-            final MenuProvider factory = state.getMenuProvider(world, pos);
+        if (!level.isClientSide) {
+            final MenuProvider factory = state.getMenuProvider(level, pos);
             if (factory != null) {
                 player.openMenu(factory);
             }
@@ -49,11 +49,11 @@ public class ExtractionPortBlock extends BoxBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-        Level world,
-        BlockState state,
-        BlockEntityType<T> type
+        Level level,
+        @NotNull BlockState state,
+        @NotNull BlockEntityType<T> type
     ) {
-        return world.isClientSide ? null : (world1, pos, state1, blockEntity) -> {
+        return level.isClientSide ? null : (world1, pos, state1, blockEntity) -> {
             if (blockEntity instanceof ExtractionPortBlockEntity extractionPort) {
                 extractionPort.tick();
             }
@@ -61,13 +61,19 @@ public class ExtractionPortBlock extends BoxBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(
+        BlockState state,
+        @NotNull Level level,
+        @NotNull BlockPos pos,
+        BlockState newState,
+        boolean moved
+    ) {
         if (!state.is(newState.getBlock())) {
-            world.getBlockEntity(pos, EZRBlockEntities.EXTRACTION_PORT).ifPresent(entity -> {
-                Containers.dropContents(world, pos, entity);
-                Containers.dropContents(world, pos, entity.getExtractList());
+            level.getBlockEntity(pos, EZRBlockEntities.EXTRACTION_PORT).ifPresent(entity -> {
+                Containers.dropContents(level, pos, entity);
+                Containers.dropContents(level, pos, entity.getExtractList());
             });
-            super.onRemove(state, world, pos, newState, moved);
+            super.onRemove(state, level, pos, newState, moved);
         }
     }
 }

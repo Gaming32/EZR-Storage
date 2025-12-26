@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class InputPortBlock extends BoxBlock {
@@ -17,18 +18,18 @@ public class InputPortBlock extends BoxBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new InputPortBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-        Level world,
-        BlockState state,
-        BlockEntityType<T> type
+        Level level,
+        @NotNull BlockState state,
+        @NotNull BlockEntityType<T> type
     ) {
-        return world.isClientSide ? null : (world1, pos, state1, blockEntity) -> {
+        return level.isClientSide ? null : (world1, pos, state1, blockEntity) -> {
             if (blockEntity instanceof InputPortBlockEntity inputPort) {
                 inputPort.tick();
             }
@@ -36,11 +37,17 @@ public class InputPortBlock extends BoxBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onRemove(
+        BlockState state,
+        @NotNull Level level,
+        @NotNull BlockPos pos,
+        BlockState newState,
+        boolean moved
+    ) {
         if (!state.is(newState.getBlock())) {
-            world.getBlockEntity(pos, EZRBlockEntities.INPUT_PORT)
-                .ifPresent(entity -> Containers.dropContents(world, pos, entity));
-            super.onRemove(state, world, pos, newState, moved);
+            level.getBlockEntity(pos, EZRBlockEntities.INPUT_PORT)
+                .ifPresent(entity -> Containers.dropContents(level, pos, entity));
+            super.onRemove(state, level, pos, newState, moved);
         }
     }
 }

@@ -1,8 +1,10 @@
 package io.github.gaming32.ezrstorage;
 
 import java.util.Objects;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -11,13 +13,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class InfiniteItemStack {
-    public record Contents(@Nullable Item item, @NotNull CompoundTag nbt) {
+    public record Contents(@NotNull Item item, @Nullable CompoundTag nbt) {
         public Contents(ItemStack stack) {
-            //noinspection DataFlowIssue
-            this(
-                stack.getItem(),
-                stack.hasTag() ? stack.getTag() : new CompoundTag()
-            );
+            this(stack.getItem(), stack.getTag());
+        }
+
+        public Contents(FriendlyByteBuf buf) {
+            this(Objects.requireNonNull(buf.readById(BuiltInRegistries.ITEM)), buf.readNbt());
+        }
+
+        public static void writeToBuf(FriendlyByteBuf buf, Contents contents) {
+            buf.writeId(BuiltInRegistries.ITEM, contents.item);
+            buf.writeNbt(contents.nbt);
         }
     }
 
@@ -27,7 +34,7 @@ public final class InfiniteItemStack {
     private long count;
 
     public InfiniteItemStack(@NotNull Item item, long count) {
-        contents = new Contents(item, new CompoundTag());
+        contents = new Contents(item, null);
         this.count = count;
     }
 
@@ -42,16 +49,24 @@ public final class InfiniteItemStack {
     }
 
     private InfiniteItemStack(CompoundTag in) {
-        contents = new Contents(
-            Registry.ITEM.get(new ResourceLocation(in.getString("Item"))),
-            in.getCompound("Nbt")
-        );
+        final var item = BuiltInRegistries.ITEM.get(new ResourceLocation(in.getString("Item")));
+        CompoundTag tag = null;
+        if (in.contains("Nbt", Tag.TAG_COMPOUND)) {
+            tag = in.getCompound("Nbt");
+            item.verifyTagAfterLoad(tag);
+        }
+
+        contents = new Contents(item, tag);
         count = in.getLong("Count");
     }
 
+    public InfiniteItemStack(FriendlyByteBuf buf) {
+        this(new Contents(buf), buf.readVarLong());
+    }
+
     public CompoundTag writeNbt(CompoundTag out) {
-        out.putString("Item", Registry.ITEM.getKey(contents.item).toString());
-        if (!contents.nbt.isEmpty()) {
+        out.putString("Item", BuiltInRegistries.ITEM.getKey(contents.item).toString());
+        if (contents.nbt != null) {
             out.put("Nbt", contents.nbt);
         }
         out.putLong("Count", count);
@@ -64,6 +79,11 @@ public final class InfiniteItemStack {
 
     public static InfiniteItemStack readNbt(CompoundTag in) {
         return new InfiniteItemStack(in);
+    }
+
+    public static void writeToBuf(FriendlyByteBuf buf, InfiniteItemStack stack) {
+        Contents.writeToBuf(buf, stack.contents);
+        buf.writeVarLong(stack.count);
     }
 
     public Contents getContents() {
@@ -87,16 +107,12 @@ public final class InfiniteItemStack {
     }
 
     public boolean isEmpty() {
-        return this == EMPTY || count == 0 || contents.item == null || contents.item.equals(Items.AIR);
+        return this == EMPTY || count == 0 || contents.item.equals(Items.AIR);
     }
 
     public boolean add(ItemStack itemStack) {
         if (!itemStack.is(contents.item)) return false;
-        if (itemStack.hasTag()) {
-            if (!contents.nbt.equals(itemStack.getTag())) return false;
-        } else {
-            if (!contents.nbt.isEmpty()) return false;
-        }
+        if (!Objects.equals(itemStack.getTag(), contents.nbt)) return false;
         count += itemStack.getCount();
         return true;
     }
@@ -104,11 +120,10 @@ public final class InfiniteItemStack {
     public ItemStack extract(int n) {
         if (isEmpty()) return ItemStack.EMPTY;
         if (n > count) n = (int) count;
-        assert contents.item != null;
         if (n > contents.item.getMaxStackSize()) n = contents.item.getMaxStackSize();
         count -= n;
         final ItemStack stack = new ItemStack(contents.item, n);
-        if (!contents.nbt.isEmpty()) {
+        if (contents.nbt != null) {
             stack.setTag(contents.nbt.copy());
         }
         return stack;
@@ -116,9 +131,8 @@ public final class InfiniteItemStack {
 
     public ItemStack toItemStack() {
         if (isEmpty()) return ItemStack.EMPTY;
-        assert contents.item != null;
         final ItemStack result = new ItemStack(contents.item, (int) Math.min(count, contents.item.getMaxStackSize()));
-        if (!contents.nbt.isEmpty()) {
+        if (contents.nbt != null) {
             result.setTag(contents.nbt);
         }
         return result;

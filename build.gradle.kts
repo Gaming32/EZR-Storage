@@ -23,23 +23,32 @@ repositories {
     maven("https://maven.parchmentmc.org") {
         name = "ParchmentMC"
     }
+
+    // Create stuff
+    maven("https://mvn.devos.one/releases")
+    maven("https://mvn.devos.one/snapshots")
+    maven("https://maven.tterrag.com/")
+    maven("https://maven.jamieswhiteshirt.com/libs-release")
+    maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") {
+        name = "Fuzs Mod Resources"
+    }
+    maven("https://maven.createmod.net/")
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft("com.mojang:minecraft:1.19.2")
+    minecraft("com.mojang:minecraft:1.20.1")
     @Suppress("UnstableApiUsage")
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-1.19.2:2022.11.27@zip")
+        parchment("org.parchmentmc.data:parchment-1.20.1:2023.09.03@zip")
     })
     modImplementation("net.fabricmc:fabric-loader:0.18.4")
 
-    modCompileOnly("maven.modrinth:create-fabric:0.5.1-i-build.1630+mc1.19.2")
-    modCompileOnly("dev.emi:emi-fabric:1.1.22+1.19.2")
+    modCompileOnly("com.simibubi.create:create-fabric:6.0.8.1+build.1744-mc1.20.1")
+    modCompileOnly("maven.modrinth:create-fabric:6.0.8.1+build.1744-mc1.20.1")
+    modCompileOnly("dev.emi:emi-fabric:1.1.22+1.20.1")
 
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.77.0+1.19.2")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:0.92.6+1.20.1")
 }
 
 loom {

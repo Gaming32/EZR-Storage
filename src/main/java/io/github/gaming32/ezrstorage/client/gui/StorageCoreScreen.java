@@ -1,15 +1,12 @@
 package io.github.gaming32.ezrstorage.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.search.EmiSearch;
-import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.InfiniteItemStack;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
-import io.github.gaming32.ezrstorage.client.InfiniteItemRenderer;
-import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
+import io.github.gaming32.ezrstorage.gui.StorageCoreMenu;
+import io.github.gaming32.ezrstorage.networking.CustomSlotClickPacket;
 import io.github.gaming32.ezrstorage.registry.EZRReg;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -19,15 +16,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.core.Registry;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -35,8 +31,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreenHandler> {
+public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreMenu> {
     public static final DecimalFormat COUNT_FORMATTER = new DecimalFormat("#,###");
     private static final ResourceLocation CREATIVE_INVENTORY_TABS = new ResourceLocation(
         "textures/gui/container/creative_inventory/tabs.png");
@@ -49,7 +46,6 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
     private boolean scrolling;
     private float currentScroll = 0f;
     private int scrollRow = 0;
-    private InfiniteItemRenderer infiniteItemRenderer;
 
     private final List<InfiniteItemStack> filteredItems = new ArrayList<>();
 
@@ -58,7 +54,7 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
     protected Button craftClearButton;
     protected Checkbox emiSyncButton;
 
-    public StorageCoreScreen(StorageCoreScreenHandler handler, Inventory inventory, Component title) {
+    public StorageCoreScreen(StorageCoreMenu handler, Inventory inventory, Component title) {
         super(handler, inventory, title);
         imageWidth = 195;
         imageHeight = 222;
@@ -81,58 +77,56 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
         searchField.setBordered(false);
         searchField.setCanLoseFocus(true);
         searchField.setTextColor(0xffffff);
-        searchField.setFocus(true);
+        searchField.setFocused(true);
         searchField.setValue("");
         addRenderableWidget(searchField);
 
         //noinspection DataFlowIssue
-        addRenderableWidget(sortTypeSelector = new Button(
-            leftPos - 100, topPos + 16, 90, 20, Component.nullToEmpty(""),
+        addRenderableWidget(sortTypeSelector = Button.builder(
+            Component.empty(),
             button -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 0)
-        ));
+        ).pos(leftPos - 100, topPos + 16).width(90).build());
         sortTypeSelector.visible = false;
 
         //noinspection DataFlowIssue
-        addRenderableWidget(craftClearButton = new BlueButtonWidget(
-            leftPos + 20, topPos + 100, 14, 14, Component.nullToEmpty("x"),
+        addRenderableWidget(craftClearButton = Button.builder(
+            Component.literal("x"),
             button -> minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1)
-        ));
+        ).pos(leftPos + 20, topPos + 100).size(14, 14).build());
         craftClearButton.visible = false;
 
-        addRenderableWidget(emiSyncButton = new ResizableTooltipOnlyCheckboxWidget(
-            searchField.x + searchField.getWidth(), searchField.y - 2,
+        // TODO: Make this button smaller
+        addRenderableWidget(emiSyncButton = new Checkbox(
+            searchField.getX() + searchField.getWidth(), searchField.getY() - 2,
             searchField.getHeight() + 2, searchField.getHeight() + 2,
-            Component.translatable("ezrstorage.emiSync"), SUPPORT_EMI_SYNC, this
+            Component.translatable("ezrstorage.emiSync"), SUPPORT_EMI_SYNC, false
         ));
+        emiSyncButton.setTooltip(Tooltip.create(Component.translatable("ezrstorage.emiSync")));
         emiSyncButton.visible = SUPPORT_EMI_SYNC;
+
         if (SUPPORT_EMI_SYNC) {
             searchField.setWidth(searchField.getWidth() - searchField.getHeight());
         }
     }
 
     @Override
-    protected void renderBg(PoseStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, getBackground());
-        blit(matrices, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+    protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+        graphics.blit(getBackground(), leftPos, topPos, 0, 0, imageWidth, imageHeight);
 
         sortTypeSelector.visible = menu.getModifications().contains(ModificationBoxBlock.Type.SORTING);
         if (sortTypeSelector.visible) {
-            RenderSystem.setShaderTexture(0, SORT_GUI);
-            blit(matrices, leftPos - 108, topPos, 0, 128, 112, 128);
+            graphics.blit(SORT_GUI, leftPos - 108, topPos, 0, 128, 112, 128);
         }
 
         searchField.visible = menu.getModifications().contains(ModificationBoxBlock.Type.SEARCH);
         emiSyncButton.visible = searchField.visible && SUPPORT_EMI_SYNC;
         if (searchField.visible) {
-            RenderSystem.setShaderTexture(0, SEARCH_BAR);
-            blit(matrices, leftPos + 8, topPos + 4, 80, 4, searchField.getInnerWidth() + 10, 12);
+            graphics.blit(SEARCH_BAR, leftPos + 8, topPos + 4, 80, 4, searchField.getInnerWidth() + 10, 12);
         }
     }
 
     @Override
-    protected void renderLabels(PoseStack matrices, int mouseX, int mouseY) {
+    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
         final String totalCount = COUNT_FORMATTER.format(menu.getCoreInventory().getCount());
         final String max = COUNT_FORMATTER.format(menu.getCoreInventory().getMaxCount());
         final String amount = totalCount + '/' + max;
@@ -142,38 +136,31 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
         if (stringWidth > 88) {
             final float scaleFactor = 0.7f;
             final float rScaleFactor = 1 / scaleFactor;
-            matrices.pushPose();
-            matrices.scale(scaleFactor, scaleFactor, scaleFactor);
+            graphics.pose().pushPose();
+            graphics.pose().scale(scaleFactor, scaleFactor, scaleFactor);
             final int x = (int) ((187 - stringWidth * scaleFactor) * rScaleFactor);
-            font.draw(matrices, amount, x, 10, 0x404040);
-            matrices.popPose();
+            graphics.drawString(font, amount, x, 10, 0x404040, false);
+            graphics.pose().popPose();
         } else {
-            font.draw(matrices, amount, 187 - stringWidth, 6, 0x404040);
+            graphics.drawString(font, amount, 187 - stringWidth, 6, 0x404040, false);
         }
 
         if (sortTypeSelector.visible) {
             sortTypeSelector.setMessage(Component.translatable(
                 "sortType." + menu.getCoreInventory().getSortType().getSerializedName()));
-            font.draw(matrices, Component.translatable("sortType"), -100, 6, 0x404040);
-            matrices.pushPose();
-            matrices.scale(0.7f, 0.7f, 0.7f);
+            graphics.drawString(font, Component.translatable("sortType"), -100, 6, 0x404040, false);
+            graphics.pose().pushPose();
+            graphics.pose().scale(0.7f, 0.7f, 0.7f);
             int drawY = (int) (42 / 0.7);
             for (final FormattedCharSequence line : font.split(
                 Component.translatable(
                     "sortType." + menu.getCoreInventory().getSortType().getSerializedName() + ".desc"), (int) (96 / 0.7)
             )) {
-                font.draw(matrices, line, (int) (-100 / 0.7), drawY, 0x404040);
+                graphics.drawString(font, line, (int) (-100 / 0.7), drawY, 0x404040, false);
                 drawY += 9;
             }
-            matrices.popPose();
+            graphics.pose().popPose();
         }
-
-        setBlitOffset(100);
-        itemRenderer.blitOffset = 100f;
-        if (infiniteItemRenderer == null) {
-            infiniteItemRenderer = new InfiniteItemRenderer();
-        }
-        infiniteItemRenderer.blitOffset = 100f;
 
         outer:
         for (int row = 0, y = 18; row < rowsVisible(); row++, y += 18) {
@@ -186,31 +173,42 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
                 final InfiniteItemStack infiniteStack = getSlot(index);
                 final ItemStack stack = infiniteStack.toItemStack();
 
-                itemRenderer.renderAndDecorateFakeItem(stack, x, y);
-                infiniteItemRenderer.renderGuiItemDecorations(
-                    font,
-                    stack,
-                    x,
-                    y,
-                    Long.toString(infiniteStack.getCount())
-                );
+                graphics.renderFakeItem(stack, x, y);
+                // TODO: Make the text smaller
+                graphics.renderItemDecorations(font, stack, x, y, formatCount(infiniteStack.getCount()));
             }
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, CREATIVE_INVENTORY_TABS);
         final int i = 175;
         final int j = 18;
         final int k = j + 108;
-        blit(matrices, i, j + (int) ((float) (k - j - 17) * currentScroll), 232, 0, 12, 15);
-        setBlitOffset(0);
-        itemRenderer.blitOffset = 0f;
+        graphics.blit(CREATIVE_INVENTORY_TABS, i, j + (int) ((float) (k - j - 17) * currentScroll), 232, 0, 12, 15);
+    }
+
+    private static String formatCount(long count) {
+        var string = String.valueOf(Math.abs(count));
+        if (count > 999999999999L) {
+            string = String.valueOf((int) Math.floor(count / 1000000000000.0)) + 'T';
+        } else if (count > 9999999999L) {
+            string = "." + (int) Math.floor(count / 1000000000000.0) + 'T';
+        } else if (count > 999999999L) {
+            string = String.valueOf((int) Math.floor(count / 1000000000.0)) + 'B';
+        } else if (count > 99999999L) {
+            string = "." + (int) Math.floor(count / 100000000.0) + 'B';
+        } else if (count > 999999L) {
+            string = String.valueOf((int) Math.floor(count / 1000000.0)) + 'M';
+        } else if (count > 99999L) {
+            string = "." + (int) Math.floor(count / 100000.0) + 'M';
+        } else if (count > 9999L) {
+            string = String.valueOf((int) Math.floor(count / 1000.0)) + 'K';
+        }
+        return string;
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+        renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, delta);
         final Integer slot = getSlotAt(mouseX, mouseY);
         if (slot != null) {
             int index;
@@ -221,22 +219,22 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
                     if (index < 0) {
                         return;
                     }
-                    renderTooltip(matrices, infiniteStack, mouseX, mouseY);
+                    renderTooltip(graphics, infiniteStack, mouseX, mouseY);
                 }
             }
         }
-        renderTooltip(matrices, mouseX, mouseY);
+        renderTooltip(graphics, mouseX, mouseY);
     }
 
-    protected void renderTooltip(PoseStack matrices, InfiniteItemStack infiniteStack, int x, int y) {
+    protected void renderTooltip(GuiGraphics graphics, InfiniteItemStack infiniteStack, int x, int y) {
         final ItemStack stack = infiniteStack.toItemStack();
         assert minecraft != null;
-        final List<Component> lines = getTooltipFromItem(stack);
+        final List<Component> lines = getTooltipFromItem(minecraft, stack);
         lines.add(
             Component.literal("Count: " + COUNT_FORMATTER.format(infiniteStack.getCount()))
                 .withStyle(style -> style.withItalic(true))
         );
-        renderComponentTooltip(matrices, lines, x, y);
+        graphics.renderComponentTooltip(font, lines, x, y);
     }
 
     @Override
@@ -290,7 +288,7 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
                 .map(EmiStack::getId)
                 .collect(Collectors.toSet());
             StreamSupport.stream(menu.getCoreInventory().spliterator(), false)
-                .filter(s -> allowedItems.contains(Registry.ITEM.getKey(s.getItem())))
+                .filter(s -> allowedItems.contains(BuiltInRegistries.ITEM.getKey(s.getItem())))
                 .forEach(filteredItems::add);
             return;
         }
@@ -305,7 +303,8 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
                 filteredItems.add(stack);
                 continue;
             }
-            for (final Component line : getTooltipFromItem(stack.toItemStack())) {
+            assert minecraft != null;
+            for (final Component line : getTooltipFromItem(minecraft, stack.toItemStack())) {
                 if (line.getString().toLowerCase().contains(searchText)) {
                     filteredItems.add(stack);
                     continue stackIter;
@@ -323,7 +322,7 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
 
         final Integer slot = getSlotAt((int) mouseX, (int) mouseY);
         if (slot != null) {
-            final ClickType mode = hasShiftDown() ? ClickType.QUICK_MOVE : ClickType.PICKUP;
+            final ClickType type = hasShiftDown() ? ClickType.QUICK_MOVE : ClickType.PICKUP;
             int index = menu.getCoreInventory().getUniqueCount();
             if (slot < getSlotCount()) {
                 final InfiniteItemStack infiniteStack = getSlot(slot);
@@ -335,15 +334,11 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
                 }
             }
             assert minecraft != null;
-            menu.customSlotClick(index, mode);
-            final FriendlyByteBuf buf = PacketByteBufs.create();
-            buf.writeByte(menu.containerId);
-            buf.writeVarInt(index);
-            buf.writeEnum(mode);
-            ClientPlayNetworking.send(EZRStorage.CUSTOM_SLOT_CLICK, buf);
+            menu.customSlotClick(index, type);
+            ClientPlayNetworking.send(new CustomSlotClickPacket(menu.containerId, index, type));
         } else {
-            final int elementX = searchField.x;
-            final int elementY = searchField.y;
+            final int elementX = searchField.getX();
+            final int elementY = searchField.getY();
             if (
                 mouseX >= elementX && mouseX <= elementX + searchField.getWidth() &&
                 mouseY >= elementY && mouseY <= elementY + searchField.getHeight()
@@ -351,9 +346,9 @@ public class StorageCoreScreen extends AbstractContainerScreen<StorageCoreScreen
                 if (button == 1 || hasShiftDown()) {
                     searchBoxChange("");
                 }
-                searchField.setFocus(true);
+                searchField.setFocused(true);
             } else {
-                searchField.setFocus(false);
+                searchField.setFocused(false);
             }
         }
 

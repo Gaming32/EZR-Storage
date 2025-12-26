@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -16,9 +17,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
-    private final List<InfiniteItemStack> items = new ArrayList<>();
+
+    private final List<InfiniteItemStack> items;
     private final Runnable markDirty;
-    private SortType sortType = SortType.COUNT_DOWN;
+    private SortType sortType;
     private long maxCount;
     private int robinIndex = 0;
 
@@ -28,7 +30,17 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
     }
 
     public InfiniteInventory(Runnable markDirty) {
+        this.items = new ArrayList<>();
         this.markDirty = markDirty;
+        this.sortType = SortType.COUNT_DOWN;
+    }
+
+    public InfiniteInventory(FriendlyByteBuf buf) {
+        markDirty = () -> {
+        };
+        maxCount = buf.readVarLong();
+        sortType = buf.readEnum(SortType.class);
+        items = buf.readList(InfiniteItemStack::new);
     }
 
     public CompoundTag writeNbt(CompoundTag out) {
@@ -53,6 +65,19 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
             .map(element -> InfiniteItemStack.readNbt((CompoundTag) element))
             .forEach(items::add);
         return this;
+    }
+
+    public static void writeToBuf(FriendlyByteBuf buf, InfiniteInventory inventory) {
+        buf.writeVarLong(inventory.maxCount);
+        buf.writeEnum(inventory.sortType);
+        buf.writeCollection(inventory.items, InfiniteItemStack::writeToBuf);
+    }
+
+    public void overrideFrom(InfiniteInventory inventory) {
+        maxCount = inventory.maxCount;
+        sortType = inventory.sortType;
+        items.clear();
+        items.addAll(inventory.items);
     }
 
     public long getCount() {
@@ -209,10 +234,12 @@ public final class InfiniteInventory implements Iterable<InfiniteItemStack> {
 
     private static final Comparator<InfiniteItemStack> COUNT_UP_BASE = Comparator.comparingLong(InfiniteItemStack::getCount);
     private static final Comparator<InfiniteItemStack> COUNT_DOWN_BASE = COUNT_UP_BASE.reversed();
-    private static final Comparator<InfiniteItemStack> AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getKey(x.getItem())
+    private static final Comparator<InfiniteItemStack> AZ_BASE = Comparator.comparing(x -> BuiltInRegistries.ITEM.getKey(
+            x.getItem())
         .getPath());
     private static final Comparator<InfiniteItemStack> ZA_BASE = AZ_BASE.reversed();
-    private static final Comparator<InfiniteItemStack> MOD_AZ_BASE = Comparator.comparing(x -> Registry.ITEM.getKey(x.getItem())
+    private static final Comparator<InfiniteItemStack> MOD_AZ_BASE = Comparator.comparing(x -> BuiltInRegistries.ITEM.getKey(
+            x.getItem())
         .getNamespace());
     private static final Comparator<InfiniteItemStack> MOD_ZA_BASE = MOD_AZ_BASE.reversed();
 

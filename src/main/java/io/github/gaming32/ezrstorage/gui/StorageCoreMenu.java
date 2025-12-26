@@ -4,14 +4,12 @@ import io.github.gaming32.ezrstorage.EZRStorage;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.InfiniteItemStack;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
-import io.github.gaming32.ezrstorage.util.MoreBufs;
+import io.github.gaming32.ezrstorage.networking.SyncInventoryPacket;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -24,32 +22,32 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class StorageCoreScreenHandler extends AbstractContainerMenu {
+public class StorageCoreMenu extends AbstractContainerMenu {
     private final InfiniteInventory coreInventory;
-    private final Set<ModificationBoxBlock.Type> modifications;
+    private final EnumSet<ModificationBoxBlock.Type> modifications;
     private final List<Slot> inputSources = new ArrayList<>();
     protected final Player player;
     private Runnable updateNotification;
 
-    public StorageCoreScreenHandler(int syncId, Inventory playerInventory) {
+    public StorageCoreMenu(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, new InfiniteInventory(), EnumSet.noneOf(ModificationBoxBlock.Type.class));
     }
 
-    public StorageCoreScreenHandler(
+    public StorageCoreMenu(
         int syncId,
         Inventory playerInventory,
         InfiniteInventory coreInventory,
-        Set<ModificationBoxBlock.Type> modifications
+        EnumSet<ModificationBoxBlock.Type> modifications
     ) {
-        this(EZRStorage.STORAGE_CORE_SCREEN_HANDLER, syncId, playerInventory, coreInventory, modifications);
+        this(EZRStorage.STORAGE_CORE_MENU, syncId, playerInventory, coreInventory, modifications);
     }
 
-    protected StorageCoreScreenHandler(
+    protected StorageCoreMenu(
         MenuType<?> type,
         int syncId,
         Inventory playerInventory,
         InfiniteInventory coreInventory,
-        Set<ModificationBoxBlock.Type> modifications
+        EnumSet<ModificationBoxBlock.Type> modifications
     ) {
         super(type, syncId);
         this.coreInventory = coreInventory;
@@ -107,20 +105,16 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
     }
 
     protected void syncToClient(ServerPlayer player) {
-        final FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeByte(containerId);
-        buf.writeNbt(coreInventory.writeNbt());
-        MoreBufs.writeEnumSet(buf, modifications);
-        ServerPlayNetworking.send(player, EZRStorage.SYNC_INVENTORY, buf);
+        ServerPlayNetworking.send(player, new SyncInventoryPacket(containerId, coreInventory, modifications));
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return true;
     }
 
     @Override
-    public boolean clickMenuButton(Player player, int id) {
+    public boolean clickMenuButton(@NotNull Player player, int id) {
         return switch (id) {
             case 0 -> {
                 coreInventory.setSortType(coreInventory.getSortType().rotate());
@@ -130,7 +124,7 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
                 yield true;
             }
             case 1 -> {
-                if (this instanceof StorageCoreScreenHandlerWithCrafting withCrafting) {
+                if (this instanceof StorageCoreMenuWithCrafting withCrafting) {
                     withCrafting.clearGrid(player);
                     coreInventory.reSort();
                     yield true;
@@ -142,7 +136,7 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(Player player, int index) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         final Slot slot = slots.get(index);
         //noinspection ConstantValue
         if (slot != null && slot.hasItem()) {
@@ -156,7 +150,7 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotIndex, int button, ClickType actionType, Player player) {
+    public void clicked(int slotIndex, int button, @NotNull ClickType actionType, @NotNull Player player) {
         if (slotIndex >= rowCount() * 9 || slotIndex < 0) {
             super.clicked(slotIndex, button, actionType, player);
             if (actionType == ClickType.QUICK_MOVE) {
@@ -189,7 +183,7 @@ public class StorageCoreScreenHandler extends AbstractContainerMenu {
     }
 
     @Override
-    public void removed(Player player) {
+    public void removed(@NotNull Player player) {
         super.removed(player);
         coreInventory.reSort();
     }

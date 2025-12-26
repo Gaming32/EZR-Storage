@@ -3,8 +3,8 @@ package io.github.gaming32.ezrstorage.block.entity;
 import io.github.gaming32.ezrstorage.InfiniteInventory;
 import io.github.gaming32.ezrstorage.block.ModificationBoxBlock;
 import io.github.gaming32.ezrstorage.block.StorageBoxBlock;
-import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandler;
-import io.github.gaming32.ezrstorage.gui.StorageCoreScreenHandlerWithCrafting;
+import io.github.gaming32.ezrstorage.gui.StorageCoreMenu;
+import io.github.gaming32.ezrstorage.gui.StorageCoreMenuWithCrafting;
 import io.github.gaming32.ezrstorage.registry.EZRBlockEntities;
 import io.github.gaming32.ezrstorage.util.MoreCollectors;
 import io.github.gaming32.ezrstorage.util.NbtUtil;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider {
     private final Set<BlockPos> network = new HashSet<>();
     private final InfiniteInventory inventory = new InfiniteInventory(this::setChanged);
-    private final Set<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
+    private final EnumSet<ModificationBoxBlock.Type> modifications = EnumSet.noneOf(ModificationBoxBlock.Type.class);
 
     public StorageCoreBlockEntity(BlockPos pos, BlockState state) {
         super(EZRBlockEntities.STORAGE_CORE, pos, state);
@@ -97,20 +97,24 @@ public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider 
         return inventory;
     }
 
-    public Set<ModificationBoxBlock.Type> getModifications() {
+    public EnumSet<ModificationBoxBlock.Type> getModifications() {
         return modifications;
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
-        return modifications.contains(ModificationBoxBlock.Type.CRAFTING)
-            ? new StorageCoreScreenHandlerWithCrafting(
-            syncId, inv, inventory, modifications, ContainerLevelAccess.create(
-            level,
-            worldPosition
-        )
-        )
-            : new StorageCoreScreenHandler(syncId, inv, inventory, modifications);
+    public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory inv, @NotNull Player player) {
+        if (modifications.contains(ModificationBoxBlock.Type.CRAFTING)) {
+            assert level != null;
+            return new StorageCoreMenuWithCrafting(
+                syncId,
+                inv,
+                inventory,
+                modifications,
+                ContainerLevelAccess.create(level, worldPosition)
+            );
+        } else {
+            return new StorageCoreMenu(syncId, inv, inventory, modifications);
+        }
     }
 
     @Override
@@ -123,16 +127,12 @@ public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider 
         nbt.put("Inventory", inventory.writeNbt());
         nbt.put(
             "Modifications",
-            modifications.stream()
-                .map(ModificationBoxBlock.Type::getSerializedName)
-                .map(StringTag::valueOf)
+            modifications.stream().map(ModificationBoxBlock.Type::getSerializedName).map(StringTag::valueOf)
                 .collect(MoreCollectors.customCollection(ListTag::new))
         );
         nbt.put(
             "Network",
-            network.stream()
-                .map(NbtUtil::blockPosToNbt)
-                .collect(MoreCollectors.customCollection(ListTag::new))
+            network.stream().map(NbtUtil::blockPosToNbt).collect(MoreCollectors.customCollection(ListTag::new))
         );
     }
 
@@ -141,15 +141,12 @@ public class StorageCoreBlockEntity extends BlockEntity implements MenuProvider 
         inventory.readNbt(nbt.getCompound("Inventory"));
 
         modifications.clear();
-        nbt.getList("Modifications", Tag.TAG_STRING)
-            .stream()
+        nbt.getList("Modifications", Tag.TAG_STRING).stream()
             .map(element -> ModificationBoxBlock.Type.valueOf(element.getAsString().toUpperCase(Locale.ROOT)))
             .forEach(modifications::add);
 
         network.clear();
-        nbt.getList("Network", Tag.TAG_INT_ARRAY)
-            .stream()
-            .map(element -> NbtUtil.nbtToBlockPos((IntArrayTag) element))
+        nbt.getList("Network", Tag.TAG_INT_ARRAY).stream().map(element -> NbtUtil.nbtToBlockPos((IntArrayTag) element))
             .forEach(network::add);
     }
 }

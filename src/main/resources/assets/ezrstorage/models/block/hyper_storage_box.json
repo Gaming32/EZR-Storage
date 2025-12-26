@@ -1,12 +1,12 @@
 {
     "parent": "block/cube",
     "textures": {
-        "down": "ezrstorage:blocks/box_side_hyper",
-        "up": "ezrstorage:blocks/box_side_hyper",
-        "north": "ezrstorage:blocks/hyper_storage_box",
-        "south": "ezrstorage:blocks/hyper_storage_box",
-        "east": "ezrstorage:blocks/hyper_storage_box",
-        "west": "ezrstorage:blocks/hyper_storage_box",
-        "particle": "ezrstorage:blocks/hyper_storage_box"
+        "down": "ezrstorage:block/box_side_hyper",
+        "up": "ezrstorage:block/box_side_hyper",
+        "north": "ezrstorage:block/hyper_storage_box",
+        "south": "ezrstorage:block/hyper_storage_box",
+        "east": "ezrstorage:block/hyper_storage_box",
+        "west": "ezrstorage:block/hyper_storage_box",
+        "particle": "ezrstorage:block/hyper_storage_box"
     }
 }

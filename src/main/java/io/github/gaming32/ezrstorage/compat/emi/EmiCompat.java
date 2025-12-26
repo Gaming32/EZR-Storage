@@ -9,7 +9,7 @@ import io.github.gaming32.ezrstorage.client.gui.StorageCoreScreenWithCrafting;
 public class EmiCompat implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
-        registry.addRecipeHandler(EZRStorage.STORAGE_CORE_SCREEN_HANDLER_WITH_CRAFTING, new StorageCoreRecipeHandler());
+        registry.addRecipeHandler(EZRStorage.STORAGE_CORE_MENU_WITH_CRAFTING, new StorageCoreRecipeHandler());
         registry.addStackProvider(StorageCoreScreen.class, new StorageCoreStackProvider<>());
         registry.addStackProvider(StorageCoreScreenWithCrafting.class, new StorageCoreStackProvider<>());
     }

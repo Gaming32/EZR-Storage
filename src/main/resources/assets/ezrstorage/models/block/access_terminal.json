@@ -1,12 +1,12 @@
 {
     "parent": "block/cube",
     "textures": {
-        "down": "ezrstorage:blocks/box_side",
-        "up": "ezrstorage:blocks/box_side",
-        "north": "ezrstorage:blocks/access_terminal",
-        "south": "ezrstorage:blocks/access_terminal",
-        "east": "ezrstorage:blocks/access_terminal",
-        "west": "ezrstorage:blocks/access_terminal",
-        "particle": "ezrstorage:blocks/access_terminal"
+        "down": "ezrstorage:block/box_side",
+        "up": "ezrstorage:block/box_side",
+        "north": "ezrstorage:block/access_terminal",
+        "south": "ezrstorage:block/access_terminal",
+        "east": "ezrstorage:block/access_terminal",
+        "west": "ezrstorage:block/access_terminal",
+        "particle": "ezrstorage:block/access_terminal"
     }
 }
