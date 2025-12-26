@@ -1,6 +1,7 @@
 package io.github.gaming32.ezrstorage.mixin;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.gaming32.ezrstorage.block.entity.RefBlockEntity;
 import io.github.gaming32.ezrstorage.block.entity.StorageCoreBlockEntity;
 import net.minecraft.block.PistonBlock;
@@ -12,15 +13,19 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PistonBlock.class)
 public class MixinPistonBlock {
-    @WrapWithCondition(
+    @WrapOperation(
         method = "onSyncedBlockEvent",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/World;removeBlock(Lnet/minecraft/util/math/BlockPos;Z)Z"
         )
     )
-    private boolean fixPistonBedrockBreaking(World instance, BlockPos pos, boolean move) {
+    private boolean fixPistonBedrockBreaking(World instance, BlockPos pos, boolean move, Operation<Boolean> original) {
         final BlockEntity entity = instance.getBlockEntity(pos);
-        return !(entity instanceof StorageCoreBlockEntity) && !(entity instanceof RefBlockEntity);
+        if (!(entity instanceof StorageCoreBlockEntity) && !(entity instanceof RefBlockEntity)) {
+            return original.call(instance, pos, move);
+        } else {
+            return false;
+        }
     }
 }
